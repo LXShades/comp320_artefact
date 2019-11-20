@@ -27,16 +27,19 @@ public class ImpMan : MonoBehaviour
     }
     private static ImpMan _singleton;
 
-    public List<RenderTexture> impostorTextures = new List<RenderTexture>();
-
-    public List<ImpostorSurface> impostorSurfaces = new List<ImpostorSurface>();
-
+    [Header("Resources (runtime, don't change!)")]
     public List<Impostify> impostables = new List<Impostify>();
+    public List<RenderTexture> impostorTextures = new List<RenderTexture>();
+    public List<ImpostorSurface> impostorSurfaces = new List<ImpostorSurface>();
+    public List<ImpostorBatch> impostorBatches;
 
     [Header("Impostor textures")]
+    public Shader impostorShader;
+
     public int impostorTextureWidth = 1024;
     public int impostorTextureHeight = 1024;
 
+    [Header("Impostor regeneration")]
     public int framesPerImpostorUpdate = 1;
 
     private int frame = 0;
@@ -45,9 +48,6 @@ public class ImpMan : MonoBehaviour
 
     private void Awake()
     {
-        /** Add a first impostor texture */
-        impostorTextures.Add(new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16));
-
         /** Create a list of all impostifiable objects */
         impostables.AddRange(FindObjectsOfType<Impostify>());
     }
@@ -101,18 +101,24 @@ public class ImpMan : MonoBehaviour
         int textureIndex = impostorSurfaces.Count / 4;
         int uvIndex = impostorSurfaces.Count % 4;
 
+        // if we need more new textures, add them here
         while (textureIndex >= impostorTextures.Count)
         {
             impostorTextures.Add(new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16));
+            impostorBatches.Add(new GameObject("_ImpostorBatch_", typeof(ImpostorBatch)).GetComponent<ImpostorBatch>());
+
+            impostorBatches[impostorBatches.Count - 1].texture = impostorTextures[impostorTextures.Count - 1];
         }
 
-        RenderTexture texture = impostorTextures[textureIndex];
-        Vector2[] uvSequence = new Vector2[] { new Vector2(0, 0), new Vector2(0.5f, 0), new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f) };
+        // Create the surface
+        Vector2[] uvSequence = new Vector2[] { new Vector2(0, 0), new Vector2(0.5f, 0), new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f) }; // for now, reserve for 0.5x0.5 blocks per texture until better packing algorithm is created
 
         ImpostorSurface fragment = new ImpostorSurface
         {
-            texture = texture,
+            texture = impostorTextures[textureIndex],
             uvDimensions = new Rect(uvSequence[uvIndex], new Vector2(0.5f, 0.5f)),
+            batch = impostorBatches[textureIndex],
+            batchPlaneIndex = impostorBatches[textureIndex].ReservePlane()
         };
 
         impostorSurfaces.Add(fragment);
@@ -122,10 +128,6 @@ public class ImpMan : MonoBehaviour
     private void ClearImpostorTextures()
     {
         impostorSurfaces.Clear();
-        /*foreach (ImpTextureFragment fragment in impostorTextureFragments)
-        {
-            fragment.
-        }*/
     }
 }
 
@@ -194,7 +196,13 @@ public class ImpostorSurface
     }
     private RenderTexture _texture;
 
-    /** The owner of this texture fragment */
+    /** The impostor batch being used and the plane reserved from it */
+    public ImpostorBatch batch;
+
+    /** Index of the plane in the impostor batch */
+    public int batchPlaneIndex;
+
+    /** The owner of this surface */
     public Impostify owner;
 };
 

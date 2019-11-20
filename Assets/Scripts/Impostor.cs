@@ -6,8 +6,12 @@ using UnityEngine;
 public class Impostor : MonoBehaviour
 {
     Mesh myMesh;
-    
-    public Rect uvs;
+
+    /** The impostor batch associated with this impostor, if applicable*/
+    public ImpostorBatch parentBatch = null;
+    private int batchIndex = -1;
+
+    public Rect uvs = new Rect(0, 0, 1, 1);
 
     static Vector3[] planeVertices = new Vector3[4] { new Vector3(5f, 0f, 5f), new Vector3(-5f, 0f, 5f), new Vector3(-5f, 0f, -5f), new Vector3(5f, 0f, -5f)};
     static Vector3[] planeNormals = new Vector3[4] { Vector3.up, Vector3.up, Vector3.up, Vector3.up };

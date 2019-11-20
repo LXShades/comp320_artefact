@@ -8,8 +8,6 @@ public class Impostify : MonoBehaviour
     public int renderTextureWidth = 256;
     public int renderTextureHeight = 256;
 
-    public bool useBestFit = true;
-
     [Header("Testing")]
     public bool previewProjectionMatrix = false;
     public bool fillImpostorBackground = false;
@@ -73,13 +71,10 @@ public class Impostify : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Space) && useBestFit)
+        if (Input.GetKey(KeyCode.Space) && previewProjectionMatrix)
         {
-            if (previewProjectionMatrix)
-            {
-                mainCamera.ResetProjectionMatrix();
-                mainCamera.projectionMatrix = impostorProjectionMatrix;
-            }
+            mainCamera.ResetProjectionMatrix();
+            mainCamera.projectionMatrix = impostorProjectionMatrix;
         }
         else
         {
@@ -144,40 +139,30 @@ public class Impostify : MonoBehaviour
         PrepareImpostorCamera();
         RenderImpostor();
 
-        // Create the impostor plane. useBestFit specifies whether we should use a screen-spanning impostor or a 
-        impostor = new GameObject("Impostor", typeof(Impostor));
-        impostor.isStatic = true;
+        // Create or update the impostor plane
+        float planeSize = impostorRadius * 2;
 
-        if (texFrag != null)
+        if (texFrag == null)
         {
-            impostor.GetComponent<Impostor>().uvs = texFrag.uvDimensions;
-        }
-
-        if (!useBestFit)
-        {
-            float planeSize = 60f;
-
-            impostor.transform.position = mainCamera.transform.position + mainCamera.transform.forward * (planeSize / Mathf.Tan(Mathf.Deg2Rad * impostorCamera.fieldOfView * 0.5f) / 2);
-            impostor.transform.localScale = new Vector3(mainCamera.aspect * planeSize * 0.1f, planeSize * 0.1f, planeSize * 0.1f);
-            impostor.transform.rotation = Quaternion.LookRotation(-Vector3.up, mainCamera.transform.position - impostor.transform.position);
-        }
-        else
-        {
-            float planeSize = impostorRadius * 2;
+            impostor = new GameObject("Impostor", typeof(Impostor));
+            impostor.isStatic = true;
 
             impostor.transform.position = impostorPosition;
             impostor.transform.localScale = new Vector3(mainCamera.aspect * planeSize * 0.1f, planeSize * 0.1f, planeSize * 0.1f);
             impostor.transform.rotation = Quaternion.LookRotation(-mainCamera.transform.up, -mainCamera.transform.forward);
+            
+            // Update the material
+            impostorMaterial = new Material(materialShader);
+
+            impostorMaterial.SetFloat("_Cutoff", 0.99f);
+            impostorMaterial.mainTexture = impostorSurface.texture;
+
+            impostor.GetComponent<MeshRenderer>().sharedMaterial = impostorMaterial;
         }
-
-        // Update the material
-        impostorMaterial = new Material(materialShader);
-
-        impostorMaterial.SetFloat("_Cutoff", 0.99f);
-        impostorMaterial.mainTexture = impostorSurface.texture;
-
-        impostor.GetComponent<MeshRenderer>().sharedMaterial = impostorMaterial;
-        
+        else
+        {
+            texFrag.batch.SetPlane(texFrag.batchPlaneIndex, impostorPosition, mainCamera.transform.up * (planeSize/2), mainCamera.transform.right * (planeSize/2 * mainCamera.aspect), texFrag.uvDimensions);
+        }
     }
 
     void CleanupResources()
@@ -228,35 +213,28 @@ public class Impostify : MonoBehaviour
         camera.targetTexture = impostorSurface.texture;
         camera.pixelRect = new Rect(impostorSurface.pixelDimensions.x, impostorSurface.pixelDimensions.y,
                                     impostorSurface.pixelDimensions.width, impostorSurface.pixelDimensions.height);
+        
+        // Figure out how big the impostor will be and its plane scale, etc, and render to match that area of the screen
+        impostorPosition = myRenderer.bounds.center;
+        impostorRadius = myRenderer.bounds.extents.magnitude / 2 * 1.1f;
 
-        if (useBestFit)
-        {
-            // Figure out how big the impostor will be and its plane scale, etc, and render to that size
-            impostorPosition = myRenderer.bounds.center;
-            impostorRadius = myRenderer.bounds.extents.magnitude / 2 * 1.1f;
+        float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
+        float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
+        float frustumHeightAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f;
+        float impostorScreenSpaceRadius = impostorRadius / frustumHeightAtImpostorDepth;
+        Vector2 screenSpacePosition = new Vector2();
 
-            float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
-            float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
-            float frustumHeightAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f;
-            float impostorScreenSpaceRadius = impostorRadius / frustumHeightAtImpostorDepth;
-            Vector2 screenSpacePosition = new Vector2();
+        screenSpacePosition = new Vector2(
+            Vector3.Dot(camera.transform.right, impostorPosition - camera.transform.position) / frustumWidthAtImpostorDepth * 2,
+            Vector3.Dot(camera.transform.up, impostorPosition - camera.transform.position) / frustumHeightAtImpostorDepth * 2);
 
-            screenSpacePosition = new Vector2(
-                Vector3.Dot(camera.transform.right, impostorPosition - camera.transform.position) / frustumWidthAtImpostorDepth * 2,
-                Vector3.Dot(camera.transform.up, impostorPosition - camera.transform.position) / frustumHeightAtImpostorDepth * 2);
+        camera.ResetProjectionMatrix();
 
-            camera.ResetProjectionMatrix();
+        impostorProjectionMatrix = Matrix4x4.Scale(new Vector3(0.5f / (impostorRadius / frustumHeightAtImpostorDepth), 0.5f / (impostorRadius / frustumHeightAtImpostorDepth), 1))
+                                    * Matrix4x4.Translate(new Vector3(-screenSpacePosition.x, -screenSpacePosition.y, 0))
+                                    * camera.projectionMatrix;
 
-            impostorProjectionMatrix = Matrix4x4.Scale(new Vector3(0.5f / (impostorRadius / frustumHeightAtImpostorDepth), 0.5f / (impostorRadius / frustumHeightAtImpostorDepth), 1))
-                                     * Matrix4x4.Translate(new Vector3(-screenSpacePosition.x, -screenSpacePosition.y, 0))
-                                     * camera.projectionMatrix;
-
-            camera.projectionMatrix = impostorProjectionMatrix;
-        }
-        else
-        {
-            camera.ResetProjectionMatrix();
-        }
+        camera.projectionMatrix = impostorProjectionMatrix;
     }
 
     void RenderImpostor()
