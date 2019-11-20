@@ -14,6 +14,7 @@ public class Impostify : MonoBehaviour
     public bool previewProjectionMatrix = false;
     public bool fillImpostorBackground = false;
     public bool holdSpaceForImpostor = false;
+    public bool useOwnTexture = false;
 
     public Shader materialShader;
 
@@ -23,7 +24,7 @@ public class Impostify : MonoBehaviour
     GameObject impostor;
 
     /** Texture to be used to render the impostor */
-    RenderTexture impostorTexture;
+    ImpostorSurface impostorSurface;
     
     /** Material onto which the impostor texture will be applied */
     Material impostorMaterial;
@@ -57,6 +58,14 @@ public class Impostify : MonoBehaviour
     /** The current projection matrix used by the impostor camera. Only applies when useBestFit is true. */
     Matrix4x4 impostorProjectionMatrix;
 
+    /** The renderer associated with this object */
+    Renderer myRenderer;
+
+    private void Awake()
+    {
+        myRenderer = GetComponent<Renderer>();
+    }
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -77,14 +86,14 @@ public class Impostify : MonoBehaviour
             mainCamera.ResetProjectionMatrix();
         }
 
-        if (isPendingRefresh || Input.GetKeyDown(KeyCode.Space))
+        /*if (isPendingRefresh || Input.GetKeyDown(KeyCode.Space))
         {
-            RefreshImpostor();
-        }
+            RegenerateImpostor();
+        }*/
 
         if (holdSpaceForImpostor)
         {
-            GetComponent<Renderer>().enabled = !Input.GetKey(KeyCode.Space);
+            myRenderer.enabled = !Input.GetKey(KeyCode.Space);
 
             if (impostor)
             {
@@ -93,18 +102,42 @@ public class Impostify : MonoBehaviour
         }
         else
         {
-            GetComponent<Renderer>().enabled = (impostor == null);
+            myRenderer.enabled = (impostor == null);
         }
     }
 
-    void RefreshImpostor()
+    public void RegenerateImpostor(ImpostorSurface texFrag = null)
     {
+        if (!useOwnTexture && texFrag == null)
+        {
+            return; // we need a texture!
+        }
+
         CleanupResources();
 
-        // Create the render texture for the impostor
-        if (!impostorTexture)
+        if (useOwnTexture)
         {
-            impostorTexture = new RenderTexture((int)renderTextureWidth, (int)renderTextureWidth, 16);
+            // Create the render texture for the impostor
+            if (useOwnTexture && impostorSurface == null)
+            {
+                impostorSurface = new ImpostorSurface()
+                {
+                    texture = new RenderTexture(renderTextureWidth, renderTextureWidth, 16),
+                    uvDimensions = new Rect(0, 0, 1, 1),
+                    owner = this
+                };
+            }
+        }
+        else
+        {
+            if (texFrag == null)
+            {
+                // We have no texture!
+                Debug.LogWarning("No tex fragment supplied to impostor with useOwnTexture=false!");
+                return;
+            }
+
+            impostorSurface = texFrag;
         }
 
         // Render the impostor
@@ -112,8 +145,13 @@ public class Impostify : MonoBehaviour
         RenderImpostor();
 
         // Create the impostor plane. useBestFit specifies whether we should use a screen-spanning impostor or a 
-        impostor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        impostor = new GameObject("Impostor", typeof(Impostor));
         impostor.isStatic = true;
+
+        if (texFrag != null)
+        {
+            impostor.GetComponent<Impostor>().uvs = texFrag.uvDimensions;
+        }
 
         if (!useBestFit)
         {
@@ -136,8 +174,7 @@ public class Impostify : MonoBehaviour
         impostorMaterial = new Material(materialShader);
 
         impostorMaterial.SetFloat("_Cutoff", 0.99f);
-
-        impostorMaterial.mainTexture = impostorTexture;
+        impostorMaterial.mainTexture = impostorSurface.texture;
 
         impostor.GetComponent<MeshRenderer>().sharedMaterial = impostorMaterial;
         
@@ -147,13 +184,13 @@ public class Impostify : MonoBehaviour
     {
         if (impostor)
         {
-            impostor.active = false;
+            impostor.SetActive(false);
             GameObject.Destroy(impostor);
 
-            if (impostorTexture)
+            if (impostorSurface != null && useOwnTexture)
             {
-                impostorTexture.Release();
-                impostorTexture = null;
+                impostorSurface.texture.Release();
+                impostorSurface = null;
             }
 
             impostorMaterial = null;
@@ -188,13 +225,15 @@ public class Impostify : MonoBehaviour
         camera.fieldOfView = mainCamera.fieldOfView;
         camera.transform.position = mainCamera.transform.position;
         camera.transform.rotation = mainCamera.transform.rotation;
-        camera.targetTexture = impostorTexture;
+        camera.targetTexture = impostorSurface.texture;
+        camera.pixelRect = new Rect(impostorSurface.pixelDimensions.x, impostorSurface.pixelDimensions.y,
+                                    impostorSurface.pixelDimensions.width, impostorSurface.pixelDimensions.height);
 
         if (useBestFit)
         {
             // Figure out how big the impostor will be and its plane scale, etc, and render to that size
-            impostorPosition = GetComponent<MeshRenderer>().bounds.center;
-            impostorRadius = GetComponent<MeshRenderer>().bounds.extents.magnitude / 2 * 1.1f;
+            impostorPosition = myRenderer.bounds.center;
+            impostorRadius = myRenderer.bounds.extents.magnitude / 2 * 1.1f;
 
             float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
             float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
@@ -224,6 +263,7 @@ public class Impostify : MonoBehaviour
     {
         Camera camera = impostorCamera;
         int oldLayer = gameObject.layer;
+        bool oldVisible = myRenderer.enabled;
 
         // Clear the background pixels
         camera.clearFlags = CameraClearFlags.Color;
@@ -232,7 +272,7 @@ public class Impostify : MonoBehaviour
         // Setup to render only this object
         gameObject.layer = 30;
         camera.cullingMask = 1<<gameObject.layer;
-        GetComponent<Renderer>().enabled = true;
+        myRenderer.enabled = true;
 
         // Render to the impostor
         camera.Render();
@@ -241,6 +281,7 @@ public class Impostify : MonoBehaviour
 
         // Done!
         gameObject.layer = oldLayer;
+        myRenderer.enabled = oldVisible;
     }
 
     private void OnDrawGizmos()
