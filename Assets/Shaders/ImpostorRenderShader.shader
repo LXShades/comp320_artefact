@@ -3,11 +3,12 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    }
-    SubShader
-    {
-        Tags { "RenderType"="Transparent" }
-        LOD 100
+	}
+		SubShader
+	{
+		Tags { "RenderType" = "Transparent" }
+		LOD 100
+		Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -32,6 +33,12 @@
                 float4 vertex : SV_POSITION;
             };
 
+			struct f2t
+			{
+				fixed4 main : COLOR0;
+				fixed4 impostor : COLOR1;
+			};
+
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
@@ -44,15 +51,22 @@
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            f2t frag (v2f i)
             {
+				f2t output;
+
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+
+				clip(col.a - 0.1f);
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
-                return col;
+				output.main = col;
+				output.impostor = col;
+
+                return output;
             }
             ENDCG
         }

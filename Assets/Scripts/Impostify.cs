@@ -213,7 +213,7 @@ public class Impostify : MonoBehaviour
         camera.targetTexture = impostorSurface.texture;
         camera.pixelRect = new Rect(impostorSurface.pixelDimensions.x, impostorSurface.pixelDimensions.y,
                                     impostorSurface.pixelDimensions.width, impostorSurface.pixelDimensions.height);
-        
+
         // Figure out how big the impostor will be and its plane scale, etc, and render to match that area of the screen
         impostorPosition = myRenderer.bounds.center;
         impostorRadius = myRenderer.bounds.extents.magnitude / 2 * 1.1f;
@@ -254,6 +254,7 @@ public class Impostify : MonoBehaviour
 
         // Render to the impostor
         camera.Render();
+
         camera.targetTexture = null;
         camera.enabled = false;
 
