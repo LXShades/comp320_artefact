@@ -88,6 +88,14 @@ public class Impostify : MonoBehaviour
 
         if (holdSpaceForImpostor)
         {
+            if (impostorSurface != null)
+            {
+                if (impostorSurface.batch)
+                {
+                    impostorSurface.batch.GetComponent<MeshRenderer>().enabled = Input.GetKey(KeyCode.Space);
+                }
+            }
+
             myRenderer.enabled = !Input.GetKey(KeyCode.Space);
 
             if (impostor)
