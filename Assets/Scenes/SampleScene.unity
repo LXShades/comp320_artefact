@@ -1693,8 +1693,9 @@ MonoBehaviour:
   impostorTextures: []
   impostorBatches: []
   impostorShader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  impostorTextureWidth: 1024
-  impostorTextureHeight: 1024
+  impostorTextureWidth: 2048
+  impostorTextureHeight: 2048
+  impostorTextureDivisions: 8
   framesPerImpostorUpdate: 1
 --- !u!4 &1854606162
 Transform:

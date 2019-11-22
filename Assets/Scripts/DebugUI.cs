@@ -12,7 +12,7 @@ public class DebugUI : MonoBehaviour
     public Image[] debugTextures;
 
     /** Circular array for frame rate logging */
-    private const int numFrameTimestamps = 60;
+    private const int numFrameTimestamps = 10;
     private int frameTimestampIndex = 0;
     private float[] frameTimestamps = new float[numFrameTimestamps];
 
@@ -33,7 +33,19 @@ public class DebugUI : MonoBehaviour
             totalFrameTimes += f;
         }
 
-        fpsCounter.text = "FPS: " + (1 / (totalFrameTimes / frameTimestamps.Length)).ToString("0.0");
+        float[] sortedTimestamps = new float[numFrameTimestamps];
+
+        if (frameTimestamps.Length > 0)
+        {
+            System.Array.Copy(frameTimestamps, sortedTimestamps, numFrameTimestamps);
+            System.Array.Sort(sortedTimestamps);
+            
+            fpsCounter.text =
+                $"FPS: {(1 / (totalFrameTimes / frameTimestamps.Length)).ToString("0000.0")}" +
+                $" (Low: {(1 / sortedTimestamps[sortedTimestamps.Length - 1]).ToString("0000.0")})" +
+                $" (Med: {(1 / sortedTimestamps[(int)(sortedTimestamps.Length * 0.5f)]).ToString("0000.0")})" + 
+                $" (High: {(1 / sortedTimestamps[0]).ToString("0000.0")})";
+        }
 
         frameTimestamps[frameTimestampIndex] = Time.deltaTime;
         frameTimestampIndex = (frameTimestampIndex + 1) % numFrameTimestamps;

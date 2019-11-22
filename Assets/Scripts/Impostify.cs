@@ -58,10 +58,15 @@ public class Impostify : MonoBehaviour
 
     /** The renderer associated with this object */
     Renderer myRenderer;
+    Mesh myMesh;
+
+    /** World-space bounds of this object */
+    private Vector3 boundsCentre;
+    private float boundsRadius;
 
     private void Awake()
     {
-        myRenderer = GetComponent<Renderer>();
+        RefreshRendererInfo();
     }
 
     void Start()
@@ -223,8 +228,8 @@ public class Impostify : MonoBehaviour
                                     impostorSurface.pixelDimensions.width, impostorSurface.pixelDimensions.height);
 
         // Figure out how big the impostor will be and its plane scale, etc, and render to match that area of the screen
-        impostorPosition = myRenderer.bounds.center;
-        impostorRadius = myRenderer.bounds.extents.magnitude / 2 * 1.1f;
+        impostorPosition = boundsCentre;
+        impostorRadius = boundsRadius;
 
         float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
         float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
@@ -248,16 +253,17 @@ public class Impostify : MonoBehaviour
     void RenderImpostor()
     {
         Camera camera = impostorCamera;
-        int oldLayer = gameObject.layer;
+        int oldLayer = myRenderer.gameObject.layer;
         bool oldVisible = myRenderer.enabled;
+        const int impostorLayer = 30;
 
         // Clear the background pixels
-        camera.clearFlags = CameraClearFlags.Color;
+        camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = fillImpostorBackground ? new Color(0, 0, 1) : new Color(0, 0, 0, 0);
 
         // Setup to render only this object
-        gameObject.layer = 30;
-        camera.cullingMask = 1<<gameObject.layer;
+        camera.cullingMask = 1<<impostorLayer;
+        myRenderer.gameObject.layer = impostorLayer;
         myRenderer.enabled = true;
 
         // Render to the impostor
@@ -267,15 +273,61 @@ public class Impostify : MonoBehaviour
         camera.enabled = false;
 
         // Done!
-        gameObject.layer = oldLayer;
+        myRenderer.gameObject.layer = oldLayer;
         myRenderer.enabled = oldVisible;
+    }
+
+    void RefreshRendererInfo()
+    {
+        myRenderer = GetComponent<Renderer>();
+
+        // try to get the highest LOD if myRenderer fails
+        if (myRenderer == null)
+        {
+            LODGroup lods = GetComponent<LODGroup>();
+
+            myRenderer = lods.GetLODs()[0].renderers[0];
+        }
+
+        myMesh = myRenderer.GetComponent<MeshFilter>()?.mesh;
+        
+        if (myRenderer)
+        {
+            Vector3[] vertices = myMesh.vertices;
+            Vector3 centre = (myMesh.bounds.max + myMesh.bounds.min) / 2;
+            float maxDistance = 0;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                float distance = Vector3.Distance(vertices[i], centre);
+
+                if (distance > maxDistance)
+                {
+                    maxDistance = distance;
+                }
+            }
+
+            boundsCentre = transform.TransformPoint(centre);
+            boundsRadius = maxDistance * Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
     }
 
     private void OnDrawGizmos()
     {
+        // show renderer boundaries in the editor
+        if (myRenderer == null)
+        {
+            RefreshRendererInfo();
+
+            if (myRenderer == null)
+            {
+                return;
+            }
+        }
+
         Gizmos.color = new Color(0, 1, 0, 0.25f);
-        Gizmos.DrawSphere(GetComponent<MeshRenderer>().bounds.center, GetComponent<MeshRenderer>().bounds.extents.magnitude / 2);
+        Gizmos.DrawSphere(boundsCentre, boundsRadius);
         Gizmos.color = new Color(1, 1, 0, 1);
-        Gizmos.DrawWireSphere(GetComponent<MeshRenderer>().bounds.center, GetComponent<MeshRenderer>().bounds.extents.magnitude / 2);
+        Gizmos.DrawWireSphere(boundsCentre, boundsRadius);
     }
 }

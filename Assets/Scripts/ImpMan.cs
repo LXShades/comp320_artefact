@@ -39,6 +39,9 @@ public class ImpMan : MonoBehaviour
     public int impostorTextureWidth = 1024;
     public int impostorTextureHeight = 1024;
 
+    // Number of divisions splitting the impostor texture between impostors. A value of e.g. 2 means there is a 2x2 split
+    public int impostorTextureDivisions = 1;
+
     [Header("Impostor regeneration")]
     public int framesPerImpostorUpdate = 1;
 
@@ -46,10 +49,25 @@ public class ImpMan : MonoBehaviour
 
     private int lastUpdatedImpostor = 0;
 
+    Rect[] impostorTextureDivisionUvs = new Rect[0];
+
     private void Awake()
     {
         /** Create a list of all impostifiable objects */
         impostables.AddRange(FindObjectsOfType<Impostify>());
+
+        Vector2 uvSize = new Vector2(1.0f / (float)impostorTextureDivisions, 1.0f / (float)impostorTextureDivisions);
+        impostorTextureDivisionUvs = new Rect[impostorTextureDivisions * impostorTextureDivisions];
+        for (int x = 0; x < impostorTextureDivisions; x++)
+        {
+            for (int y = 0; y < impostorTextureDivisions; y++)
+            {
+                int index = y * impostorTextureDivisions + x;
+                impostorTextureDivisionUvs[index].x = x * uvSize.x;
+                impostorTextureDivisionUvs[index].y = y * uvSize.y;
+                impostorTextureDivisionUvs[index].size = uvSize;
+            }
+        }
     }
 
     private void Update()
@@ -83,14 +101,22 @@ public class ImpMan : MonoBehaviour
         }
         else if ((frame % framesPerImpostorUpdate) == 0 && impostorSurfaces.Count > 0)
         {
-            lastUpdatedImpostor++;
-
-            if (lastUpdatedImpostor >= impostorSurfaces.Count)
+            for (int i = 0; i < impostorSurfaces.Count; i++)
             {
-                lastUpdatedImpostor = 0;
-            }
+                lastUpdatedImpostor++;
 
-            impostorSurfaces[lastUpdatedImpostor].owner.RegenerateImpostor(impostorSurfaces[lastUpdatedImpostor]);
+                if (lastUpdatedImpostor >= impostorSurfaces.Count)
+                {
+                    lastUpdatedImpostor = 0;
+                }
+
+                // Skip impostors that are hold-spaceable
+                if (!impostorSurfaces[lastUpdatedImpostor].owner.holdSpaceForImpostor || Input.GetKey(KeyCode.Space))
+                {
+                    impostorSurfaces[lastUpdatedImpostor].owner.RegenerateImpostor(impostorSurfaces[lastUpdatedImpostor]);
+                    break;
+                }
+            }
         }
 
         frame++;
@@ -98,8 +124,8 @@ public class ImpMan : MonoBehaviour
 
     private ImpostorSurface ReserveImpostorSurface(int width, int height)
     {
-        int textureIndex = impostorSurfaces.Count / 4;
-        int uvIndex = impostorSurfaces.Count % 4;
+        int textureIndex = impostorSurfaces.Count / impostorTextureDivisions;
+        int uvIndex = impostorSurfaces.Count % impostorTextureDivisions;
 
         // if we need more new textures, add them here
         while (textureIndex >= impostorTextures.Count)
@@ -111,12 +137,10 @@ public class ImpMan : MonoBehaviour
         }
 
         // Create the surface
-        Vector2[] uvSequence = new Vector2[] { new Vector2(0, 0), new Vector2(0.5f, 0), new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f) }; // for now, reserve for 0.5x0.5 blocks per texture until better packing algorithm is created
-
         ImpostorSurface fragment = new ImpostorSurface
         {
             texture = impostorTextures[textureIndex],
-            uvDimensions = new Rect(uvSequence[uvIndex], new Vector2(0.5f, 0.5f)),
+            uvDimensions = impostorTextureDivisionUvs[uvIndex],
             batch = impostorBatches[textureIndex],
             batchPlaneIndex = impostorBatches[textureIndex].ReservePlane()
         };
@@ -128,6 +152,19 @@ public class ImpMan : MonoBehaviour
     private void ClearImpostorTextures()
     {
         impostorSurfaces.Clear();
+    }
+
+    private void RenderImpostors()
+    {
+        // Render a group of impostors
+        
+        // Set up the main camera to render
+
+        // For each impostor, the projection should be different...
+        // ...OR use multiple render layers and put the impostors on that separate layer?
+        // OR assign a proxy shader to the impostors, which renders 
+
+        // Make sure 
     }
 }
 
