@@ -7,13 +7,16 @@ using UnityEngine;
  * ImpMan is a singleton, if you're interested ladies ;) */
 public class ImpMan : MonoBehaviour
 {
+    /// <summary>
+    /// Gets or creates the singleton ImpMan
+    /// </summary>
     public static ImpMan singleton
     {
         get
         {
             if (!_singleton)
             {
-                // find or create the singleton
+                // Find or create the singleton
                 _singleton = GameObject.FindObjectOfType<ImpMan>();
 
                 if (!_singleton)
@@ -28,34 +31,72 @@ public class ImpMan : MonoBehaviour
     private static ImpMan _singleton;
 
     [Header("Resources (runtime, don't change!)")]
+    /// <summary>
+    /// List of all impostables in the scene
+    /// </summary>
     public List<Impostify> impostables = new List<Impostify>();
+
+    /// <summary>
+    /// List of all impostor texture resources currently being used
+    /// </summary>
     public List<RenderTexture> impostorTextures = new List<RenderTexture>();
+
+    /// <summary>
+    /// List of all known impostor surfaces that have been reserved
+    /// </summary>
     public List<ImpostorSurface> impostorSurfaces = new List<ImpostorSurface>();
+
+    /// <summary>
+    /// List of all known impostor batches that have been created/reserved
+    /// </summary>
     public List<ImpostorBatch> impostorBatches;
 
+    [Header("Impostor general")]
+    [Tooltip("Whether impostors should be used at all")]
+    public bool enableImpostors = true;
+
     [Header("Impostor textures")]
+    [Tooltip("The shader to render impostors with")]
     public Shader impostorShader;
 
+    [Tooltip("The width, in pixels, of the internal impostor textures")]
     public int impostorTextureWidth = 1024;
+    [Tooltip("The height, in pixels, of the internal impostor textures")]
     public int impostorTextureHeight = 1024;
 
-    // Number of divisions splitting the impostor texture between impostors. A value of e.g. 2 means there is a 2x2 split
+    [Tooltip("Number of divisions splitting the impostor texture between impostor surfaces. A value of e.g. 2 means there is a 2x2 split")]
     public int impostorTextureDivisions = 1;
 
     [Header("Impostor regeneration")]
+    [Tooltip("Test: Frames to pass before updating an impostor(s)")]
     public int framesPerImpostorUpdate = 1;
+    
+    /// <summary>
+    /// The camera that snapshots the impostors. We only need one such camera in the scene
+    /// </summary>
+    public Camera impostorCamera;
 
+    /// <summary>
+    /// A frame counter since the ImpMan's creation
+    /// </summary>
     private int frame = 0;
 
+    /// <summary>
+    /// The index of the last updated impostor
+    /// </summary>
     private int lastUpdatedImpostor = 0;
 
+    /// <summary>
+    /// A pre-calculated list of UVs for an impostor texture evenly divided into (impostorTextureDivisions*impostorTextureDivisions) surfaces
+    /// </summary>
     Rect[] impostorTextureDivisionUvs = new Rect[0];
 
     private void Awake()
     {
-        /** Create a list of all impostifiable objects */
+        // Create a list of all impostifiable objects
         impostables.AddRange(FindObjectsOfType<Impostify>());
 
+        // Pregenerate the predefined division slot dimension and positions
         Vector2 uvSize = new Vector2(1.0f / (float)impostorTextureDivisions, 1.0f / (float)impostorTextureDivisions);
         impostorTextureDivisionUvs = new Rect[impostorTextureDivisions * impostorTextureDivisions];
         for (int x = 0; x < impostorTextureDivisions; x++)
@@ -68,60 +109,87 @@ public class ImpMan : MonoBehaviour
                 impostorTextureDivisionUvs[index].size = uvSize;
             }
         }
+
+        // Create the impostor camera
+        impostorCamera = CreateImpostorCamera();
     }
 
     private void Update()
     {
-        /* Here are some potential patterns for updating impostors:
-         *
-         * Update as many as possible at a set interval
-         * Update a set maximum amount at a set interval
-         * Update specific impostors depending on their changed angles and distances
-         * 
-         * The first is the easiest and perhaps the most useful to test.
-         * 
-         * With regards to shading, we could have a shader that writes the impostors to both the screen and the impostor texture at once
-         */
-        if (frame == 0)
+        // This function currently contains a lot of debugging features
+        bool doUpdateImpostors = ((frame % framesPerImpostorUpdate) == 0) || Input.GetKeyDown(KeyCode.Space);
+
+        if (enableImpostors)
         {
-            // Clear all impostor textures
-            ClearImpostorTextures();
-
-            // Reserve texture fragments for each object
-            foreach (Impostify impostable in impostables)
+            if (frame == 0)
             {
-                ImpostorSurface texFrag = ReserveImpostorSurface(512, 512);
+                // Clear all impostor textures
+                ClearImpostorSurfaces();
 
-                if (texFrag != null)
+                // Reserve and render texture fragments for each object
+                foreach (Impostify impostable in impostables)
                 {
-                    texFrag.owner = impostable;
-                    impostable.RegenerateImpostor(texFrag);
+                    ImpostorSurface surface = ReserveImpostorSurface(512, 512);
+
+                    if (surface != null)
+                    {
+                        surface.owner = impostable;
+                        impostable.RerenderImpostor(surface);
+                    }
+                }
+            }
+            else if (doUpdateImpostors && impostorSurfaces.Count > 0)
+            {
+                // Refresh the next impostor(s)
+                for (int i = 0; i < impostorSurfaces.Count; i++)
+                {
+                    lastUpdatedImpostor++;
+
+                    if (lastUpdatedImpostor >= impostorSurfaces.Count)
+                    {
+                        lastUpdatedImpostor = 0;
+                    }
+
+                    // Only process impostors that don't enable holdSpaceForImpostor
+                    if (!impostorSurfaces[lastUpdatedImpostor].owner.holdSpaceForImpostor || Input.GetKey(KeyCode.Space))
+                    {
+                        impostorSurfaces[lastUpdatedImpostor].owner.RerenderImpostor(impostorSurfaces[lastUpdatedImpostor]);
+                        break;
+                    }
                 }
             }
         }
-        else if ((frame % framesPerImpostorUpdate) == 0 && impostorSurfaces.Count > 0)
+
+        // Enable/disable impostors in general
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            for (int i = 0; i < impostorSurfaces.Count; i++)
+            enableImpostors = !enableImpostors;
+
+            foreach (ImpostorSurface surface in impostorSurfaces)
             {
-                lastUpdatedImpostor++;
-
-                if (lastUpdatedImpostor >= impostorSurfaces.Count)
-                {
-                    lastUpdatedImpostor = 0;
-                }
-
-                // Skip impostors that are hold-spaceable
-                if (!impostorSurfaces[lastUpdatedImpostor].owner.holdSpaceForImpostor || Input.GetKey(KeyCode.Space))
-                {
-                    impostorSurfaces[lastUpdatedImpostor].owner.RegenerateImpostor(impostorSurfaces[lastUpdatedImpostor]);
-                    break;
-                }
+                surface.owner.isImpostorVisible = enableImpostors;
             }
+            foreach (ImpostorBatch batch in impostorBatches)
+            {
+                batch.GetComponent<MeshRenderer>().enabled = enableImpostors;
+            }
+        }
+
+        // Take screenshots
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
         }
 
         frame++;
     }
 
+    /// <summary>
+    /// Reserves and returns a new impostor surface.
+    /// </summary>
+    /// <param name="width">Ignored [todo]. The desired width of the impostor</param>
+    /// <param name="height">Ignored [todo]. The desired height of the impostor</param>
+    /// <returns>A new ImpostorSurface</returns>
     private ImpostorSurface ReserveImpostorSurface(int width, int height)
     {
         int textureIndex = impostorSurfaces.Count / impostorTextureDivisions;
@@ -149,11 +217,17 @@ public class ImpMan : MonoBehaviour
         return fragment;
     }
 
-    private void ClearImpostorTextures()
+    /// <summary>
+    /// Clears all impostor surfaces. This does not free the resources they used.
+    /// </summary>
+    private void ClearImpostorSurfaces()
     {
         impostorSurfaces.Clear();
     }
 
+    /// <summary>
+    /// Renders a group of impostors (WIP)
+    /// </summary>
     private void RenderImpostors()
     {
         // Render a group of impostors
@@ -166,12 +240,28 @@ public class ImpMan : MonoBehaviour
 
         // Make sure 
     }
+    
+    /// <summary>
+    /// Creates the impostor camera
+    /// </summary>
+    private Camera CreateImpostorCamera()
+    {
+        GameObject cameraObject = new GameObject("_ImpostorCamera_", typeof(Camera));
+
+        // Disable it for now (so it isn't used as an actual camera)
+        cameraObject.GetComponent<Camera>().enabled = false;
+        return cameraObject.GetComponent<Camera>();
+    }
 }
 
-/** A fragment of an impostor texture that can be reserved for an object(s) */
+/// <summary>
+/// A fragment of an impostor texture that can be reserved for an object(s)
+/// </summary>
 public class ImpostorSurface
 {
-    /** Position and size of the texture fragment on the texture, in UV coordinates*/
+    /// <summary>
+    /// Position and size of the surface on the texture, in UV coordinates
+    /// </summary>
     public Rect uvDimensions
     {
         get
@@ -182,6 +272,7 @@ public class ImpostorSurface
         {
             _uvDimensions = value;
 
+            // Refresh the surface pixel dimensions
             if (texture)
             {
                 _pixelDimensions = new RectInt(
@@ -195,7 +286,9 @@ public class ImpostorSurface
     }
     private Rect _uvDimensions;
 
-    /** Position and size of the texture fragment on the texture in pixels */
+    /// <summary>
+    /// Position and size of the surface on the texture, in pixels
+    /// </summary>
     public RectInt pixelDimensions
     {
         get
@@ -205,7 +298,9 @@ public class ImpostorSurface
     }
     private RectInt _pixelDimensions;
 
-    /** Texture that we're allowed to use */
+    /// <summary>
+    /// Texture that this surface uses
+    /// </summary>
     public RenderTexture texture
     {
         get
@@ -216,6 +311,7 @@ public class ImpostorSurface
         {
             _texture = value;
 
+            // Refresh the surface pixel dimensions
             if (value)
             {
                 _pixelDimensions = new RectInt(
@@ -233,20 +329,18 @@ public class ImpostorSurface
     }
     private RenderTexture _texture;
 
-    /** The impostor batch being used and the plane reserved from it */
+    /// <summary>
+    /// The impostor batch being used and the plane reserved from it 
+    /// </summary>
     public ImpostorBatch batch;
 
-    /** Index of the plane in the impostor batch */
+    /// <summary>
+    /// Index of the plane in the impostor batch, if applicable
+    /// </summary>
     public int batchPlaneIndex;
 
-    /** The owner of this surface */
+    /// <summary>
+    /// The owner of this surface
+    /// </summary>
     public Impostify owner;
 };
-
-public class ImpPlane
-{
-    /** UV coordinates across the plane */
-    public Rect uvDimensions;
-
-
-}

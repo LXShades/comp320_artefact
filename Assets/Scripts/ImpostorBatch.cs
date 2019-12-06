@@ -6,30 +6,45 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class ImpostorBatch : MonoBehaviour
 {
+    /// <summary>
+    /// Mesh containing the impostor plane(s)
+    /// </summary>
     private Mesh myMesh;
+
+    /// <summary>
+    /// Material being used by the impostor plane(s)
+    /// </summary>
     private Material myMaterial;
 
-    /** Maximum number of impostor planes stored in this batch */
-    public int maxNumImpostors = 300;
+    [Tooltip("Maximum number of impostor planes stored in this batch")]
+    public int maxNumImpostors = 32;
 
-    /** The texture to be used when rendering this impostor batch */
+    [Tooltip("The texture to be used when rendering this impostor batch")]
     public Texture texture = null;
 
-    /** Number of impostors currently reserved for use */
+    /// <summary>
+    /// Number of impostors currently reserved for use in this batch
+    /// </summary>
     private int numReservedImpostors = 0;
 
+    // Mesh element cache (as accessing mesh.vertices, etc takes time)
     private Vector3[] vertices;
     private Vector2[] uvs;
     private int[] indexes;
 
-    private bool doFlushMeshChanges = false;
+    /// <summary>
+    /// Whether to refresh 
+    /// </summary>
+    private bool isMeshInvalidated = false;
 
     private void Awake()
     {
+        // Setup the impostor mesh caches
         vertices = new Vector3[maxNumImpostors * 4];
         uvs = new Vector2[maxNumImpostors * 4];
         indexes = new int[maxNumImpostors * 6];
 
+        // Pre-calculate the index buffer (this never needs to change)
         for (int i = 0; i < maxNumImpostors; i++)
         {
             int indexRoot = i * 6;
@@ -56,8 +71,8 @@ public class ImpostorBatch : MonoBehaviour
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
 
-        // Flush changes to the mesh?
-        if (doFlushMeshChanges)
+        // Flush changes to the mesh
+        if (isMeshInvalidated)
         {
             RefreshMesh();
         }
@@ -79,7 +94,7 @@ public class ImpostorBatch : MonoBehaviour
             myMesh.Clear();
         }
         
-        // Assign the mesh elements
+        // Copy the cached mesh elements
         myMesh.vertices = vertices;
         myMesh.SetIndices(indexes, MeshTopology.Triangles, 0);
         myMesh.uv = uvs;
@@ -88,9 +103,14 @@ public class ImpostorBatch : MonoBehaviour
         // Refresh the material
         myMaterial.SetFloat("_Cutoff", 0.99f);
         myMaterial.mainTexture = texture;
+
+        isMeshInvalidated = false;
     }
 
-    /** Reserves an impostor plane */
+    /// <summary>
+    /// Reserves an impostor plane
+    /// </summary>
+    /// <returns>The index of the reserved plane</returns>
     public int ReservePlane()
     {
         if (numReservedImpostors + 1 >= maxNumImpostors)
@@ -102,7 +122,14 @@ public class ImpostorBatch : MonoBehaviour
         return numReservedImpostors++;
     }
 
-    /** Plants a plane with the specified dimensions */
+    /// <summary>
+    /// Positions the plane with the given index and specified dimensions
+    /// </summary>
+    /// <param name="planeIndex">The index of the plane to place</param>
+    /// <param name="center">The centre of the plane</param>
+    /// <param name="up">The plane's up vector. This should be half the total height of the impostor</param>
+    /// <param name="right">The plane's right vector. This should be half the total width of the impostor</param>
+    /// <param name="planeUvs">The UVs covered by the impostor plane</param>
     public void SetPlane(int planeIndex, Vector3 center, Vector3 up, Vector3 right, Rect planeUvs)
     {
         // Update the vertex and UVs buffer at this plane index
@@ -113,11 +140,12 @@ public class ImpostorBatch : MonoBehaviour
         vertices[planeRoot + 2] = center - up - right;
         vertices[planeRoot + 3] = center + up - right;
 
-        uvs[planeRoot + 2] = planeUvs.min;
-        uvs[planeRoot + 1] = new Vector2(planeUvs.xMax, planeUvs.yMin);
         uvs[planeRoot + 0] = planeUvs.max;
+        uvs[planeRoot + 1] = new Vector2(planeUvs.xMax, planeUvs.yMin);
+        uvs[planeRoot + 2] = planeUvs.min;
         uvs[planeRoot + 3] = new Vector2(planeUvs.xMin, planeUvs.yMax);
 
-        doFlushMeshChanges = true;
+        // Refresh the mesh later
+        isMeshInvalidated = true;
     }
 }

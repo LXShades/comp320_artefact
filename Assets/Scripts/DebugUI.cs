@@ -3,20 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// UI for impostor and performance debugging
+/// </summary>
 public class DebugUI : MonoBehaviour
 {
-    /** The FPS counter text */
+    /// <summary>
+    /// The FPS counter text
+    /// </summary>
     public Text fpsCounter;
 
-    /** The debug texture images in the UI hiearchy */
+    /// <summary>
+    /// The debug texture images in the UI hiearchy
+    /// </summary>
     public Image[] debugTextures;
 
-    /** Circular array for frame rate logging */
-    private const int numFrameTimestamps = 10;
-    private int frameTimestampIndex = 0;
-    private float[] frameTimestamps = new float[numFrameTimestamps];
+    // Frame logging is done in a circular array
+    /// <summary>
+    /// Current frame timestamp index (where the processing time of the next frame will be recorded)
+    /// </summary>
+    private int frameTimeIndex = 0;
 
-    // Update is called once per frame
+    /// <summary>
+    /// Maximum number of frame timestamps in the circular array
+    /// </summary>
+    private const int numFrameTimes = 10;
+    
+    /// <summary>
+    /// Circular array of frame timestamps
+    /// </summary>
+    private float[] frameTimes = new float[numFrameTimes];
+
+
     void Update()
     {
         // Refresh the impostor texture display
@@ -25,29 +43,32 @@ public class DebugUI : MonoBehaviour
             debugTextures[i].material.mainTexture = ImpMan.singleton.impostorTextures[i];
         }
 
-        // Refresh the frame rate counter
+        // Refresh the frame rate 
+        // Count total frame times to get the average
         float totalFrameTimes = 0;
 
-        foreach (float f in frameTimestamps)
+        foreach (float f in frameTimes)
         {
             totalFrameTimes += f;
         }
 
-        float[] sortedTimestamps = new float[numFrameTimestamps];
-
-        if (frameTimestamps.Length > 0)
+        if (frameTimes.Length > 0)
         {
-            System.Array.Copy(frameTimestamps, sortedTimestamps, numFrameTimestamps);
+            // Sort the timestamps so we can get a lower quartile, median and upper quartile amount
+            float[] sortedTimestamps = new float[numFrameTimes];
+
+            System.Array.Copy(frameTimes, sortedTimestamps, numFrameTimes);
             System.Array.Sort(sortedTimestamps);
             
             fpsCounter.text =
-                $"FPS: {(1 / (totalFrameTimes / frameTimestamps.Length)).ToString("0000.0")}" +
+                $"FPS: {(1 / (totalFrameTimes / frameTimes.Length)).ToString("0000.0")}" +
                 $" (Low: {(1 / sortedTimestamps[sortedTimestamps.Length - 1]).ToString("0000.0")})" +
                 $" (Med: {(1 / sortedTimestamps[(int)(sortedTimestamps.Length * 0.5f)]).ToString("0000.0")})" + 
                 $" (High: {(1 / sortedTimestamps[0]).ToString("0000.0")})";
         }
 
-        frameTimestamps[frameTimestampIndex] = Time.deltaTime;
-        frameTimestampIndex = (frameTimestampIndex + 1) % numFrameTimestamps;
+        // Record this frame into the array
+        frameTimes[frameTimeIndex] = Time.deltaTime;
+        frameTimeIndex = (frameTimeIndex + 1) % numFrameTimes;
     }
 }
