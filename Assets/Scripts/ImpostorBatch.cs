@@ -144,7 +144,7 @@ public class ImpostorBatch : MonoBehaviour
         uvs[planeRoot + 1] = new Vector2(planeUvs.xMax, planeUvs.yMin);
         uvs[planeRoot + 2] = planeUvs.min;
         uvs[planeRoot + 3] = new Vector2(planeUvs.xMin, planeUvs.yMax);
-
+        
         // Refresh the mesh later
         isMeshInvalidated = true;
     }

@@ -51,9 +51,12 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     public List<ImpostorBatch> impostorBatches;
 
-    [Header("Impostor general")]
+    
+    [Header("Impostor configuration")]
     [Tooltip("Whether impostors should be used at all")]
     public bool enableImpostors = true;
+
+    public ImpostorLayerConfiguration[] layerConfigurations;
 
     [Header("Impostor textures")]
     [Tooltip("The shader to render impostors with")]
@@ -344,3 +347,27 @@ public class ImpostorSurface
     /// </summary>
     public Impostify owner;
 };
+
+/// <summary>
+/// Impostor layer configuration settings
+/// </summary>
+[System.Serializable]
+public class ImpostorLayerConfiguration
+{
+    /// <summary>
+    /// How many updates per second this layer should have
+    /// </summary>
+    public float updateRate;
+
+    /// <summary>
+    /// The minimum radius of this impostor layer. Objects crossing this boundary are probably in the previous layer
+    /// </summary>
+    public float minRadius;
+
+    /// <summary>
+    /// The maximum radius of this impostor layer. Objects past this boundary are probably in the next layer
+    /// </summary>
+    public float maxRadius;
+
+
+}
