@@ -56,7 +56,7 @@ public class ImpMan : MonoBehaviour
     [Tooltip("Whether impostors should be used at all")]
     public bool enableImpostors = true;
 
-    public ImpostorLayerConfiguration[] layerConfigurations;
+    public ImpostorLayer[] impostorLayers;
 
     [Header("Impostor textures")]
     [Tooltip("The shader to render impostors with")]
@@ -69,15 +69,11 @@ public class ImpMan : MonoBehaviour
 
     [Tooltip("Number of divisions splitting the impostor texture between impostor surfaces. A value of e.g. 2 means there is a 2x2 split")]
     public int impostorTextureDivisions = 1;
-
-    [Header("Impostor regeneration")]
-    [Tooltip("Test: Frames to pass before updating an impostor(s)")]
-    public int framesPerImpostorUpdate = 1;
     
     /// <summary>
     /// The camera that snapshots the impostors. We only need one such camera in the scene
     /// </summary>
-    public Camera impostorCamera;
+    public ImpostorCamera impostorCamera;
 
     /// <summary>
     /// A frame counter since the ImpMan's creation
@@ -117,52 +113,16 @@ public class ImpMan : MonoBehaviour
         impostorCamera = CreateImpostorCamera();
     }
 
+    private void Start()
+    {
+        foreach (ImpostorLayer layer in impostorLayers)
+        {
+            layer.surface = ReserveImpostorSurface(1024, 1024);
+        }
+    }
+
     private void Update()
     {
-        // This function currently contains a lot of debugging features
-        bool doUpdateImpostors = ((frame % framesPerImpostorUpdate) == 0) || Input.GetKeyDown(KeyCode.Space);
-
-        if (enableImpostors)
-        {
-            if (frame == 0)
-            {
-                // Clear all impostor textures
-                ClearImpostorSurfaces();
-
-                // Reserve and render texture fragments for each object
-                foreach (Impostify impostable in impostables)
-                {
-                    ImpostorSurface surface = ReserveImpostorSurface(512, 512);
-
-                    if (surface != null)
-                    {
-                        surface.owner = impostable;
-                        impostable.RerenderImpostor(surface);
-                    }
-                }
-            }
-            else if (doUpdateImpostors && impostorSurfaces.Count > 0)
-            {
-                // Refresh the next impostor(s)
-                for (int i = 0; i < impostorSurfaces.Count; i++)
-                {
-                    lastUpdatedImpostor++;
-
-                    if (lastUpdatedImpostor >= impostorSurfaces.Count)
-                    {
-                        lastUpdatedImpostor = 0;
-                    }
-
-                    // Only process impostors that don't enable holdSpaceForImpostor
-                    if (!impostorSurfaces[lastUpdatedImpostor].owner.holdSpaceForImpostor || Input.GetKey(KeyCode.Space))
-                    {
-                        impostorSurfaces[lastUpdatedImpostor].owner.RerenderImpostor(impostorSurfaces[lastUpdatedImpostor]);
-                        break;
-                    }
-                }
-            }
-        }
-
         // Enable/disable impostors in general
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -170,11 +130,32 @@ public class ImpMan : MonoBehaviour
 
             foreach (ImpostorSurface surface in impostorSurfaces)
             {
-                surface.owner.isImpostorVisible = enableImpostors;
+                if (surface.owner)
+                {
+                    surface.owner.isImpostorVisible = enableImpostors;
+                }
             }
             foreach (ImpostorBatch batch in impostorBatches)
             {
                 batch.GetComponent<MeshRenderer>().enabled = enableImpostors;
+            }
+        }
+
+        if (enableImpostors)
+        {
+            // draw everything by default?
+            foreach (Impostify impostify in impostables)
+            {
+                foreach (Renderer renderer in impostify.renderers)
+                {
+                    renderer.enabled = true;
+                }
+            }
+
+            // update impostor layers
+            for (int i = 0; i < impostorLayers.Length; i++)
+            {
+                RefreshImpostorLayer(impostorLayers[i]);
             }
         }
 
@@ -185,6 +166,61 @@ public class ImpMan : MonoBehaviour
         }
 
         frame++;
+    }
+
+    void RefreshImpostorLayer(ImpostorLayer layer)
+    {
+        // collect all impostors ahead of the camera at the distance into th elayer
+        Vector3 cameraForward = Camera.main.transform.forward;
+        float cameraForwardBase = Vector3.Dot(cameraForward, Camera.main.transform.position);
+        List<Impostify> impostablesToRender = new List<Impostify>();
+        const int impostorRenderLayer = 31;
+        Vector3 boundsMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 boundsMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        int numRenderers = 0;
+
+        foreach (Impostify impostable in impostables)
+        {
+            float depth = Vector3.Dot(impostable.transform.position, cameraForward) - cameraForwardBase;
+
+            if (depth > layer.minRadius && depth <= layer.maxRadius)
+            {
+                // Render this impostor
+                impostablesToRender.Add(impostable);
+                
+                foreach (Renderer renderer in impostable.renderers)
+                {
+                    renderer.gameObject.layer = impostorRenderLayer;
+                    renderer.enabled = true;
+                    numRenderers++;
+
+                    boundsMin = Vector3.Min(boundsMin, renderer.bounds.min);
+                    boundsMax = Vector3.Max(boundsMax, renderer.bounds.max);
+                }
+            }
+        }
+
+        // Don't bother if there's nothing to draw
+        if (numRenderers == 0) return;
+
+        // Render the objects in this impostor layer
+        Vector3 impostorPosition = (boundsMin + boundsMax) * 0.5f;
+        float impostorWidth, impostorHeight;
+
+        impostorCamera.FrameArea(boundsMin, boundsMax, Camera.main, out impostorWidth, out impostorHeight);
+        impostorCamera.RenderToSurface(layer.surface, new Color(1, 0, 0, 0));
+        
+        foreach (Impostify impostable in impostablesToRender)
+        {
+            foreach (Renderer renderer in impostable.renderers)
+            {
+                renderer.gameObject.layer = 0; // todo
+                renderer.enabled = false;
+            }
+        }
+        
+        layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition, 
+            Camera.main.transform.up * impostorHeight, Camera.main.transform.right * impostorWidth, layer.surface.uvDimensions);
     }
 
     /// <summary>
@@ -227,33 +263,16 @@ public class ImpMan : MonoBehaviour
     {
         impostorSurfaces.Clear();
     }
-
-    /// <summary>
-    /// Renders a group of impostors (WIP)
-    /// </summary>
-    private void RenderImpostors()
-    {
-        // Render a group of impostors
-        
-        // Set up the main camera to render
-
-        // For each impostor, the projection should be different...
-        // ...OR use multiple render layers and put the impostors on that separate layer?
-        // OR assign a proxy shader to the impostors, which renders 
-
-        // Make sure 
-    }
     
     /// <summary>
     /// Creates the impostor camera
     /// </summary>
-    private Camera CreateImpostorCamera()
+    private ImpostorCamera CreateImpostorCamera()
     {
-        GameObject cameraObject = new GameObject("_ImpostorCamera_", typeof(Camera));
+        GameObject cameraObject = new GameObject("_ImpostorCamera_", typeof(ImpostorCamera));
 
         // Disable it for now (so it isn't used as an actual camera)
-        cameraObject.GetComponent<Camera>().enabled = false;
-        return cameraObject.GetComponent<Camera>();
+        return cameraObject.GetComponent<ImpostorCamera>();
     }
 }
 
@@ -352,7 +371,7 @@ public class ImpostorSurface
 /// Impostor layer configuration settings
 /// </summary>
 [System.Serializable]
-public class ImpostorLayerConfiguration
+public class ImpostorLayer
 {
     /// <summary>
     /// How many updates per second this layer should have
@@ -369,5 +388,5 @@ public class ImpostorLayerConfiguration
     /// </summary>
     public float maxRadius;
 
-
+    public ImpostorSurface surface;
 }

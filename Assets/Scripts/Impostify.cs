@@ -28,7 +28,7 @@ public class Impostify : MonoBehaviour
         {
             if (value != _isImpostorVisible)
             {
-                foreach (Renderer renderer in myRenderers)
+                foreach (Renderer renderer in renderers)
                 {
                     renderer.enabled = !value;
                 }
@@ -44,13 +44,13 @@ public class Impostify : MonoBehaviour
 
     /// <summary>
     /// Current surface being used for the impostor
-    ///</summary>
-    ImpostorSurface impostorSurface;
+    /// </summary>
+    public ImpostorSurface impostorSurface;
     
     /** Expected position of the impostor */
     Vector3 impostorPosition;
 
-    /** Physical radius of the object. This translates to the height of the impostor (rename?) */
+    /** Physical dimensions of the impostor object on its local axes */
     float impostorWidth;
     float impostorHeight;
 
@@ -62,8 +62,8 @@ public class Impostify : MonoBehaviour
     Matrix4x4 impostorProjectionMatrix;
 
     /** The renderer associated with this object */
-    Renderer[] myRenderers = new Renderer[0];
-    Mesh[] myMeshes = new Mesh[0];
+    public Renderer[] renderers = new Renderer[0];
+    public Mesh[] meshes = new Mesh[0];
 
     Camera mainCamera;
 
@@ -81,99 +81,45 @@ public class Impostify : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void RerenderImpostor(ImpostorSurface impSurface = null)
-    {
-        if (impSurface == null)
-        {
-            return; // we need a texture!
-        }
-
-        impostorSurface = impSurface;
-
-        // Render the impostor
-        PrepareImpostorCamera();
-        RenderImpostor();
-
-        // Update the impostor plane
-        impSurface.batch.SetPlane(impSurface.batchPlaneIndex, impostorPosition, mainCamera.transform.up * impostorHeight, mainCamera.transform.right * impostorWidth, impSurface.uvDimensions);
-    }
-
-    void PrepareImpostorCamera()
-    {
-        // Setup the impostor camera
-        Camera camera = ImpMan.singleton.impostorCamera;
-
-        camera.aspect = mainCamera.aspect;
-        camera.fieldOfView = mainCamera.fieldOfView;
-        camera.transform.position = mainCamera.transform.position;
-        camera.transform.rotation = mainCamera.transform.rotation;
-        camera.targetTexture = impostorSurface.texture;
-        camera.pixelRect = new Rect(impostorSurface.pixelDimensions.x, impostorSurface.pixelDimensions.y,
-                                    impostorSurface.pixelDimensions.width, impostorSurface.pixelDimensions.height);
-        camera.ResetProjectionMatrix();
-
-        float boxX = (minBounds.x - maxBounds.x)*0.5f, boxY = (minBounds.y - maxBounds.y)*0.5f, boxZ = (minBounds.z - maxBounds.z)*0.5f;
-        float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
-        float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
-        float frustumHeightAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f;
-        float screenSpaceWidth = (Mathf.Abs(camera.transform.right.x * boxX) +
-                                 Mathf.Abs(camera.transform.right.y * boxY) +
-                                 Mathf.Abs(camera.transform.right.z * boxZ)) / frustumWidthAtImpostorDepth;
-        float screenSpaceHeight = (Mathf.Abs(camera.transform.up.x * boxX) +
-                                 Mathf.Abs(camera.transform.up.y * boxY) +
-                                 Mathf.Abs(camera.transform.up.z * boxZ)) / frustumHeightAtImpostorDepth;
-        
-        // Figure out how big the impostor will be and its plane scale, etc, and render to match that area of the screen
-        impostorPosition = boundsCentre;
-        impostorWidth = screenSpaceWidth * frustumWidthAtImpostorDepth;
-        impostorHeight = screenSpaceHeight * frustumHeightAtImpostorDepth;
-
-        Vector2 screenSpacePosition = new Vector2(
-            Vector3.Dot(camera.transform.right, impostorPosition - camera.transform.position) / frustumWidthAtImpostorDepth * 2,
-            Vector3.Dot(camera.transform.up, impostorPosition - camera.transform.position) / frustumHeightAtImpostorDepth * 2);
-
-        impostorProjectionMatrix = Matrix4x4.Scale(new Vector3(0.5f / screenSpaceWidth, 0.5f / screenSpaceHeight, 1))
-                                    * Matrix4x4.Translate(new Vector3(-screenSpacePosition.x, -screenSpacePosition.y, 0))
-                                    * camera.projectionMatrix;
-
-        camera.projectionMatrix = impostorProjectionMatrix;
-    }
-
     void RenderImpostor()
     {
-        Camera camera = ImpMan.singleton.impostorCamera;
-        int[] oldLayers = new int[myMeshes.Length];
-        bool[] oldVisibility = new bool[myMeshes.Length];
-        const int impostorLayer = 30;
+        ImpostorCamera impCam = ImpMan.singleton.impostorCamera;
+        int[] oldLayers = new int[meshes.Length];
+        bool[] oldVisibility = new bool[meshes.Length];
+        const int impostorLayer = 31;
 
         // Clear the background pixels
-        camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = fillImpostorBackground ? new Color(0, 0, 1) : new Color(0, 0, 0, 0);
+        impCam.FrameArea(minBounds, maxBounds, Camera.main, out impostorWidth, out impostorHeight);
 
         // Setup to render only this object
-        for (int i = 0; i < myMeshes.Length; i++)
+        for (int i = 0; i < meshes.Length; i++)
         {
-            oldLayers[i] = myRenderers[i].gameObject.layer;
-            oldVisibility[i] = myRenderers[i].enabled;
+            oldLayers[i] = renderers[i].gameObject.layer;
+            oldVisibility[i] = renderers[i].enabled;
 
-            myRenderers[i].gameObject.layer = impostorLayer;
-            myRenderers[i].enabled = true;
+            renderers[i].gameObject.layer = impostorLayer;
+            renderers[i].enabled = true;
         }
-        
-        // Render to the impostor
-        camera.cullingMask = 1 << impostorLayer;
-        camera.Render();
 
-        for (int i = 0; i < myMeshes.Length; i++)
+        // Render to the impostor
+        impCam.RenderToSurface(impostorSurface, fillImpostorBackground ? new Color(0, 0, 1) : new Color(0, 0, 0, 0));
+
+        for (int i = 0; i < meshes.Length; i++)
         {
-            myRenderers[i].gameObject.layer = oldLayers[i];
-            myRenderers[i].enabled = oldVisibility[i];
+            renderers[i].gameObject.layer = oldLayers[i];
+            renderers[i].enabled = oldVisibility[i];
+        }
+
+        // Update the impostor plane
+        if (impostorSurface != null)
+        {
+            impostorSurface.batch.SetPlane(impostorSurface.batchPlaneIndex, impostorPosition, mainCamera.transform.up * impostorHeight, mainCamera.transform.right * impostorWidth, impostorSurface.uvDimensions);
         }
     }
 
     void RefreshRendererInfo()
     {
-        if (myRenderers.Length == 0)
+        if (renderers.Length == 0)
         {
             // Collect meshes to render
             List<Mesh> meshList = new List<Mesh>();
@@ -208,21 +154,21 @@ public class Impostify : MonoBehaviour
                 }
             }
 
-            myMeshes = meshList.ToArray();
-            myRenderers = rendererList.ToArray();
+            meshes = meshList.ToArray();
+            renderers = rendererList.ToArray();
         }
 
         boundsCentre = transform.position;
         boundsRadius = 0;
         
-        if (myMeshes.Length > 0)
+        if (meshes.Length > 0)
         {
             float totalMaxDistance = 0;
             // Take the centre of the bounding box for all meshes combined
             maxBounds = new Vector3(float.MinValue, float.MinValue, float.MinValue);
             minBounds = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
 
-            foreach (Renderer renderer in myRenderers)
+            foreach (Renderer renderer in renderers)
             {
                 minBounds = Vector3.Min(minBounds, renderer.bounds.min);
                 maxBounds = Vector3.Max(maxBounds, renderer.bounds.max);
@@ -231,12 +177,12 @@ public class Impostify : MonoBehaviour
             // Extend the size of the radius based on the distance of the vertices from the center of each model
             Vector3 centre = (minBounds + maxBounds) / 2;
 
-            for (int i = 0; i < myMeshes.Length; i++)
+            for (int i = 0; i < meshes.Length; i++)
             {
-                Mesh mesh = myMeshes[i];
+                Mesh mesh = meshes[i];
                 Vector3[] vertices = mesh.vertices;
                 float totalScale = 1;
-                Transform currentTransform = myRenderers[i].transform;
+                Transform currentTransform = renderers[i].transform;
                 float maxDistance = 0;
 
                 while (currentTransform)
@@ -261,11 +207,11 @@ public class Impostify : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         // show renderer boundaries in the editor
-        if (myRenderers.Length == 0)
+        if (renderers.Length == 0)
         {
             RefreshRendererInfo();
 
-            if (myRenderers.Length == 0)
+            if (renderers.Length == 0)
             {
                 return;
             }
