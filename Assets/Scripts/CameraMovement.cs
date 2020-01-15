@@ -16,6 +16,9 @@ public class CameraMovement : MonoBehaviour
     [Tooltip("The speed of the camera while holding Shift, in m/s")]
     public float sprintSpeed = 10;
 
+    [Tooltip("The acceleration of the speed while sprinting, in m/s/s")]
+    public float sprintAcceleration = 2.0f;
+
     /// <summary>
     /// Current camera yaw angle
     /// </summary>
@@ -25,6 +28,11 @@ public class CameraMovement : MonoBehaviour
     /// Current camera pitch angle in degrees
     /// </summary>
     float viewPitch = 0;
+
+    /// <summary>
+    /// Used for acceleration while holding shift
+    /// </summary>
+    float activeSprintSpeed;
     
     void Start()
     {
@@ -33,8 +41,17 @@ public class CameraMovement : MonoBehaviour
     
     void Update()
     {
+        if (Input.GetKey(KeyCode.LeftShift) && (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0))
+        {
+            activeSprintSpeed += Time.deltaTime * sprintAcceleration;
+        }
+        else
+        {
+            activeSprintSpeed = sprintSpeed;
+        }
+
         // Move the camera by keyboard inputs
-        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : speed;
+        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? activeSprintSpeed : speed;
 
         transform.position += transform.forward * Input.GetAxis("Vertical") * Time.deltaTime * currentSpeed;
         transform.position += transform.right * Input.GetAxis("Horizontal") * Time.deltaTime * currentSpeed;

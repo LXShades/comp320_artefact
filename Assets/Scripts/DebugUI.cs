@@ -18,6 +18,11 @@ public class DebugUI : MonoBehaviour
     /// </summary>
     public Image[] debugTextures;
 
+    /// <summary>
+    /// A list of debug toggles used for wow
+    /// </summary>
+    public Text debugToggles;
+
     // Frame logging is done in a circular array
     /// <summary>
     /// Current frame timestamp index (where the processing time of the next frame will be recorded)
@@ -27,13 +32,12 @@ public class DebugUI : MonoBehaviour
     /// <summary>
     /// Maximum number of frame timestamps in the circular array
     /// </summary>
-    private const int numFrameTimes = 10;
+    private const int numFrameTimes = 140;
     
     /// <summary>
     /// Circular array of frame timestamps
     /// </summary>
     private float[] frameTimes = new float[numFrameTimes];
-
 
     void Update()
     {
@@ -70,5 +74,27 @@ public class DebugUI : MonoBehaviour
         // Record this frame into the array
         frameTimes[frameTimeIndex] = Time.deltaTime;
         frameTimeIndex = (frameTimeIndex + 1) % numFrameTimes;
+
+        // Show debug toggles
+        debugToggles.text = "";
+        debugToggles.text += $"EnableImpostors (Space): {ImpMan.singleton.enableImpostors}\n";
+        debugToggles.text += $"ActivateCam (C): {ImpMan.singleton.activateImpostorCamera}\n";
+        debugToggles.text += $"FreezeImpostors (F): {ImpMan.singleton.freezeImpostors}\n";
+        debugToggles.text += $"UseMasks (M): {ImpMan.singleton.useMasksForCulling}\n";
+        debugToggles.text += $"Backgrounds (B)";
+
+        // Process debug toggles
+        //ImpMan.singleton.enableImpostors ^= Input.GetKeyDown(KeyCode.Space);
+        ImpMan.singleton.activateImpostorCamera ^= Input.GetKeyDown(KeyCode.C);
+        ImpMan.singleton.freezeImpostors ^= Input.GetKeyDown(KeyCode.F);
+        ImpMan.singleton.useMasksForCulling ^= Input.GetKeyDown(KeyCode.M);
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            foreach (ImpostorLayer layer in ImpMan.singleton.impostorLayers)
+            {
+                layer.debugFillBackground = !layer.debugFillBackground;
+            }
+        }
     }
 }

@@ -57,7 +57,7 @@ public class ImpostorCamera : MonoBehaviour
                                     * camera.projectionMatrix;
     }
 
-    public void RenderToSurface(ImpostorSurface surface, Color clearColour)
+    public void SetTargetSurface(ImpostorSurface surface, Color clearColour)
     {
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = clearColour;
@@ -66,6 +66,12 @@ public class ImpostorCamera : MonoBehaviour
                                     surface.pixelDimensions.width, surface.pixelDimensions.height);
 
         camera.cullingMask = 1 << 31;
+    }
+
+    public void RenderToSurface(ImpostorSurface surface, Color clearColour)
+    {
+        SetTargetSurface(surface, clearColour);
+
         camera.Render();
     }
 }

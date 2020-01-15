@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#define USE_MASKS_FOR_HIDING
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,6 +57,16 @@ public class ImpMan : MonoBehaviour
     [Tooltip("Whether impostors should be used at all")]
     public bool enableImpostors = true;
 
+    [Tooltip("Whether to use masks for culling objects that have been turned into impostors")]
+    public bool useMasksForCulling = true;
+
+    [Tooltip("Whether to keep the impostor camera activated")]
+    public bool activateImpostorCamera = false;
+
+    [Tooltip("Freezes active impostor systems")]
+    public bool freezeImpostors = false;
+
+    [Tooltip("Initial configurations for impostor layers")]
     public ImpostorLayer[] impostorLayers;
 
     [Header("Impostor textures")]
@@ -79,11 +90,6 @@ public class ImpMan : MonoBehaviour
     /// A frame counter since the ImpMan's creation
     /// </summary>
     private int frame = 0;
-
-    /// <summary>
-    /// The index of the last updated impostor
-    /// </summary>
-    private int lastUpdatedImpostor = 0;
 
     /// <summary>
     /// A pre-calculated list of UVs for an impostor texture evenly divided into (impostorTextureDivisions*impostorTextureDivisions) surfaces
@@ -128,13 +134,17 @@ public class ImpMan : MonoBehaviour
         {
             enableImpostors = !enableImpostors;
 
-            foreach (ImpostorSurface surface in impostorSurfaces)
+            if (!enableImpostors)
             {
-                if (surface.owner)
+                foreach (Impostify impostable in impostables)
                 {
-                    surface.owner.isImpostorVisible = enableImpostors;
+                    impostable.isImpostorVisible = true;
+                    impostable.isImpostorVisible = false; // hack to assert change
                 }
+
+                impostorCamera.camera.enabled = false;
             }
+
             foreach (ImpostorBatch batch in impostorBatches)
             {
                 batch.GetComponent<MeshRenderer>().enabled = enableImpostors;
@@ -143,19 +153,34 @@ public class ImpMan : MonoBehaviour
 
         if (enableImpostors)
         {
-            // draw everything by default?
-            foreach (Impostify impostify in impostables)
+            bool hasUpdated = false;
+
+            if (!freezeImpostors)
             {
-                foreach (Renderer renderer in impostify.renderers)
+                // update impostor layers
+                for (int i = 0; i < impostorLayers.Length; i++)
                 {
-                    renderer.enabled = true;
+                    hasUpdated |= RefreshImpostorLayer(impostorLayers[i]);
                 }
             }
 
-            // update impostor layers
-            for (int i = 0; i < impostorLayers.Length; i++)
+            if (activateImpostorCamera)
             {
-                RefreshImpostorLayer(impostorLayers[i]);
+                impostorCamera.camera.enabled = true; // we wanted to disable it when hasUpdated is false, but that caused stutters by gfx.WaitForPresent...
+
+                if (!hasUpdated)
+                {
+                    impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
+                    impostorCamera.camera.cullingMask = 0; // don't render anything right now
+                }
+                else
+                {
+                    impostorCamera.camera.cullingMask = 1 << 31;
+                }
+            }
+            else
+            {
+                impostorCamera.camera.enabled = false;
             }
         }
 
@@ -168,8 +193,13 @@ public class ImpMan : MonoBehaviour
         frame++;
     }
 
-    void RefreshImpostorLayer(ImpostorLayer layer)
+    bool RefreshImpostorLayer(ImpostorLayer layer)
     {
+        if ((int)(Time.time * layer.updateRate) == (int)((Time.time - Time.deltaTime) * layer.updateRate))
+        {
+            return false; // we're not refreshing yet
+        }
+
         // collect all impostors ahead of the camera at the distance into th elayer
         Vector3 cameraForward = Camera.main.transform.forward;
         float cameraForwardBase = Vector3.Dot(cameraForward, Camera.main.transform.position);
@@ -201,26 +231,69 @@ public class ImpMan : MonoBehaviour
         }
 
         // Don't bother if there's nothing to draw
-        if (numRenderers == 0) return;
+        if (numRenderers == 0) return false;
 
         // Render the objects in this impostor layer
         Vector3 impostorPosition = (boundsMin + boundsMax) * 0.5f;
         float impostorWidth, impostorHeight;
+        Benchmark benchRender = Benchmark.New();
 
         impostorCamera.FrameArea(boundsMin, boundsMax, Camera.main, out impostorWidth, out impostorHeight);
-        impostorCamera.RenderToSurface(layer.surface, new Color(1, 0, 0, 0));
-        
+
+        if (activateImpostorCamera)
+        {
+            // camera will render naturally
+            impostorCamera.SetTargetSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
+        }
+        else
+        {
+            // manually render the camera
+            impostorCamera.RenderToSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
+        }
+
+        // enable previously impostified objects
+        foreach (Impostify impostable in layer.activeImpostors)
+        {
+            foreach (Renderer renderer in impostable.renderers)
+            {
+                renderer.gameObject.layer = 0;
+                renderer.enabled = true;
+            }
+        }
+
+        // disable newly impostified objects
         foreach (Impostify impostable in impostablesToRender)
         {
             foreach (Renderer renderer in impostable.renderers)
             {
-                renderer.gameObject.layer = 0; // todo
-                renderer.enabled = false;
+                if (useMasksForCulling)
+                {
+                    renderer.gameObject.layer = impostorRenderLayer;
+                    renderer.enabled = true;
+                }
+                else
+                {
+                    renderer.enabled = false;
+                }
             }
         }
-        
+
+        // Cull objects that have been turned into impostors
+        if (useMasksForCulling)
+        {
+            Camera.main.cullingMask &= ~(1 << impostorRenderLayer);
+        }
+
+        // Store the list of objects so we can re-enable them if they leave the radius during the next update
+        layer.activeImpostors = impostablesToRender;
+
+        float time = benchRender.ms;
+        Debug.Log($"Render: {time}");
+
         layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition, 
             Camera.main.transform.up * impostorHeight, Camera.main.transform.right * impostorWidth, layer.surface.uvDimensions);
+
+        return true;
     }
 
     /// <summary>
@@ -239,6 +312,8 @@ public class ImpMan : MonoBehaviour
         {
             impostorTextures.Add(new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16));
             impostorBatches.Add(new GameObject("_ImpostorBatch_", typeof(ImpostorBatch)).GetComponent<ImpostorBatch>());
+
+            impostorTextures[impostorTextures.Count - 1].format = RenderTextureFormat.ARGBHalf;
 
             impostorBatches[impostorBatches.Count - 1].texture = impostorTextures[impostorTextures.Count - 1];
         }
@@ -388,5 +463,18 @@ public class ImpostorLayer
     /// </summary>
     public float maxRadius;
 
+    /// <summary>
+    /// Whether to fill the impostor's background for debugging purposes
+    /// </summary>
+    public bool debugFillBackground;
+
+    /// <summary>
+    /// The impostor surface this layer uses
+    /// </summary>
     public ImpostorSurface surface;
+
+    /// <summary>
+    /// A list of objects that are currently included in this impostor
+    /// </summary>
+    public List<Impostify> activeImpostors = new List<Impostify>();
 }

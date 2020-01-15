@@ -98,3 +98,4 @@ MonoBehaviour:
   mouseSensitivity: 1
   speed: 5
   sprintSpeed: 10
+  sprintAcceleration: 5

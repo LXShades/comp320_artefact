@@ -57,6 +57,8 @@ public class ImpostorBatch : MonoBehaviour
             indexes[indexRoot + 4] = vertexRoot + 2;
             indexes[indexRoot + 5] = vertexRoot + 3;
         }
+
+        gameObject.layer = 30;
     }
 
     private void Start()
@@ -80,6 +82,7 @@ public class ImpostorBatch : MonoBehaviour
 
     private void RefreshMesh()
     {
+        Benchmark benchMeshRefresh = Benchmark.New();
         if (myMesh == null)
         {
             // Create the empty mesh and material
@@ -99,6 +102,9 @@ public class ImpostorBatch : MonoBehaviour
         myMesh.SetIndices(indexes, MeshTopology.Triangles, 0);
         myMesh.uv = uvs;
         myMesh.RecalculateBounds();
+
+        float time = benchMeshRefresh.ms;
+        Debug.Log($"Mesh refresh: {time}");
 
         // Refresh the material
         myMaterial.SetFloat("_Cutoff", 0.99f);

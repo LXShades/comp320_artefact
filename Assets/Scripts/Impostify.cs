@@ -30,6 +30,7 @@ public class Impostify : MonoBehaviour
             {
                 foreach (Renderer renderer in renderers)
                 {
+                    renderer.gameObject.layer = 0;
                     renderer.enabled = !value;
                 }
                 _isImpostorVisible = value;
@@ -81,6 +82,9 @@ public class Impostify : MonoBehaviour
         mainCamera = Camera.main;
     }
 
+    /// <summary>
+    /// Renders this impostor onto the current assigned impostorSurface
+    /// </summary>
     void RenderImpostor()
     {
         ImpostorCamera impCam = ImpMan.singleton.impostorCamera;
@@ -117,6 +121,9 @@ public class Impostify : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Regenerates the mesh list and boundaries for this object
+    /// </summary>
     void RefreshRendererInfo()
     {
         if (renderers.Length == 0)
@@ -140,7 +147,7 @@ public class Impostify : MonoBehaviour
                 {
                     LODGroup lods = child.GetComponent<LODGroup>();
 
-                    if (lods.lodCount > 0)
+                    if (lods && lods.lodCount > 0)
                     {
                         childMesh = lods.GetLODs()[0].renderers[0].GetComponent<MeshFilter>()?.sharedMesh;
                         childRenderer = lods.GetLODs()[0].renderers[0];

@@ -47,8 +47,17 @@ MonoBehaviour:
   impostorTextures: []
   impostorBatches: []
   enableImpostors: 1
+  useMasksForCulling: 1
+  activateImpostorCamera: 1
+  freezeImpostors: 0
+  impostorLayers:
+  - updateRate: 1
+    minRadius: 80
+    maxRadius: 300
+    debugFillBackground: 0
+    activeImpostors: []
   impostorShader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  impostorTextureWidth: 2048
-  impostorTextureHeight: 2048
-  impostorTextureDivisions: 8
-  framesPerImpostorUpdate: 1
+  impostorTextureWidth: 4096
+  impostorTextureHeight: 4096
+  impostorTextureDivisions: 1
+  impostorCamera: {fileID: 0}
