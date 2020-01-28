@@ -63,8 +63,8 @@ public class Impostify : MonoBehaviour
     Matrix4x4 impostorProjectionMatrix;
 
     /** The renderer associated with this object */
-    public Renderer[] renderers = new Renderer[0];
-    public Mesh[] meshes = new Mesh[0];
+    [System.NonSerialized] public Renderer[] renderers = new Renderer[0];
+    [System.NonSerialized] public Mesh[] meshes = new Mesh[0];
 
     Camera mainCamera;
 
@@ -123,6 +123,7 @@ public class Impostify : MonoBehaviour
 
     /// <summary>
     /// Regenerates the mesh list and boundaries for this object
+    /// Note that this function may be called in-editor
     /// </summary>
     void RefreshRendererInfo()
     {
@@ -159,34 +160,52 @@ public class Impostify : MonoBehaviour
                     childMesh = meshFilter.sharedMesh;
                     childRenderer = child.GetComponent<MeshRenderer>();
                 }
-
-                // try to get the highest LOD if myRenderer fails
-                if (childMesh == null)
-                {
-                    LODGroup lods = child.GetComponent<LODGroup>();
-
-                    if (lods && lods.lodCount > 0)
-                    {
-                        childMesh = lods.GetLODs()[0].renderers[0].GetComponent<MeshFilter>()?.sharedMesh;
-                        childRenderer = lods.GetLODs()[0].renderers[0];
-
-
-#if UNITY_EDITOR
-                        if (Application.isPlaying) // don't modify LOD groups while editing
-                        {
-#endif
-                            lods.SetLODs(new LOD[1] { lods.GetLODs()[0] });
-#if UNITY_EDITOR
-                        }
-#endif
-                    }
-                }
                 
                 // Add to the mesh/renderer list
                 if (childMesh && childRenderer)
                 {
                     meshList.Add(childMesh);
                     rendererList.Add(childRenderer);
+                }
+
+                // Add LOD groups if there are any
+                LODGroup lodComponent = child.GetComponent<LODGroup>();
+
+                if (lodComponent && lodComponent.lodCount > 0)
+                {
+                    Debug.Log($"Found a LOD. Diable? {Application.isPlaying}");
+                    LOD[] lods = lodComponent.GetLODs();
+                    
+                    foreach (MeshRenderer renderer in lods[0].renderers)
+                    {
+                        meshFilter = renderer.GetComponent<MeshFilter>();
+
+                        if (meshFilter)
+                        {
+                            meshList.Add(meshFilter.sharedMesh);
+                            rendererList.Add(renderer);
+                        }
+                    }
+
+                    // If in-game, disable other LODs in the group
+#if UNITY_EDITOR
+                    if (Application.isPlaying)
+                    {
+#endif
+                        for (int i = 1; i < lods.Length; i++)
+                        {
+                            foreach (Renderer renderer in lods[i].renderers)
+                            {
+                                renderer.enabled = false;
+                            }
+                        }
+
+                        lods[0].fadeTransitionWidth = 1;
+                        lods[0].screenRelativeTransitionHeight = 0;
+                        lodComponent.SetLODs(new LOD[1] { lods[0] });
+#if UNITY_EDITOR
+                    }
+#endif
                 }
             }
 
