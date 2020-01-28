@@ -133,14 +133,32 @@ public class Impostify : MonoBehaviour
             List<Renderer> rendererList = new List<Renderer>();
             foreach (Transform child in GetComponentsInChildren<Transform>())
             {
-                if (child.GetComponentInParent<LODGroup>() != null)
+                // don't add children of LOD groups, as they probably comprise multiple LOD copies
+                bool isInLodGroup = false;
+                for (Transform parent = child.parent; parent != null; parent = parent.parent)
                 {
-                    // don't add children of LOD groups, as they probably comprise multiple LOD copies
+                    if (parent.GetComponent<LODGroup>())
+                    {
+                        isInLodGroup = true;
+                        break;
+                    }
+                }
+
+                if (isInLodGroup)
+                {
                     continue;
                 }
 
-                Mesh childMesh = child.GetComponent<MeshFilter>()?.sharedMesh;
-                Renderer childRenderer = child.GetComponent<MeshRenderer>();
+                MeshFilter meshFilter = child.GetComponent<MeshFilter>();
+                Mesh childMesh = null;
+                Renderer childRenderer = null;
+
+                // try and get the mesh filter
+                if (meshFilter)
+                {
+                    childMesh = meshFilter.sharedMesh;
+                    childRenderer = child.GetComponent<MeshRenderer>();
+                }
 
                 // try to get the highest LOD if myRenderer fails
                 if (childMesh == null)
@@ -151,9 +169,20 @@ public class Impostify : MonoBehaviour
                     {
                         childMesh = lods.GetLODs()[0].renderers[0].GetComponent<MeshFilter>()?.sharedMesh;
                         childRenderer = lods.GetLODs()[0].renderers[0];
+
+
+#if UNITY_EDITOR
+                        if (Application.isPlaying) // don't modify LOD groups while editing
+                        {
+#endif
+                            lods.SetLODs(new LOD[1] { lods.GetLODs()[0] });
+#if UNITY_EDITOR
+                        }
+#endif
                     }
                 }
                 
+                // Add to the mesh/renderer list
                 if (childMesh && childRenderer)
                 {
                     meshList.Add(childMesh);

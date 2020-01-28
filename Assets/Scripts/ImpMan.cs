@@ -100,6 +100,7 @@ public class ImpMan : MonoBehaviour
     {
         // Create a list of all impostifiable objects
         impostables.AddRange(FindObjectsOfType<Impostify>());
+        impostables.RemoveAll(impostify => impostify.enabled == false);
 
         // Pregenerate the predefined division slot dimension and positions
         Vector2 uvSize = new Vector2(1.0f / (float)impostorTextureDivisions, 1.0f / (float)impostorTextureDivisions);
