@@ -57,6 +57,11 @@ public class ImpostorCamera : MonoBehaviour
                                     * camera.projectionMatrix;
     }
 
+    /// <summary>
+    /// Sets the target surface to render to
+    /// </summary>
+    /// <param name="surface">The target surface</param>
+    /// <param name="clearColour">The background colour to clear to</param>
     public void SetTargetSurface(ImpostorSurface surface, Color clearColour)
     {
         camera.clearFlags = CameraClearFlags.SolidColor;
@@ -65,7 +70,7 @@ public class ImpostorCamera : MonoBehaviour
         camera.pixelRect = new Rect(surface.pixelDimensions.x, surface.pixelDimensions.y,
                                     surface.pixelDimensions.width, surface.pixelDimensions.height);
 
-        camera.cullingMask = 1 << 31;
+        camera.cullingMask = 1 << ImpMan.singleton.impostorRenderLayer;
     }
 
     public void RenderToSurface(ImpostorSurface surface, Color clearColour)

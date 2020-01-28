@@ -57,7 +57,8 @@ MonoBehaviour:
     debugFillBackground: 0
     activeImpostors: []
   impostorShader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  impostorTextureWidth: 4096
-  impostorTextureHeight: 4096
+  impostorTextureWidth: 2048
+  impostorTextureHeight: 2048
   impostorTextureDivisions: 1
+  impostorRenderLayer: 28
   impostorCamera: {fileID: 0}

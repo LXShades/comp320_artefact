@@ -90,7 +90,7 @@ public class Impostify : MonoBehaviour
         ImpostorCamera impCam = ImpMan.singleton.impostorCamera;
         int[] oldLayers = new int[meshes.Length];
         bool[] oldVisibility = new bool[meshes.Length];
-        const int impostorLayer = 31;
+        int impostorLayer = ImpMan.singleton.impostorRenderLayer;
 
         // Clear the background pixels
         impCam.FrameArea(minBounds, maxBounds, Camera.main, out impostorWidth, out impostorHeight);

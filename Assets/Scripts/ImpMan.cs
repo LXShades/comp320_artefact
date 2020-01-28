@@ -80,16 +80,16 @@ public class ImpMan : MonoBehaviour
 
     [Tooltip("Number of divisions splitting the impostor texture between impostor surfaces. A value of e.g. 2 means there is a 2x2 split")]
     public int impostorTextureDivisions = 1;
+
+    [Header("Impostor rendering settings")]
+    [Tooltip("Render layer to draw impostors on")]
+    public int impostorRenderLayer = 31;
     
+    [Header("Miscellaneous")]
     /// <summary>
     /// The camera that snapshots the impostors. We only need one such camera in the scene
     /// </summary>
     public ImpostorCamera impostorCamera;
-
-    /// <summary>
-    /// A frame counter since the ImpMan's creation
-    /// </summary>
-    private int frame = 0;
 
     /// <summary>
     /// A pre-calculated list of UVs for an impostor texture evenly divided into (impostorTextureDivisions*impostorTextureDivisions) surfaces
@@ -176,7 +176,7 @@ public class ImpMan : MonoBehaviour
                 }
                 else
                 {
-                    impostorCamera.camera.cullingMask = 1 << 31;
+                    impostorCamera.camera.cullingMask = 1 << impostorRenderLayer;
                 }
             }
             else
@@ -190,8 +190,6 @@ public class ImpMan : MonoBehaviour
         {
             ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
         }
-
-        frame++;
     }
 
     bool RefreshImpostorLayer(ImpostorLayer layer)
@@ -205,7 +203,6 @@ public class ImpMan : MonoBehaviour
         Vector3 cameraForward = Camera.main.transform.forward;
         float cameraForwardBase = Vector3.Dot(cameraForward, Camera.main.transform.position);
         List<Impostify> impostablesToRender = new List<Impostify>();
-        const int impostorRenderLayer = 31;
         Vector3 boundsMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 boundsMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         int numRenderers = 0;
@@ -233,6 +230,8 @@ public class ImpMan : MonoBehaviour
 
         // Don't bother if there's nothing to draw
         if (numRenderers == 0) return false;
+
+        Debug.Log($"numRenderers: {numRenderers}");
 
         // Render the objects in this impostor layer
         Vector3 impostorPosition = (boundsMin + boundsMax) * 0.5f;
@@ -289,7 +288,7 @@ public class ImpMan : MonoBehaviour
         layer.activeImpostors = impostablesToRender;
 
         float time = benchRender.ms;
-        Debug.Log($"Render: {time}");
+        //Debug.Log($"Render: {time}");
 
         layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition, 
             Camera.main.transform.up * impostorHeight, Camera.main.transform.right * impostorWidth, layer.surface.uvDimensions);
