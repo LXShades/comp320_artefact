@@ -231,7 +231,7 @@ public class ImpMan : MonoBehaviour
         // Don't bother if there's nothing to draw
         if (numRenderers == 0) return false;
 
-        Debug.Log($"numRenderers: {numRenderers}");
+//        Debug.Log($"numRenderers: {numRenderers}");
 
         // Render the objects in this impostor layer
         Vector3 impostorPosition = (boundsMin + boundsMax) * 0.5f;

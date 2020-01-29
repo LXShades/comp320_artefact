@@ -104,7 +104,7 @@ public class ImpostorBatch : MonoBehaviour
         myMesh.RecalculateBounds();
 
         float time = benchMeshRefresh.ms;
-        Debug.Log($"Mesh refresh: {time}");
+//        Debug.Log($"Mesh refresh: {time}");
 
         // Refresh the material
         myMaterial.SetFloat("_Cutoff", 0.99f);
