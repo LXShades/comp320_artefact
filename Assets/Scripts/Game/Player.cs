@@ -175,8 +175,12 @@ public class Player : MonoBehaviour
 
     Vector3 Move(Vector3 movementVector)
     {
-        Vector3 capsuleUp = transform.TransformVector(new Vector3(0, capsule.height * 0.5f, 0));
+        Vector3 capsuleUp = transform.TransformVector(new Vector3(0, Mathf.Max(capsule.height * 0.5f - capsule.radius, capsule.radius), 0));
+        Vector3 capsuleUpTip = transform.TransformVector(new Vector3(0, capsule.height * 0.5f, 0));
         Vector3 capsuleCenter = transform.TransformPoint(capsule.center);
+        Vector3 capsuleBottom = capsuleCenter - capsuleUpTip;
+        float castRadius = capsuleUpTip.magnitude - capsuleUp.magnitude;
+        Vector3 man = capsuleCenter - capsuleUp.normalized * (capsuleUp.magnitude + capsule.radius * Mathf.Max(transform.localScale.x, transform.localScale.z));
 
         RaycastHit hit;
 
@@ -188,44 +192,46 @@ public class Player : MonoBehaviour
         for (int iteration = 0; iteration < numIterations; iteration++)
         {
             if (Physics.CapsuleCast(capsuleCenter + capsuleUp, capsuleCenter - capsuleUp,
-                capsule.radius * Mathf.Max(transform.localScale.x, transform.localScale.z), movementVector.normalized, out hit,
+                castRadius, movementVector.normalized, out hit,
                 movementVector.magnitude, ~0, QueryTriggerInteraction.Ignore))
             {
                 bool isGroundSurface = Vector3.Dot(hit.normal, Vector3.up) >= Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
 
                 if (iteration != numIterations - 1)
                 {
+                    Vector3 embeddedVector = movementVector * (1 - hit.distance / movementVector.magnitude);
+
                     if (!isGroundSurface)
                     {
                         // the first several iterations will try to slide along surfaces
-                        movementVector += hit.normal * ((movementVector.magnitude - hit.distance) * -Vector3.Dot(movementVector.normalized, hit.normal));
+                        movementVector += hit.normal * (-Vector3.Dot(embeddedVector, hit.normal) + 0.0001f);
                     }
                     else
                     {
-                        Vector3 embeddedVector = movementVector.normalized * (movementVector.magnitude - hit.distance);
+                        Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.blue);
+                        Debug.DrawLine(hit.point, hit.point + embeddedVector, Color.red);
                         // This is a ground surface, so it's probably best that we don't slide along it. We have a grip on it.
                         // So instead, we'll cancel vertical motion and maintain our other motion...
-                        movementVector += Vector3.up * (embeddedVector.magnitude / -Vector3.Dot(hit.normal, movementVector.normalized));
+                        movementVector += Vector3.up * (-Vector3.Dot(Vector3.up, embeddedVector) + 0.0001f);
 
-                        Debug.DrawLine(transform.position, transform.position + movementVector, Color.cyan);
-                        Debug.Break();
+                        isOnGround = true;
                     }
                 }
                 else
                 {
+                    Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.blue);
+
                     // the last iteration will just outright remove excess movement, to avoid clipping through stuff
-                    movementVector = movementVector * (movementVector.magnitude / hit.distance) * 0.99f;
+                    movementVector *= ((hit.distance - 0.001f) / movementVector.magnitude);
+
+                    Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.green);
                 }
             }
             else
             {
                 break;
             }
-
-            DebugDraw.Line(transform.position, transform.position + movementVector, Color.Lerp(Color.green, Color.red, (float)(iteration + 1) / numIterations));
         }
-
-        Debug.DrawLine(transform.position, transform.position + movementVector, Color.red);
 
         // Move!
         transform.position += movementVector;
