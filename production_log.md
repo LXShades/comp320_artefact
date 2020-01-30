@@ -13,3 +13,16 @@ Furthermore, the impostor system needs to surround the player, but it currently 
 The top priority is to find a scene to test the system in. A realistic scenario would be a highly detailed scene that threatens the frame rate.
 
 The next priority depends on which of the above issues is most visually noticeable. We'll need to fix them in that order. Some of the bugs might prove too difficult in which case it may be worth continuing with the actual game's development to avoid stalls.
+
+# 29/01/2020
+## Overview
+In an Agile fashion, it was felt that the features most important to the project would be the game as this is what the end user would experience. This provides the necessary context for refining the impostor system, which was taking a while to develop due to a lack focus.
+
+We found and downloaded a scene for the game yesterday to begin this context. To get the game up and running, the character movement and slingshot ability were implemented, but collision wasn't finished.
+
+We initially tried to create acceleration and friction curves for character movement. This required an InverseEvaluate function for curves. Unfortunately, after much time and unit testing (UnitTests.cs) the reliability of these functions proved too low. Furthermore, the behaviour of an acceleration curve when accelerating in the opposite direction was quite undefined in concept. Eventually, we didn't achieve properly-functioning curve-based movement and decided to return to a standard linear acceleration/friction model, noting the time investment to returns ratio.
+
+## Next steps
+The next priority is to fix the collision and add the balloon enemies. Once the game is playable, we still need to add the end states and questionnaires.
+
+The impostor system will take massive amounts of refinement to get right, and we feel it would be best to commit this early time period to the game and surveys as we are able to finish those in a comparatively short time span.
