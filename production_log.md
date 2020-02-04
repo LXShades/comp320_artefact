@@ -31,5 +31,14 @@ The impostor system will take massive amounts of refinement to get right, and we
 ## Overview
 A test of the game in the main level shows that the collision system is functional enough to continue to the next stage of the game development. We can reliably move through the environment and while in special cases we will fall through the floor, we are in a good position to iterate on the core game. However, these bugs are highly problematic - sometimes falling through the floor - and once the game is done some of the remaining time will be committed to fixing these.
 
+## Today
+We created the balloon enemies, spawners, spawn triggers and basic editor tools to bring this all together.
+
+The UI was also implemented with minimal issues. There is now a timer and balloon tally.
+
+We added the data file recording functionality today. To ensure the data formatting was functioning properly, we iterated with a unit test in UnitTests.cs. We checked the file data manually as well to confirm it did indeed contain comma-separated values.
+
+Surveying functionality was also added, but needs some tweaks to be ready.
+
 ## Next steps
-Create the balloon enemies and update the shooting to be accurate to the animation.
+Finish surveying and round sequence. Update the shooting to be accurate to the animation.

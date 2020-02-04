@@ -41,30 +41,72 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int numPoppedBalloons;
 
+    public bool isPaused
+    {
+        get
+        {
+            return (timeRemaining == 0);
+        }
+    }
+
+    /// <summary>
+    /// The recorded data file
+    /// </summary>
+    public DataFile data
+    {
+        get
+        {
+            if (_data == null)
+            {
+                _data = new DataFile("data.csv");
+            }
+
+            return _data;
+        }
+    }
+    private DataFile _data;
+
     public float timeRemaining
     {
         get
         {
-            return levelTimeLimit - (Time.time - levelStartTime);
+            return Mathf.Max(levelTimeLimit - (Time.time - levelStartTime), 0);
         }
     }
+
+    // Retrieves the name (letter) of the current impostor configuration
+    public string impostorConfigurationName
+    {
+        get
+        {
+            return impostorConfigurations[impostorConfigurationIndex];
+        }
+    }
+
+    // The current impostor configuration
+    public int impostorConfigurationIndex = 0;
+
+    public string[] impostorConfigurations = new string[] { "A", "B", "C", "D" };
 
     // Time.time when the level was started
     private float levelStartTime;
 
     // Time before the game ends
-    private float levelTimeLimit = 2 * 60;
+    private float levelTimeLimit = 2;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Register the scene load callback
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneLoad;
     }
 
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// Continues to the next round or the end screen
+    /// </summary>
+    public void StartNextRound()
     {
-        
+        impostorConfigurationIndex = (impostorConfigurationIndex + 1) % impostorConfigurations.Length;
     }
 
     /// <summary>

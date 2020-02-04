@@ -32,6 +32,9 @@ public class BalloonSpawner : MonoBehaviour
     // List of spawn bursts in a cycle
     public List<SpawnBurst> spawnBursts = new List<SpawnBurst>();
 
+    // Whether to activate at level start
+    public bool autoActivate = false;
+
     // Game time that the beginning of the cycle started at
     float activationTime = 0;
 
@@ -41,7 +44,10 @@ public class BalloonSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Activate();
+        if (autoActivate)
+        {
+            Activate();
+        }
     }
 
     // Update is called once per frame
@@ -50,7 +56,7 @@ public class BalloonSpawner : MonoBehaviour
         if (hasActivated)
         {
             float currentTime = Time.time - activationTime;
-            float lastTime = Time.time - Time.deltaTime;
+            float lastTime = currentTime - Time.deltaTime;
 
             // Spawn balloons
             foreach (SpawnBurst burst in spawnBursts)
@@ -84,6 +90,19 @@ public class BalloonSpawner : MonoBehaviour
             hasActivated = true;
         }
     }
+
+#if UNITY_EDITOR
+    void OnDrawGizmos()
+    {
+        foreach (SpawnBurst burst in spawnBursts)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + burst.startVelocity);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + burst.endVelocity);
+        }
+    }
+#endif
 
     void SpawnBalloon(Vector3 position, Vector3 velocity)
     {

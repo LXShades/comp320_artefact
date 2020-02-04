@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
         capsule = GetComponent<CapsuleCollider>();
 
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
