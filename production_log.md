@@ -26,3 +26,10 @@ We initially tried to create acceleration and friction curves for character move
 The next priority is to fix the collision and add the balloon enemies. Once the game is playable, we still need to add the end states and questionnaires.
 
 The impostor system will take massive amounts of refinement to get right, and we feel it would be best to commit this early time period to the game and surveys as we are able to finish those in a comparatively short time span.
+
+# 04/02/2020
+## Overview
+A test of the game in the main level shows that the collision system is functional enough to continue to the next stage of the game development. We can reliably move through the environment and while in special cases we will fall through the floor, we are in a good position to iterate on the core game. However, these bugs are highly problematic - sometimes falling through the floor - and once the game is done some of the remaining time will be committed to fixing these.
+
+## Next steps
+Create the balloon enemies and update the shooting to be accurate to the animation.

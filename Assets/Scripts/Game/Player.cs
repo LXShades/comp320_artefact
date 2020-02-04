@@ -63,6 +63,8 @@ public class Player : MonoBehaviour
         eyeHorizontalAngle = transform.rotation.y;
 
         capsule = GetComponent<CapsuleCollider>();
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
