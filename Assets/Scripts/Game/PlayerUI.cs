@@ -18,6 +18,6 @@ public class PlayerUI : MonoBehaviour
     {
         // Update player balloon status
         balloonStatusText.text = $"Balloons: {GameManager.singleton.numTotalBalloons}\nPopped: {GameManager.singleton.numPoppedBalloons}";
-        timerText.text = $"{GameManager.singleton.timeRemaining}\nremaining";
+        timerText.text = $"{((int)GameManager.singleton.timeRemaining/60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
     }
 }

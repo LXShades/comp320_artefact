@@ -484,7 +484,10 @@ MonoBehaviour:
   acceleration: 12
   friction: 8
   maxSpeed: 8
+  jumpSpeed: 10
   lookSensitivity: 90.65
+  maxSlopeAngle: 45
+  gravity: 9.8
   eyes: {fileID: 3044613863449127822}
   slingshot: {fileID: 8522928202243599265}
   velocity: {x: 0, y: 0, z: 0}
@@ -844,11 +847,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3044613865486892498}
     m_Modifications:
-    - target: {fileID: 3721198709164953506, guid: bbecbfa1a2a32a145aac4d80b485b28c,
-        type: 3}
-      propertyPath: m_Name
-      value: ImpMan
-      objectReference: {fileID: 0}
     - target: {fileID: 3721198709164953504, guid: bbecbfa1a2a32a145aac4d80b485b28c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -903,6 +901,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3721198709164953506, guid: bbecbfa1a2a32a145aac4d80b485b28c,
+        type: 3}
+      propertyPath: m_Name
+      value: ImpMan
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbecbfa1a2a32a145aac4d80b485b28c, type: 3}
@@ -1028,11 +1031,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3715546892338337290, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f984b484cdf1d7444a1dfecd2e9c9b57, type: 3}

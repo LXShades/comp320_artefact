@@ -65,10 +65,10 @@ public class DebugUI : MonoBehaviour
             System.Array.Sort(sortedTimestamps);
             
             fpsCounter.text =
-                $"FPS: {(1 / (totalFrameTimes / frameTimes.Length)).ToString("0000.0")}" +
-                $" (Low: {(1 / sortedTimestamps[sortedTimestamps.Length - 1]).ToString("0000.0")})" +
-                $" (Med: {(1 / sortedTimestamps[(int)(sortedTimestamps.Length * 0.5f)]).ToString("0000.0")})" + 
-                $" (High: {(1 / sortedTimestamps[0]).ToString("0000.0")})";
+                $"FPS: {(1 / (totalFrameTimes / frameTimes.Length)).ToString("0000.0")}\n" +
+                $"Low: {(1 / sortedTimestamps[sortedTimestamps.Length - 1]).ToString("0000.0")}\n" +
+                $"Med: {(1 / sortedTimestamps[(int)(sortedTimestamps.Length * 0.5f)]).ToString("0000.0")}\n" + 
+                $"High: {(1 / sortedTimestamps[0]).ToString("0000.0")}\n";
         }
 
         // Record this frame into the array

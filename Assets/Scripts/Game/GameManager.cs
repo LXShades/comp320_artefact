@@ -45,9 +45,15 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return 120;
+            return levelTimeLimit - (Time.time - levelStartTime);
         }
     }
+
+    // Time.time when the level was started
+    private float levelStartTime;
+
+    // Time before the game ends
+    private float levelTimeLimit = 2 * 60;
 
     // Start is called before the first frame update
     void Start()
@@ -68,5 +74,7 @@ public class GameManager : MonoBehaviour
     {
         numTotalBalloons = 0;
         numPoppedBalloons = 0;
+
+        levelStartTime = Time.time;
     }
 }
