@@ -139,6 +139,10 @@ public class Player : MonoBehaviour
         {
             horizontalVelocity -= horizontalVelocity.normalized * (Time.deltaTime * friction);
         }
+        else
+        {
+            horizontalVelocity = Vector3.zero;
+        }
     }
 
     /// <summary>

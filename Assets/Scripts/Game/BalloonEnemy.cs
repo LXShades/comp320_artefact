@@ -33,6 +33,8 @@ public class BalloonEnemy : MonoBehaviour
         spawnTime = Time.time;
 
         rb = GetComponent<Rigidbody>();
+
+        GameManager.singleton.numTotalBalloons++;
     }
 
     // Update is called once per frame
@@ -71,6 +73,7 @@ public class BalloonEnemy : MonoBehaviour
         {
             // The player hit!
             // Add to their score?
+            GameManager.singleton.numPoppedBalloons++;
         }
 
         if (collision.collider.GetComponent<BalloonEnemy>() != null)
