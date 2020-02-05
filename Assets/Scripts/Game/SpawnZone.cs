@@ -32,10 +32,16 @@ public class SpawnZone : MonoBehaviour
     {
         if (collider.GetComponentInParent<Player>())
         {
+            Debug.Log("Aight im activate spawns...");
+
             foreach (BalloonSpawner spawner in associatedSpawners)
             {
                 spawner.Activate();
             }
+        }
+        else
+        {
+            Debug.Log("Who df is this");
         }
     }
 }

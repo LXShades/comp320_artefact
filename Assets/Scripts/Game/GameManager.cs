@@ -88,11 +88,11 @@ public class GameManager : MonoBehaviour
 
     public string[] impostorConfigurations = new string[] { "A", "B", "C", "D" };
 
+    // Duration of each game round
+    public float levelTimeLimit = 120;
+
     // Time.time when the level was started
     private float levelStartTime;
-
-    // Time before the game ends
-    private float levelTimeLimit = 2;
 
     // Start is called before the first frame update
     void Start()
@@ -107,6 +107,8 @@ public class GameManager : MonoBehaviour
     public void StartNextRound()
     {
         impostorConfigurationIndex = (impostorConfigurationIndex + 1) % impostorConfigurations.Length;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
     /// <summary>

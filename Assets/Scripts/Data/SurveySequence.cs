@@ -29,24 +29,38 @@ public class SurveySequence : MonoBehaviour
     // Status box
     public Text questionsRemaining;
     // Continue button
-    public Text continueButton;
+    public Button continueButton;
+    // Text on the continue button
+    public Text continueButtonText;
 
     // Current question in the list of question that we're at
     int currentQuestionIndex = 0;
 
     public void Start()
     {
-        SetQuestion(questions[currentQuestionIndex]);
+        SetQuestion(0);
     }
 
     /// <summary>
     /// Applies the given SurveyQuestion to the UI
     /// </summary>
-    public void SetQuestion(SurveyQuestion question)
+    public void SetQuestion(int questionIndex)
     {
-        surveyBox.description = question.description;
-        surveyBox.entryName = question.dataColumn;
-        surveyBox.slider.value = 0;
+        surveyBox.description = questions[questionIndex].description;
+        surveyBox.entryName = questions[questionIndex].dataColumn;
+        surveyBox.slider.value = 3;
+
+        if (currentQuestionIndex == questions.Length - 1)
+        {
+            questionsRemaining.text = "Last question!";
+            continueButtonText.text = "Next round!";
+        }
+        else
+        {
+            questionsRemaining.text = $"{questions.Length - currentQuestionIndex - 1} more to go...";
+        }
+
+        continueButton.interactable = false;
     }
 
     /// <summary>
@@ -58,22 +72,19 @@ public class SurveySequence : MonoBehaviour
         {
             currentQuestionIndex++;
 
-            SetQuestion(questions[currentQuestionIndex]);
-
-
-            if (currentQuestionIndex == questions.Length - 1)
-            {
-                questionsRemaining.text = "Last question";
-                continueButton.text = "Next round!";
-            }
-            else
-            {
-                questionsRemaining.text = $"{questions.Length - currentQuestionIndex - 1} more to go...";
-            }
+            SetQuestion(currentQuestionIndex);
         }
         else
         {
             GameManager.singleton.StartNextRound();
         }
+    }
+
+    /// <summary>
+    /// Called when the slider is clicked
+    /// </summary>
+    public void OnClickedSlider()
+    {
+        continueButton.interactable = true;
     }
 }

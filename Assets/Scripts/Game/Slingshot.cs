@@ -27,8 +27,11 @@ public class Slingshot : MonoBehaviour
 
     private float lastFiredTime;
 
+    // Whether the slingshot has begun charging
     private bool isCharging = false;
     private bool hasCharged = false;
+    // Causes the slingshot to fire on the next frame that it's not charged
+    private bool isFiring = false;
 
     void Awake()
     {
@@ -37,10 +40,17 @@ public class Slingshot : MonoBehaviour
 
     void Update()
     {
+        // Determine whether charge sequence has finished
         if (isCharging && !animation.isPlaying)
         {
             isCharging = false;
             hasCharged = true;
+        }
+
+        // Fire automatically if the mouse was released while charging
+        if (isFiring && hasCharged)
+        {
+            ReleaseProjectile();
         }
     }
 
@@ -65,18 +75,31 @@ public class Slingshot : MonoBehaviour
     {
         if (hasCharged)
         {
-            // Record firing time for cooldowns
-            lastFiredTime = Time.time;
-            hasCharged = false;
-
-            // Play the shooting animation
-            animation.clip = fire;
-            animation.Play();
-
-            // Spawn and eject the projectile towards the target
-            RockProjectile rock = Instantiate(projectile, transform.position, Quaternion.identity);
-
-            rock.Shoot(player.GetTargetPosition());
+            // fire immediately
+            ReleaseProjectile();
         }
+        else
+        {
+            // postpone until the animation is finished
+            isFiring = true;
+        }
+    }
+
+    private void ReleaseProjectile()
+    {
+        // Record firing time for cooldowns
+        lastFiredTime = Time.time;
+        hasCharged = false;
+        isCharging = false;
+        isFiring = false;
+
+        // Play the shooting animation
+        animation.clip = fire;
+        animation.Play();
+
+        // Spawn and eject the projectile towards the target
+        RockProjectile rock = Instantiate(projectile, transform.position, Quaternion.identity);
+
+        rock.Shoot(player.GetTargetPosition());
     }
 }

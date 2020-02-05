@@ -20,7 +20,14 @@ public class PlayerUI : MonoBehaviour
     // Survey screen
     public GameObject surveyScreen;
 
-    // Update is called once per frame
+    void Start()
+    {
+        // Start with initial UI state
+        completeScreen.SetActive(true);
+        surveyScreen.SetActive(false);
+        endScreen.SetActive(false);
+    }
+
     void Update()
     {
         if (GameManager.singleton.timeRemaining > 0)
@@ -28,10 +35,16 @@ public class PlayerUI : MonoBehaviour
             // Update player balloon status
             balloonStatusText.text = $"Balloons: {GameManager.singleton.numTotalBalloons}\nPopped: {GameManager.singleton.numPoppedBalloons}";
             timerText.text = $"{((int)GameManager.singleton.timeRemaining / 60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
         else
         {
             endScreen.SetActive(true);
+            Cursor.visible = true;
+
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 

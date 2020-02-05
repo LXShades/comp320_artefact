@@ -42,3 +42,16 @@ Surveying functionality was also added, but needs some tweaks to be ready.
 
 ## Next steps
 Finish surveying and round sequence. Update the shooting to be accurate to the animation.
+
+05/02/2020
+## Overview
+A presentation of the game shows it to be in a buggy state. This is partly because the survey system was under testing in the last iteration.
+
+- The balloons didn't spawn
+- The survey showed immedately (for testing)
+- The impostor system was not implemented.
+
+The impostor system is being put on hold while we address the requirements of the game. Once the game has been outlined, it would then be sensible to continue the impostor system.
+
+## Next steps
+Finish the survey system, making sure it restarts the game at the next impostor configuration. Keep the game time limit customisable, so we can test the survey system by letting the game end immediately after beginning. Ensure the balloon spawn correctly and the end of the level functions.
