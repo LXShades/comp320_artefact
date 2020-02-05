@@ -67,7 +67,7 @@ public class ImpMan : MonoBehaviour
     public bool freezeImpostors = false;
 
     [Tooltip("Initial configurations for impostor layers")]
-    public ImpostorLayer[] impostorLayers;
+    public ImpostorLayer[] impostorLayers = new ImpostorLayer[0];
 
     [Header("Impostor textures")]
     [Tooltip("The shader to render impostors with")]
@@ -340,6 +340,36 @@ public class ImpMan : MonoBehaviour
     }
     
     /// <summary>
+    /// Sets up the impostor layers to match the configuration given in the list
+    /// </summary>
+    public void SetConfiguration(ImpostorConfiguration configuration)
+    {
+        // Restore impostors contianed in previous layers
+        foreach (ImpostorLayer layer in impostorLayers)
+        {
+            foreach (Impostify impostable in layer.activeImpostors)
+            {
+                foreach (Renderer renderer in impostable.renderers)
+                {
+                    renderer.gameObject.layer = 0;
+                    renderer.enabled = true;
+                }
+            }
+        }
+
+        // Remove previous layers
+        ClearImpostorSurfaces();
+
+        // Copy new ones over
+        impostorLayers = new ImpostorLayer[configuration.layers.Length];
+
+        for (int i = 0; i < configuration.layers.Length; i++)
+        {
+            impostorLayers[i] = configuration.layers[i].Clone();
+        }
+    }
+
+    /// <summary>
     /// Creates the impostor camera
     /// </summary>
     private ImpostorCamera CreateImpostorCamera()
@@ -349,6 +379,18 @@ public class ImpMan : MonoBehaviour
         // Disable it for now (so it isn't used as an actual camera)
         return cameraObject.GetComponent<ImpostorCamera>();
     }
+}
+
+/// <summary>
+/// A container of ImpostorLayer setups for the ImpMan to use
+/// </summary>
+[System.Serializable]
+public class ImpostorConfiguration
+{
+    /// <summary>
+    /// List of layers to impostify
+    /// </summary>
+    public ImpostorLayer[] layers;
 }
 
 /// <summary>
@@ -477,4 +519,17 @@ public class ImpostorLayer
     /// A list of objects that are currently included in this impostor
     /// </summary>
     public List<Impostify> activeImpostors = new List<Impostify>();
+
+    /// <summary>
+    /// Copies data from a different impostor layer to this one
+    /// </summary>
+    public ImpostorLayer Clone()
+    {
+        ImpostorLayer clone = (ImpostorLayer)this.MemberwiseClone();
+
+        clone.activeImpostors = new List<Impostify>();
+        clone.surface = null;
+
+        return clone;
+    }
 }

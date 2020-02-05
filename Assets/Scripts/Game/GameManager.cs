@@ -22,8 +22,6 @@ public class GameManager : MonoBehaviour
                 {
                     _singleton = new GameObject("_GameManager_", typeof(GameManager)).GetComponent<GameManager>();
                 }
-
-                DontDestroyOnLoad(_singleton);
             }
 
             return _singleton;
@@ -79,14 +77,21 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return impostorConfigurations[impostorConfigurationIndex];
+            return ((System.Char)('A' + impostorConfigurationIndex)).ToString();
         }
     }
 
     // The current impostor configuration
     public int impostorConfigurationIndex = 0;
 
-    public string[] impostorConfigurations = new string[] { "A", "B", "C", "D" };
+    // The current index in the random impostor configuration list
+    public int impostorConfigurationSequenceIndex = 0;
+
+    // The impostor indexes to go through each round, randomised
+    public int[] impostorConfigurationSequence = new int[0];
+
+    // Game-defined impostor configurations
+    public ImpostorConfiguration[] impostorConfigurations = new ImpostorConfiguration[0];
 
     // Duration of each game round
     public float levelTimeLimit = 120;
@@ -94,11 +99,54 @@ public class GameManager : MonoBehaviour
     // Time.time when the level was started
     private float levelStartTime;
 
+    // Name of the main level
+    public string levelName = "SunTemple";
+
+    /// <summary>
+    /// Sets up the random impostor configuration order
+    /// </summary>
+    void Awake()
+    {
+        // Randomise the impostor configuration order using the following strategy
+        // Make a list of random values
+        int numConfigurations = impostorConfigurations.Length;
+        float[] randomValues = new float[numConfigurations];
+
+        for (int i = 0; i < numConfigurations; i++)
+        {
+            randomValues[i] = Random.value;
+        }
+
+        // Add the impostor configurations in the same order as these values
+        impostorConfigurationSequence = new int[numConfigurations];
+
+        for (int configIndex = 0; configIndex < numConfigurations; configIndex++)
+        {
+            float smallestValue = 1.0f;
+            int smallestValueIndex = -1;
+
+            for (int i = 0; i < randomValues.Length; i++)
+            {
+                if (randomValues[i] < smallestValue)
+                {
+                    smallestValueIndex = i;
+                    smallestValue = randomValues[i];
+                }
+            }
+
+            impostorConfigurationSequence[configIndex] = smallestValueIndex;
+            randomValues[smallestValueIndex] = float.MaxValue;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         // Register the scene load callback
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneLoad;
+
+        // Don't destory this object when we change scenes
+        DontDestroyOnLoad(this);
     }
 
     /// <summary>
@@ -106,9 +154,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNextRound()
     {
-        impostorConfigurationIndex = (impostorConfigurationIndex + 1) % impostorConfigurations.Length;
+        // Next impostor configuration in the sequence
+        impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
+        impostorConfigurationSequenceIndex++;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        // Load/reload main level
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+    }
+
+    public void SetImpostorConfiguration(int configurationIndex)
+    {
+        Debug.Log("Setting impostor configuration");
+
+        ImpMan.singleton.SetConfiguration(impostorConfigurations[configurationIndex]);
     }
 
     /// <summary>
@@ -120,5 +178,8 @@ public class GameManager : MonoBehaviour
         numPoppedBalloons = 0;
 
         levelStartTime = Time.time;
+
+        // Initialise impman impostor configuration
+        SetImpostorConfiguration(impostorConfigurationIndex);
     }
 }
