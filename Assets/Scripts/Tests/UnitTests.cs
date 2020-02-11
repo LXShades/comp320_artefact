@@ -11,7 +11,6 @@ public class UnitTests : MonoBehaviour
     void Start()
     {
         TestCurveExtensions();
-        TestDataFile();
     }
 
     void TestCurveExtensions()
@@ -22,23 +21,6 @@ public class UnitTests : MonoBehaviour
 
         RunTest("UpCurve", upCurve.InverseEvaluate(1.5f, precision), 2.5f, precision);
         RunTest("DownCurve", downCurve.InverseEvaluate(2.5f, precision), 1f, precision);
-    }
-
-    /// <summary>
-    /// Formatting tests for data files
-    /// </summary>
-    void TestDataFile()
-    {
-        DataFile file = new DataFile($"{Application.dataPath}/CSVTest.csv");
-
-        file.sessionData["impostorsA"] = "didn't notice";
-        file.sessionData["impostorsB"] = "kinda noticed";
-        file.sessionData["impostorsC"] = "pretty obvious mate";
-        file.sessionData["impostorsD"] = "missed it like it was the battle of britain";
-
-        RunTest("CreateDataFormat", file.CreateDataFormat(), new string[] { "impostorsA", "impostorsB", "impostorsC", "impostorsD" });
-        file.WriteToFile();
-        RunTest("GetDataFormat", file.GetDataFormat(file.filename), new string[] { "impostorsA", "impostorsB", "impostorsC", "impostorsD" });
     }
 
     /// <summary>

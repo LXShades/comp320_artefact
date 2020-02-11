@@ -56,13 +56,16 @@ public class GameManager : MonoBehaviour
         {
             if (_data == null)
             {
-                _data = new DataFile("data.csv");
+                _data = new DataFile();
             }
 
             return _data;
         }
     }
     private DataFile _data;
+
+    // File name of the data file
+    public string dataName = "data.csv";
 
     public float timeRemaining
     {

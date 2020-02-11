@@ -11,25 +11,14 @@ public class DataFile
     // Variable-value associative data
     public Dictionary<string, string> sessionData = new Dictionary<string, string>();
 
-    // The name of the file to be used
-    public string filename;
-
-    public DataFile(string filename)
-    {
-        this.filename = filename;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
     /// <summary>
     /// Attempts to write to a data file and returns whether successful
     /// If this class contains data not available by the existing file's format, this function fails
     /// The file is created if it does not exist
     /// </summary>
-    public bool WriteToFile()
+    /// <param name="filename">Name of the file to write</param>
+    /// <param name="blankValue">Value to write when a value isn't available</param>
+    public bool WriteToFile(string filename, string blankValue = "")
     {
         // Read the current file, if one exists
         string[] format = null;
@@ -41,7 +30,7 @@ public class DataFile
             {
                 if (reader.BaseStream.Length > 0)
                 {
-                    format = GetDataFormat(filename);
+                    format = ReadDataFormat(filename);
 
                     // Verify that each of our keys is in the format
                     foreach (KeyValuePair<string, string> key in sessionData)
@@ -61,7 +50,7 @@ public class DataFile
         // Generate the format if it doesn't already exist in the file
         if (isNewFile)
         {
-            format = CreateDataFormat();
+            format = GenerateDataFormat();
         }
 
         // Write to the file
@@ -86,7 +75,7 @@ public class DataFile
             // Write the values to the file
             for (int i = 0; i < format.Length; i++)
             {
-                string data = sessionData.ContainsKey(format[i]) ? sessionData[format[i]] : "0";
+                string data = sessionData.ContainsKey(format[i]) ? sessionData[format[i]] : blankValue;
                 if (i < format.Length - 1)
                 {
                     writer.Write($"{data},");
@@ -103,9 +92,9 @@ public class DataFile
     }
 
     /// <summary>
-    /// Reads the data format in a csv file
+    /// Reads the data format in an existing csv file
     /// </summary>
-    public string[] GetDataFormat(string filename)
+    public string[] ReadDataFormat(string filename)
     {
         using (StreamReader reader = new StreamReader(filename))
         {
@@ -124,7 +113,7 @@ public class DataFile
     /// <summary>
     /// Generates the data format (column headers)
     /// </summary>
-    public string[] CreateDataFormat()
+    public string[] GenerateDataFormat()
     {
         int index = 0;
         string[] format = new string[sessionData.Count];
