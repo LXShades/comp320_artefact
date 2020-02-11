@@ -39,9 +39,5 @@ public class SpawnZone : MonoBehaviour
                 spawner.Activate();
             }
         }
-        else
-        {
-            Debug.Log("Who df is this");
-        }
     }
 }

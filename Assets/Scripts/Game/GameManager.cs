@@ -110,36 +110,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        // Randomise the impostor configuration order using the following strategy
-        // Make a list of random values
-        int numConfigurations = impostorConfigurations.Length;
-        float[] randomValues = new float[numConfigurations];
-
-        for (int i = 0; i < numConfigurations; i++)
-        {
-            randomValues[i] = Random.value;
-        }
-
-        // Add the impostor configurations in the same order as these values
-        impostorConfigurationSequence = new int[numConfigurations];
-
-        for (int configIndex = 0; configIndex < numConfigurations; configIndex++)
-        {
-            float smallestValue = 1.0f;
-            int smallestValueIndex = -1;
-
-            for (int i = 0; i < randomValues.Length; i++)
-            {
-                if (randomValues[i] < smallestValue)
-                {
-                    smallestValueIndex = i;
-                    smallestValue = randomValues[i];
-                }
-            }
-
-            impostorConfigurationSequence[configIndex] = smallestValueIndex;
-            randomValues[smallestValueIndex] = float.MaxValue;
-        }
+        StartSequence();
     }
 
     // Start is called before the first frame update
@@ -153,22 +124,75 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Generates and starts the impostor sequence from the list of configurations provided
+    /// </summary>
+    public void StartSequence()
+    {
+        // Randomise the impostor configuration order using the following strategy
+        // Make a list of random values
+        int numConfigurations = impostorConfigurations.Length;
+
+        if (numConfigurations > 0)
+        {
+            float[] randomValues = new float[numConfigurations];
+
+            for (int i = 0; i < numConfigurations; i++)
+            {
+                randomValues[i] = Random.value;
+            }
+
+            // Add the impostor configurations in the same order as these values
+            impostorConfigurationSequence = new int[numConfigurations];
+
+            for (int configIndex = 0; configIndex < numConfigurations; configIndex++)
+            {
+                float smallestValue = 1.0f;
+                int smallestValueIndex = -1;
+
+                for (int i = 0; i < randomValues.Length; i++)
+                {
+                    if (randomValues[i] < smallestValue)
+                    {
+                        smallestValueIndex = i;
+                        smallestValue = randomValues[i];
+                    }
+                }
+
+                impostorConfigurationSequence[configIndex] = smallestValueIndex;
+                randomValues[smallestValueIndex] = float.MaxValue;
+            }
+
+            impostorConfigurationIndex = impostorConfigurationSequence[0];
+            impostorConfigurationSequenceIndex = 0;
+        }
+        else
+        {
+            impostorConfigurationIndex = 0;
+            impostorConfigurationSequenceIndex = 0;
+        }
+    }
+
+    /// <summary>
     /// Continues to the next round or the end screen
     /// </summary>
     public void StartNextRound()
     {
-        // Next impostor configuration in the sequence
-        impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
-        impostorConfigurationSequenceIndex++;
+        if (impostorConfigurationSequenceIndex < impostorConfigurationSequence.Length)
+        {
+            // Use next impostor configuration in the sequence
+            impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
+            impostorConfigurationSequenceIndex++;
+        }
 
         // Load/reload main level
         UnityEngine.SceneManagement.SceneManager.LoadScene(1);
     }
 
+    /// <summary>
+    /// Sets the currently active ImpMan impostor configuration to the one specified in configurationIndex
+    /// </summary>
     public void SetImpostorConfiguration(int configurationIndex)
     {
-        Debug.Log("Setting impostor configuration");
-
         ImpMan.singleton.SetConfiguration(impostorConfigurations[configurationIndex]);
     }
 
@@ -182,7 +206,10 @@ public class GameManager : MonoBehaviour
 
         levelStartTime = Time.time;
 
-        // Initialise impman impostor configuration
-        SetImpostorConfiguration(impostorConfigurationIndex);
+        if (impostorConfigurationIndex < impostorConfigurations.Length)
+        {
+            // Initialise impman impostor configuration
+            SetImpostorConfiguration(impostorConfigurationIndex);
+        }
     }
 }

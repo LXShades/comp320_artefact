@@ -65,5 +65,29 @@ namespace Tests
             // Use yield to skip a frame.
             yield return null;
         }
+
+        /// <summary>
+        /// Tests impostor configuration sequence ordering
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TestGameManagerImpostorConfigurationOrder()
+        {
+            // Create a basic impostor layer list
+            GameManager man = GameManager.singleton;
+
+            man.impostorConfigurations = new ImpostorConfiguration[3]
+            {
+                new ImpostorConfiguration() {layers = new ImpostorLayer[1] { new ImpostorLayer()} },
+                new ImpostorConfiguration() {layers = new ImpostorLayer[1] { new ImpostorLayer()} },
+                new ImpostorConfiguration() {layers = new ImpostorLayer[1] { new ImpostorLayer()} },
+            };
+
+            // check that the sequence indices are generated correctly
+            man.StartSequence();
+            Assert.AreEqual(man.impostorConfigurationSequence.Length, 3);
+            Assert.AreEqual(man.impostorConfigurationSequence[0] + man.impostorConfigurationSequence[1] + man.impostorConfigurationSequence[2], 3);
+
+            yield return null;
+        }
     }
 }
