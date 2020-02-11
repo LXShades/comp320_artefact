@@ -88,10 +88,19 @@ public class GameManager : MonoBehaviour
     public int impostorConfigurationIndex = 0;
 
     // The current index in the random impostor configuration list
-    public int impostorConfigurationSequenceIndex = 0;
+    public int currentRound = 0;
+
+    // Returns the total number of rounds - equivalent to the length of the impostor configuration-by-round sequence
+    public int numRounds
+    {
+        get
+        {
+            return impostorConfigurationRounds.Length;
+        }
+    }
 
     // The impostor indexes to go through each round, randomised
-    public int[] impostorConfigurationSequence = new int[0];
+    public int[] impostorConfigurationRounds = new int[0];
 
     // Game-defined impostor configurations
     public ImpostorConfiguration[] impostorConfigurations = new ImpostorConfiguration[0];
@@ -113,7 +122,6 @@ public class GameManager : MonoBehaviour
         StartSequence();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         // Register the scene load callback
@@ -142,7 +150,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Add the impostor configurations in the same order as these values
-            impostorConfigurationSequence = new int[numConfigurations];
+            impostorConfigurationRounds = new int[numConfigurations];
 
             for (int configIndex = 0; configIndex < numConfigurations; configIndex++)
             {
@@ -158,17 +166,17 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                impostorConfigurationSequence[configIndex] = smallestValueIndex;
+                impostorConfigurationRounds[configIndex] = smallestValueIndex;
                 randomValues[smallestValueIndex] = float.MaxValue;
             }
 
-            impostorConfigurationIndex = impostorConfigurationSequence[0];
-            impostorConfigurationSequenceIndex = 0;
+            impostorConfigurationIndex = impostorConfigurationRounds[0];
+            currentRound = 0;
         }
         else
         {
             impostorConfigurationIndex = 0;
-            impostorConfigurationSequenceIndex = 0;
+            currentRound = 0;
         }
     }
 
@@ -177,15 +185,20 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNextRound()
     {
-        if (impostorConfigurationSequenceIndex + 1 < impostorConfigurationSequence.Length)
+        if (currentRound + 1 < impostorConfigurationRounds.Length)
         {
             // Use next impostor configuration in the sequence
-            impostorConfigurationSequenceIndex++;
-            impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
-        }
+            currentRound++;
+            impostorConfigurationIndex = impostorConfigurationRounds[currentRound];
 
-        // Load/reload main level
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+            // Load/reload main level
+            UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        }
+        else
+        {
+            // Load the end screen
+            UnityEngine.SceneManagement.SceneManager.LoadScene(2);
+        }
     }
 
     /// <summary>

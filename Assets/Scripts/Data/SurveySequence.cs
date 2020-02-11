@@ -52,13 +52,17 @@ public class SurveySequence : MonoBehaviour
 
         if (currentQuestionIndex == questions.Length - 1)
         {
-            questionsRemaining.text = "Last question!";
-            continueButtonText.text = "Next round!";
+            if (GameManager.singleton.currentRound + 1 < GameManager.singleton.numRounds)
+            {
+                continueButtonText.text = "Next round!";
+            }
+            else
+            {
+                continueButtonText.text = "Finish game!";
+            }
         }
-        else
-        {
-            questionsRemaining.text = $"{questions.Length - currentQuestionIndex - 1} more to go...";
-        }
+
+        questionsRemaining.text = $"{currentQuestionIndex + 1}/{questions.Length}";
 
         continueButton.interactable = false;
     }
