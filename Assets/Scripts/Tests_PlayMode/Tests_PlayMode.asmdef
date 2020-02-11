@@ -1,7 +1,7 @@
 {
     "name": "Tests_PlayMode",
     "references": [
-        "NewAssembly"
+        "GameAssembly"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

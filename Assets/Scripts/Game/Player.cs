@@ -167,7 +167,7 @@ public class Player : MonoBehaviour
     // Charges up and/or fires the slingshot based on player inputs
     void HandleSlingshot()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1"))
         {
             slingshot.ChargeUp();
         }

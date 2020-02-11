@@ -10,6 +10,8 @@ public class Slingshot : MonoBehaviour
     [Header("Hierarchy")]
     // The player holding the slingshot
     public Player player;
+    // Where the projectiles should spawn from
+    public Transform projectileSpawnPoint;
 
     [Header("Shooting")]
     // Cooldown time between shots, in seconds
@@ -31,7 +33,7 @@ public class Slingshot : MonoBehaviour
     private bool isCharging = false;
     private bool hasCharged = false;
     // Causes the slingshot to fire on the next frame that it's not charged
-    private bool isFiring = false;
+    private bool doFireWhenCharged = false;
 
     void Awake()
     {
@@ -40,6 +42,13 @@ public class Slingshot : MonoBehaviour
 
     void Update()
     {
+        // show default pose when not using it
+        if (!animation.isPlaying && !isCharging && !hasCharged)
+        {
+            animation.clip = chargeUp;
+            animation.clip.SampleAnimation(gameObject, 0);
+        }
+
         // Determine whether charge sequence has finished
         if (isCharging && !animation.isPlaying)
         {
@@ -48,7 +57,7 @@ public class Slingshot : MonoBehaviour
         }
 
         // Fire automatically if the mouse was released while charging
-        if (isFiring && hasCharged)
+        if (doFireWhenCharged && hasCharged)
         {
             ReleaseProjectile();
         }
@@ -59,7 +68,7 @@ public class Slingshot : MonoBehaviour
     /// </summary>
     public void ChargeUp()
     {
-        if (Time.time - lastFiredTime > fireCooldown)
+        if (!isCharging && !hasCharged && Time.time - lastFiredTime > fireCooldown)
         {
             animation.clip = chargeUp;
             animation.Play();
@@ -78,10 +87,10 @@ public class Slingshot : MonoBehaviour
             // fire immediately
             ReleaseProjectile();
         }
-        else
+        else if (isCharging)
         {
             // postpone until the animation is finished
-            isFiring = true;
+            doFireWhenCharged = true;
         }
     }
 
@@ -91,14 +100,17 @@ public class Slingshot : MonoBehaviour
         lastFiredTime = Time.time;
         hasCharged = false;
         isCharging = false;
-        isFiring = false;
+        doFireWhenCharged = false;
 
         // Play the shooting animation
         animation.clip = fire;
         animation.Play();
+    }
 
+    public void OnProjectileDetach()
+    {
         // Spawn and eject the projectile towards the target
-        RockProjectile rock = Instantiate(projectile, transform.position, Quaternion.identity);
+        RockProjectile rock = Instantiate(projectile, projectileSpawnPoint.position, Quaternion.identity);
 
         rock.Shoot(player.GetTargetPosition());
     }
