@@ -177,11 +177,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNextRound()
     {
-        if (impostorConfigurationSequenceIndex < impostorConfigurationSequence.Length)
+        if (impostorConfigurationSequenceIndex + 1 < impostorConfigurationSequence.Length)
         {
             // Use next impostor configuration in the sequence
-            impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
             impostorConfigurationSequenceIndex++;
+            impostorConfigurationIndex = impostorConfigurationSequence[impostorConfigurationSequenceIndex];
         }
 
         // Load/reload main level

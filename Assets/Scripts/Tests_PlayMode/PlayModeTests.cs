@@ -87,6 +87,9 @@ namespace Tests
             Assert.AreEqual(man.impostorConfigurationSequence.Length, 3);
             Assert.AreEqual(man.impostorConfigurationSequence[0] + man.impostorConfigurationSequence[1] + man.impostorConfigurationSequence[2], 3);
 
+            // ensure the first round is the first in the impostor configuration sequence
+            Assert.AreEqual(man.impostorConfigurationIndex, man.impostorConfigurationSequence[0]);
+
             yield return null;
         }
     }

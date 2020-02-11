@@ -18,6 +18,7 @@
 * Does the player's slingshot shoot reliably?
 * Does the score count increase as the player shoots balloons?
 * Does the next round begin when the player completes a level?
+* Is the player stopped when the game ends?
 
 ## Stress testing
 * Do spawners reliably activate if the player attempts to jump around the invisible triggers?
