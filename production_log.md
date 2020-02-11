@@ -43,7 +43,7 @@ Surveying functionality was also added, but needs some tweaks to be ready.
 ## Next steps
 Finish surveying and round sequence. Update the shooting to be accurate to the animation.
 
-05/02/2020
+# 05/02/2020
 ## Overview
 A presentation of the game shows it to be in a buggy state. This is partly because the survey system was under testing in the last iteration.
 
@@ -55,3 +55,17 @@ The impostor system is being put on hold while we address the requirements of th
 
 ## Next steps
 Finish the survey system, making sure it restarts the game at the next impostor configuration. Keep the game time limit customisable, so we can test the survey system by letting the game end immediately after beginning. Ensure the balloon spawn correctly and the end of the level functions.
+
+# 11/02/2020
+## Current stage: Game (and a bit of data collection for unit test refactoring)
+## Overview
+This week's session brought our attention to testing and bugtracking. As the game grows, it has become necessary to test more elements than were initially expected. We have written a specific requirements and stress test plan in test_plan.md to address this.
+
+Unity has its own unit test runner, which we'll be using here onwards for our unit tests. We migrated the DataFile test code along the way (result: looking good!).
+
+Other than that, the focus remains on the gameplay. We still have some requirements that are not quite satisfied; for example, being able to reliably shoot balloons. We aim to complete the requirements today.
+
+## Next steps
+- Clarify the test plan
+- Complete core game loop MVP
+- Conclude the day with a requirements test as specified in the Game stage of the test plan
