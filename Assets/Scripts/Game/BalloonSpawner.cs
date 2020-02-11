@@ -71,7 +71,8 @@ public class BalloonSpawner : MonoBehaviour
                     // Check if we're crossing one of the bursts in a multiple-burst burst. burst.
                     if (((currentTime - burst.time) % burst.spawnTimeGap) < ((lastTime - burst.time) % burst.spawnTimeGap))
                     {
-                        SpawnBalloon(transform.position, Vector3.Lerp(burst.startVelocity, burst.endVelocity, (currentTime - burst.time) / (burst.spawnTimeGap * burst.numToSpawn)));
+                        float lerpFactor = burst.numToSpawn >= 2 ? (currentTime - burst.time) / (burst.spawnTimeGap * (burst.numToSpawn - 1)) : 0.5f;
+                        SpawnBalloon(transform.position, Vector3.Lerp(burst.startVelocity, burst.endVelocity, lerpFactor));
                     }
                 }
             }

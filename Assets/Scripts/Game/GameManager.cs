@@ -30,6 +30,23 @@ public class GameManager : MonoBehaviour
     private static GameManager _singleton;
 
     /// <summary>
+    /// Retrieves the player
+    /// </summary>
+    public Player player
+    {
+        get
+        {
+            if (_player == null)
+            {
+                _player = FindObjectOfType<Player>();
+            }
+
+            return _player;
+        }
+    }
+    private Player _player;
+
+    /// <summary>
     /// Total number of balloons in this scene
     /// </summary>
     public int numTotalBalloons;

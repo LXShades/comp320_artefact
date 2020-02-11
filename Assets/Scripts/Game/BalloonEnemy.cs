@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 /// <summary>
@@ -8,10 +6,10 @@ using UnityEngine;
 /// </summary>
 public class BalloonEnemy : MonoBehaviour
 {
-    // How far up/down the balloon will bob
-    public float bobHeight;
-    // How rapidly the balloon will bob
-    public float bobRate = 0.5f;
+    // How far up/down the balloon will wobble
+    public float wobbleAmount = 30.0f;
+    // How rapidly the balloon will wobble
+    public float wobbleRate = 0.5f;
     // When the balloon will self-destruct to remove itself from the scene
     public float selfDestructTime = 8.0f;
     // Direction of the balloon
@@ -27,10 +25,15 @@ public class BalloonEnemy : MonoBehaviour
     // Components
     private Rigidbody rb;
 
+    // Axis to wobble around
+    private Vector3 wobbleAxis;
+
     void Awake()
     {
         initialPosition = transform.position;
         spawnTime = Time.time;
+
+        wobbleAxis = (transform.position - GameManager.singleton.player.transform.position).normalized;
 
         rb = GetComponent<Rigidbody>();
 
@@ -45,10 +48,11 @@ public class BalloonEnemy : MonoBehaviour
         // Move the balloon along the path
         transform.position = initialPosition + velocity * aliveTime;
         // and bob
-        transform.position += Vector3.up * (bobHeight * Mathf.Sin(bobRate * Mathf.PI));
+        transform.localRotation = Quaternion.AngleAxis(Mathf.Sin(wobbleRate * Mathf.PI * aliveTime) * wobbleAmount, wobbleAxis);
 
         // Pass the momentum onto the rigidbody so collisions can be detected
         rb.velocity = velocity;
+        rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
 
         // Destroy the balloon after a period

@@ -255,7 +255,7 @@ public class Player : MonoBehaviour
         const float range = 100.0f;
         Vector3 target = eyes.transform.position + eyes.transform.forward * range;
 
-        if (Physics.Raycast(eyes.transform.position, eyes.transform.forward, out hit, range, ~0, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(eyes.transform.position, eyes.transform.forward, out hit, range, ~LayerMask.GetMask("BlockOnlyPlayer"), QueryTriggerInteraction.Ignore))
         {
             target = hit.point;
         }
