@@ -33,7 +33,7 @@ public class PlayerUI : MonoBehaviour
         if (GameManager.singleton.timeRemaining > 0)
         {
             // Update player balloon status
-            balloonStatusText.text = $"Balloons: {GameManager.singleton.numTotalBalloons}\nPopped: {GameManager.singleton.numPoppedBalloons}";
+            balloonStatusText.text = $"{GameManager.singleton.numPoppedBalloons}/{GameManager.singleton.numTotalBalloons}";
             timerText.text = $"{((int)GameManager.singleton.timeRemaining / 60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
 
             Cursor.lockState = CursorLockMode.Locked;

@@ -69,3 +69,11 @@ Other than that, the focus remains on the gameplay. We still have some requireme
 - Clarify the test plan
 - Complete core game loop MVP
 - Conclude the day with a requirements test as specified in the Game stage of the test plan
+
+# 12/02/2020
+Yesterday's requirements test found everything working except the player was not stopped when the game ended. However, this is not a priority for next week's playtest.
+
+The core game loop is there and functioning fairly well. Provisionary stress testing shows issues with the player clipping through objects. However, the biggest missing piece is the lack of a finished level. Finishing the level has become the next largest priority that should be absolutely achievable today. After that, it will be useful to return to the data collection phase so we can complete that as fast as possible, before using the remainder of development time on stress testing and impostor system refinement.
+
+## Next steps
+- Complete the level
