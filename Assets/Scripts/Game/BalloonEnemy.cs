@@ -82,7 +82,7 @@ public class BalloonEnemy : MonoBehaviour
 
         if (collision.collider.GetComponent<BalloonEnemy>() != null)
         {
-            velocity += collision.relativeVelocity;
+            ;// velocity += collision.relativeVelocity;
         }
         else
         {
