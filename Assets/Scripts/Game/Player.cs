@@ -47,6 +47,9 @@ public class Player : MonoBehaviour
         }
     }
 
+    // How far the player has travelled overall
+    public float distanceTravelled = 0;
+
     // Horizontal look direction angle, in degrees
     private float eyeHorizontalAngle = 0;
     // Vertical look direction angle, in degrees
@@ -161,6 +164,8 @@ public class Player : MonoBehaviour
         if (Time.deltaTime > 0 && velocity.sqrMagnitude > 0)
         {
             velocity = Move(velocity * Time.deltaTime) / Time.deltaTime;
+
+            distanceTravelled += velocity.magnitude * Time.deltaTime;
         }
     }
 

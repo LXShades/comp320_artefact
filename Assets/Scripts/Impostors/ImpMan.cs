@@ -50,7 +50,7 @@ public class ImpMan : MonoBehaviour
     /// <summary>
     /// List of all known impostor batches that have been created/reserved
     /// </summary>
-    public List<ImpostorBatch> impostorBatches;
+    public List<ImpostorBatch> impostorBatches = new List<ImpostorBatch>();
 
     
     [Header("Impostor configuration")]

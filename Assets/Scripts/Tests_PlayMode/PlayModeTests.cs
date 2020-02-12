@@ -84,11 +84,11 @@ namespace Tests
 
             // check that the sequence indices are generated correctly
             man.StartSequence();
-            Assert.AreEqual(man.impostorConfigurationRounds.Length, 3);
-            Assert.AreEqual(man.impostorConfigurationRounds[0] + man.impostorConfigurationRounds[1] + man.impostorConfigurationRounds[2], 3);
+            Assert.AreEqual(man.impostorConfigByRound.Length, 3);
+            Assert.AreEqual(man.impostorConfigByRound[0] + man.impostorConfigByRound[1] + man.impostorConfigByRound[2], 3);
 
             // ensure the first round is the first in the impostor configuration sequence
-            Assert.AreEqual(man.impostorConfigurationIndex, man.impostorConfigurationRounds[0]);
+            Assert.AreEqual(man.activeImpostorConfiguration, man.impostorConfigByRound[0]);
 
             yield return null;
         }

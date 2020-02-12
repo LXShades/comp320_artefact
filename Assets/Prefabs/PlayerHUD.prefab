@@ -358,7 +358,7 @@ MonoBehaviour:
   - description: Responsiveness of keyboard and mouse controls
     dataColumn: responsiveness
   - description: Frame rate
-    dataColumn: fps
+    dataColumn: perceivedFps
   - description: My performance in the game
     dataColumn: performance
   surveyBox: {fileID: 4556520111158064459}

@@ -56,6 +56,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int numPoppedBalloons;
 
+    // List of lifetimes of balloons when popped
+    public List<float> balloonPopLifetimes = new List<float>();
+
     public bool isPaused
     {
         get
@@ -81,8 +84,13 @@ public class GameManager : MonoBehaviour
     }
     private DataFile _data;
 
+    /// <summary>
+    /// Tracks frame rate and stuff
+    /// </summary>
+    public FpsSampler fpsSampler = new FpsSampler();
+
     // File name of the data file
-    public string dataName = "data.csv";
+    public string dataName = "participantData.csv";
 
     public float timeRemaining
     {
@@ -97,12 +105,18 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return ((System.Char)('A' + impostorConfigurationIndex)).ToString();
+            return ((System.Char)('A' + activeImpostorConfiguration)).ToString();
         }
     }
 
-    // The current impostor configuration
-    public int impostorConfigurationIndex = 0;
+    // The currently active impostor configuration
+    public int activeImpostorConfiguration
+    {
+        get
+        {
+            return currentRound < numRounds ? impostorConfigByRound[currentRound] : 0;
+        }
+    }
 
     // The current index in the random impostor configuration list
     public int currentRound = 0;
@@ -112,12 +126,12 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return impostorConfigurationRounds.Length;
+            return impostorConfigByRound.Length;
         }
     }
 
     // The impostor indexes to go through each round, randomised
-    public int[] impostorConfigurationRounds = new int[0];
+    public int[] impostorConfigByRound = new int[0];
 
     // Game-defined impostor configurations
     public ImpostorConfiguration[] impostorConfigurations = new ImpostorConfiguration[0];
@@ -167,7 +181,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Add the impostor configurations in the same order as these values
-            impostorConfigurationRounds = new int[numConfigurations];
+            impostorConfigByRound = new int[numConfigurations];
 
             for (int configIndex = 0; configIndex < numConfigurations; configIndex++)
             {
@@ -183,16 +197,14 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                impostorConfigurationRounds[configIndex] = smallestValueIndex;
+                impostorConfigByRound[configIndex] = smallestValueIndex;
                 randomValues[smallestValueIndex] = float.MaxValue;
             }
 
-            impostorConfigurationIndex = impostorConfigurationRounds[0];
             currentRound = 0;
         }
         else
         {
-            impostorConfigurationIndex = 0;
             currentRound = 0;
         }
     }
@@ -202,17 +214,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNextRound()
     {
-        if (currentRound + 1 < impostorConfigurationRounds.Length)
+        // Record uncollated data
+        float totalLifetime = 0;
+        balloonPopLifetimes.ForEach(b => totalLifetime += b);
+
+        data.sessionData[$"fps{impostorConfigurationName}"] = fpsSampler.GetAverageFps().ToString();
+        data.sessionData[$"travelled{impostorConfigurationName}"] = player.distanceTravelled.ToString();
+        data.sessionData[$"balloonLifetime{impostorConfigurationName}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();
+
+        if (currentRound + 1 < impostorConfigByRound.Length)
         {
             // Use next impostor configuration in the sequence
             currentRound++;
-            impostorConfigurationIndex = impostorConfigurationRounds[currentRound];
 
             // Load/reload main level
             UnityEngine.SceneManagement.SceneManager.LoadScene(1);
         }
         else
         {
+            // Save the data!
+            data.WriteToFile(dataName);
+
             // Load the end screen
             UnityEngine.SceneManagement.SceneManager.LoadScene(2);
         }
@@ -234,12 +256,15 @@ public class GameManager : MonoBehaviour
         numTotalBalloons = 0;
         numPoppedBalloons = 0;
 
+        balloonPopLifetimes.Clear();
+        fpsSampler.Reset();
+
         levelStartTime = Time.time;
 
-        if (impostorConfigurationIndex < impostorConfigurations.Length)
+        if (activeImpostorConfiguration < impostorConfigurations.Length)
         {
-            // Initialise impman impostor configuration
-            SetImpostorConfiguration(impostorConfigurationIndex);
+            // Initialise ImpMan impostor configuration
+            SetImpostorConfiguration(activeImpostorConfiguration);
         }
     }
 }

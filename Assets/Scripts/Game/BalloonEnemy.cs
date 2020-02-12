@@ -93,6 +93,12 @@ public class BalloonEnemy : MonoBehaviour
 
     public void Pop()
     {
+        // Record the data (but not if self-destructed; this gives an unuseful value of 5 every time)
+        if (Time.time - spawnTime < selfDestructTime)
+        {
+            GameManager.singleton.balloonPopLifetimes.Add(Time.time - spawnTime);
+        }
+
         Instantiate(popParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
