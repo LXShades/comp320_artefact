@@ -23,7 +23,7 @@ public class ImpostorCamera : MonoBehaviour
     /// <param name="mainCamera"></param>
     /// <param name="impostorWidth"></param>
     /// <param name="impostorHeight"></param>
-    public void FrameArea(Vector3 minBounds, Vector3 maxBounds, Camera mainCamera, out float impostorWidth, out float impostorHeight)
+    public void FrameArea(Vector3 minBounds, Vector3 maxBounds, Vector3 impostorCentre, Camera mainCamera, out float impostorWidth, out float impostorHeight)
     {
         // Copy and setup camera projection settings
         camera.aspect = mainCamera.aspect;
@@ -31,9 +31,8 @@ public class ImpostorCamera : MonoBehaviour
         camera.transform.position = mainCamera.transform.position;
         camera.transform.rotation = mainCamera.transform.rotation;
 
-        Vector3 impostorPosition = (minBounds + maxBounds) * 0.5f;
         float boxX = (minBounds.x - maxBounds.x) * 0.5f, boxY = (minBounds.y - maxBounds.y) * 0.5f, boxZ = (minBounds.z - maxBounds.z) * 0.5f;
-        float impostorDepth = Vector3.Dot(impostorPosition - camera.transform.position, camera.transform.forward);
+        float impostorDepth = Vector3.Dot(impostorCentre - camera.transform.position, camera.transform.forward);
         float frustumWidthAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
         float frustumHeightAtImpostorDepth = (impostorDepth * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f;
         float screenSpaceWidth = (Mathf.Abs(camera.transform.right.x * boxX) +
@@ -48,13 +47,15 @@ public class ImpostorCamera : MonoBehaviour
         impostorHeight = screenSpaceHeight * frustumHeightAtImpostorDepth;
 
         Vector2 screenSpacePosition = new Vector2(
-            Vector3.Dot(camera.transform.right, impostorPosition - camera.transform.position) / frustumWidthAtImpostorDepth * 2,
-            Vector3.Dot(camera.transform.up, impostorPosition - camera.transform.position) / frustumHeightAtImpostorDepth * 2);
+            Vector3.Dot(camera.transform.right, impostorCentre - camera.transform.position) / frustumWidthAtImpostorDepth * 2,
+            Vector3.Dot(camera.transform.up, impostorCentre - camera.transform.position) / frustumHeightAtImpostorDepth * 2);
 
         camera.ResetProjectionMatrix();
         camera.projectionMatrix = Matrix4x4.Scale(new Vector3(0.5f / screenSpaceWidth, 0.5f / screenSpaceHeight, 1))
                                     * Matrix4x4.Translate(new Vector3(-screenSpacePosition.x, -screenSpacePosition.y, 0))
                                     * camera.projectionMatrix;
+
+        DebugDraw.Box(minBounds, maxBounds, Color.red);
     }
 
     /// <summary>

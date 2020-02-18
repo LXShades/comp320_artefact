@@ -93,7 +93,7 @@ public class Impostify : MonoBehaviour
         int impostorLayer = ImpMan.singleton.impostorRenderLayer;
 
         // Clear the background pixels
-        impCam.FrameArea(minBounds, maxBounds, Camera.main, out impostorWidth, out impostorHeight);
+        impCam.FrameArea(minBounds, maxBounds, (minBounds + maxBounds) * 0.5f, Camera.main, out impostorWidth, out impostorHeight);
 
         // Setup to render only this object
         for (int i = 0; i < meshes.Length; i++)
@@ -173,7 +173,6 @@ public class Impostify : MonoBehaviour
 
                 if (lodComponent && lodComponent.lodCount > 0)
                 {
-                    Debug.Log($"Found a LOD. Diable? {Application.isPlaying}");
                     LOD[] lods = lodComponent.GetLODs();
                     
                     foreach (MeshRenderer renderer in lods[0].renderers)

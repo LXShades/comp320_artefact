@@ -32,7 +32,7 @@ public class DebugUI : MonoBehaviour
     /// <summary>
     /// Maximum number of frame timestamps in the circular array
     /// </summary>
-    private const int numFrameTimes = 140;
+    private const int numFrameTimes = 60;
     
     /// <summary>
     /// Circular array of frame timestamps

@@ -234,11 +234,11 @@ public class ImpMan : MonoBehaviour
 //        Debug.Log($"numRenderers: {numRenderers}");
 
         // Render the objects in this impostor layer
-        Vector3 impostorPosition = (boundsMin + boundsMax) * 0.5f;
+        Vector3 impostorPosition = Camera.main.transform.position + Camera.main.transform.forward * 2.0f;
         float impostorWidth, impostorHeight;
         Benchmark benchRender = Benchmark.New();
 
-        impostorCamera.FrameArea(boundsMin, boundsMax, Camera.main, out impostorWidth, out impostorHeight);
+        impostorCamera.FrameArea(boundsMin, boundsMax, impostorPosition, Camera.main, out impostorWidth, out impostorHeight);
 
         if (activateImpostorCamera)
         {
@@ -366,6 +366,8 @@ public class ImpMan : MonoBehaviour
         for (int i = 0; i < configuration.layers.Length; i++)
         {
             impostorLayers[i] = configuration.layers[i].Clone();
+
+            impostorLayers[i].surface = ReserveImpostorSurface(0, 0);
         }
     }
 

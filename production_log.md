@@ -93,3 +93,27 @@ Following this requirements test, the impostor system will be applied to multipl
 * Fix player being able to move after the game
 * Verify data collection system
 * Stress-test the impostor system
+
+## A morsel of pain, suffering and humiliation
+An early test of the entirely impostorised scene revealed a critical problem. A massive refactor of the system is required.
+
+The current system works as follows
+
+* Impostify components allow objects and subobjects to turn into impostors when dictated by the Impostor Manager.
+* Impostors are centered in the group of objects
+* All relevant meshes and sub-meshes are collected and managed by this system
+* Long frame times are spent generating these impostors at once.
+
+The ad-hoc test revealed the following concerns, ordered by highest severity:
+
+* Rendering large chunks of the level manually takes a considerable amount of CPU time to the point that frame hitches are a compounding issue. Progressive rendering may be the best option.
+* The impostor is not guaranteed to be in front of the player. For large chunks of the level to be impostorised, the real placement of the impostor needs to be configurable so it can be placed ahead of the camera.
+* The resolution of the impostor is extremely low due to the massive area covered. The impostor should clamp its size to the size of the view frustum, or slightly larger, rather than the entire scene.
+
+It should be noted that the experiment is still valid even if the frame rate drops. The research question is focused on identifying the tradeoff, but if we can instead identify that players are unlikely to notice impostors independent of framerate, that leaves room for further research on optimising the frame rate. Furthermore there remains a commercial interest in providing a deployable, reusable system that offers optimisation potential with minimal setup.
+
+The crucial errors are around the sheer impracticality of the impostor system as it stands. It does not consider areas which the player stands within and produces a pixellated blur encompassing a much larger area than necessary.
+
+The following subgoals are proposed to address the aforementioned problems:
+* The decoupled ability to frame the impostor camera matrix to cover a specific area and specific centre point
+* The decoupled ability to place this rendered frame seamlessly into the environment.

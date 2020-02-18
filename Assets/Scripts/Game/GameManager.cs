@@ -158,8 +158,11 @@ public class GameManager : MonoBehaviour
         // Register the scene load callback
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneLoad;
 
-        // Don't destory this object when we change scenes
+        // Don't destroy this object when we change scenes
         DontDestroyOnLoad(this);
+
+        // Call the missed OnSceneLoad
+        OnSceneLoad(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), UnityEngine.SceneManagement.SceneManager.GetActiveScene());
     }
 
     /// <summary>
