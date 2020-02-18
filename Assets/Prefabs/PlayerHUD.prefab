@@ -3143,6 +3143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   balloonStatusText: {fileID: 3806463286461126984}
   timerText: {fileID: 1820137181778284791}
+  crosshair: {fileID: 3830671518948016363}
   endScreen: {fileID: 3115328821574393479}
   completeScreen: {fileID: 4125511313338823786}
   surveyScreen: {fileID: 500302072835066689}

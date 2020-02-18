@@ -72,6 +72,12 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.singleton.timeRemaining <= 0f)
+        {
+            // game is over, stop everything plz
+            return;
+        }
+
         // Receive inputs
         ApplyInputLook();
         ApplyInputAcceleration();

@@ -13,6 +13,8 @@ public class PlayerUI : MonoBehaviour
     // UI text for the time remaining
     public Text timerText;
 
+    // In-game crosshair
+    public GameObject crosshair;
     // End screen and survey
     public GameObject endScreen;
     // Round end screen
@@ -36,6 +38,8 @@ public class PlayerUI : MonoBehaviour
             balloonStatusText.text = $"{GameManager.singleton.numPoppedBalloons}/{GameManager.singleton.numTotalBalloons}";
             timerText.text = $"{((int)GameManager.singleton.timeRemaining / 60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
 
+            crosshair.SetActive(true);
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
@@ -43,6 +47,8 @@ public class PlayerUI : MonoBehaviour
         {
             endScreen.SetActive(true);
             Cursor.visible = true;
+
+            crosshair.SetActive(false);
 
             Cursor.lockState = CursorLockMode.None;
         }
