@@ -221,6 +221,8 @@ public class GameManager : MonoBehaviour
         data.sessionData[$"fps{impostorConfigurationName}"] = fpsSampler.GetAverageFps().ToString();
         data.sessionData[$"travelled{impostorConfigurationName}"] = player.distanceTravelled.ToString();
         data.sessionData[$"balloonLifetime{impostorConfigurationName}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();
+        data.sessionData[$"balloonsPopped{impostorConfigurationName}"] = numPoppedBalloons.ToString();
+        data.sessionData[$"balloonsSeen{impostorConfigurationName}"] = numTotalBalloons.ToString();
 
         if (currentRound + 1 < impostorConfigByRound.Length)
         {
@@ -233,7 +235,7 @@ public class GameManager : MonoBehaviour
         else
         {
             // Save the data!
-            data.WriteToFile(dataName);
+            data.WriteToFile($"{Application.dataPath}/{dataName}");
 
             // Load the end screen
             UnityEngine.SceneManagement.SceneManager.LoadScene(2);

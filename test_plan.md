@@ -11,13 +11,13 @@
 
 # Stage: Game
 ## Requirements testing
-* Can the player complete the level?
 * Can the player shoot all balloons?
 * Can the player play all rounds?
 * Do the balloons spawn when the player enters the trigger area?
 * Does the player's slingshot shoot reliably?
 * Does the score count increase as the player shoots balloons?
-* Does the next round begin when the player completes a level?
+* Does the next round begin after the player completes a level?
+* Can the player complete the level?
 * Is the player stopped when the game ends?
 
 ## Stress testing
@@ -30,7 +30,8 @@
 # Stage: Data collection
 ## Requirements testing
 * Do the questions all appear in sequence after each round?
-* Does the balloon lifetime data appear to match the gameplay?
+* Does the balloon lifetime data match the player's gameplay performance?
+* Does the frame rate data match the game's performance?
 * Is the data associated with the active impostor configuration correctly?
 * Does the questionnaire data match the user's responses?
 
