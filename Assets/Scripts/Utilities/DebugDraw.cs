@@ -41,12 +41,35 @@ public static class DebugDraw
     /// <param name="color">The colour of the box</param>
     public static void Box(Vector3 min, Vector3 max, Color color)
     {
-        Debug.DrawLine(min, min + new Vector3(max.x - min.x, 0, 0));
-        Debug.DrawLine(min, min + new Vector3(0, max.y - min.y, 0));
-        Debug.DrawLine(min, min + new Vector3(0, 0, max.z - min.z));
+        Debug.DrawLine(new Vector3(min.x, min.y, min.z), new Vector3(min.x, min.y, max.z), color);
+        Debug.DrawLine(new Vector3(min.x, min.y, min.z), new Vector3(min.x, max.y, min.z), color);
+        Debug.DrawLine(new Vector3(min.x, min.y, min.z), new Vector3(max.x, min.y, min.z), color);
 
-        Debug.DrawLine(max, max - new Vector3(max.x - min.x, 0, 0));
-        Debug.DrawLine(max, max - new Vector3(0, max.y - min.y, 0));
-        Debug.DrawLine(max, max - new Vector3(0, 0, max.z - min.z));
+        Debug.DrawLine(new Vector3(min.x, min.y, max.z), new Vector3(min.x, max.y, max.z), color);
+        Debug.DrawLine(new Vector3(min.x, min.y, max.z), new Vector3(max.x, min.y, max.z), color);
+
+        Debug.DrawLine(new Vector3(min.x, max.y, min.z), new Vector3(min.x, max.y, max.z), color);
+        Debug.DrawLine(new Vector3(min.x, max.y, min.z), new Vector3(max.x, max.y, min.z), color);
+
+        Debug.DrawLine(new Vector3(max.x, min.y, min.z), new Vector3(max.x, min.y, max.z), color);
+        Debug.DrawLine(new Vector3(max.x, min.y, min.z), new Vector3(max.x, max.y, min.z), color);
+
+        Debug.DrawLine(new Vector3(max.x, max.y, max.z), new Vector3(max.x, max.y, min.z), color);
+        Debug.DrawLine(new Vector3(max.x, max.y, max.z), new Vector3(max.x, min.y, max.z), color);
+        Debug.DrawLine(new Vector3(max.x, max.y, max.z), new Vector3(min.x, max.y, max.z), color);
+    }
+
+    /// <summary>
+    /// Draws a square
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name=""></param>
+    public static void Square(Vector3 centre, Vector3 up, Vector3 right, Color color)
+    {
+        Debug.DrawLine(centre + up - right, centre + up + right, color);
+        Debug.DrawLine(centre + up + right, centre - up + right, color);
+        Debug.DrawLine(centre - up + right, centre - up - right, color);
+        Debug.DrawLine(centre - up - right, centre + up - right, color);
     }
 }

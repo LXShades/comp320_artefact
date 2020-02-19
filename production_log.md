@@ -117,3 +117,11 @@ The crucial errors are around the sheer impracticality of the impostor system as
 The following subgoals are proposed to address the aforementioned problems:
 * The decoupled ability to frame the impostor camera matrix to cover a specific area and specific centre point
 * The decoupled ability to place this rendered frame seamlessly into the environment.
+
+# 19/02/2020
+Another ad-hoc test evaluation revealed the width and height of the impostors were not being set correctly when the impostor centre was changed. As this can cause extreme pixellation, this is a priority to fix.
+
+## Reflection
+A lot of time was spent attempting to work out how to slot the impostor into the correct segment of the screen. This was almost done before, but did not allow a custom distance and , which is useful for verifying the best distance to place each layer (e.g. maximal, minimal, centered).
+
+Tunnel-vision occurred and we eventually decided to focus efforts on drawing debug shapes into the scene to visualise every variable that was being calculated, including impostor distance, boundaries and screen space positions. This was provided a critical advantage compraed to e.g. drawing graphs on Paint and we will use this method in the future if tunnel-vision occurs.

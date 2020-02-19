@@ -93,7 +93,8 @@ public class Impostify : MonoBehaviour
         int impostorLayer = ImpMan.singleton.impostorRenderLayer;
 
         // Clear the background pixels
-        impCam.FrameArea(minBounds, maxBounds, (minBounds + maxBounds) * 0.5f, Camera.main, out impostorWidth, out impostorHeight);
+        Vector3 centreOut;
+        impCam.FrameArea(minBounds, maxBounds, (minBounds + maxBounds) * 0.5f, Camera.main, out impostorWidth, out impostorHeight, out centreOut);
 
         // Setup to render only this object
         for (int i = 0; i < meshes.Length; i++)

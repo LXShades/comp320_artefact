@@ -52,6 +52,8 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     public List<ImpostorBatch> impostorBatches = new List<ImpostorBatch>();
 
+    public float debugImpostorDepth = 5.0f;
+
     
     [Header("Impostor configuration")]
     [Tooltip("Whether impostors should be used at all")]
@@ -234,11 +236,11 @@ public class ImpMan : MonoBehaviour
 //        Debug.Log($"numRenderers: {numRenderers}");
 
         // Render the objects in this impostor layer
-        Vector3 impostorPosition = Camera.main.transform.position + Camera.main.transform.forward * 2.0f;
+        Vector3 impostorPosition = Camera.main.transform.position + Camera.main.transform.forward * debugImpostorDepth;
         float impostorWidth, impostorHeight;
         Benchmark benchRender = Benchmark.New();
 
-        impostorCamera.FrameArea(boundsMin, boundsMax, impostorPosition, Camera.main, out impostorWidth, out impostorHeight);
+        impostorCamera.FrameArea(boundsMin, boundsMax, impostorPosition, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
 
         if (activateImpostorCamera)
         {
