@@ -130,7 +130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9786360
 RectTransform:
   m_ObjectHideFlags: 0
@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 451072255}
   - component: {fileID: 451072254}
   m_Layer: 5
-  m_Name: InfoC
+  m_Name: InfoD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -412,13 +412,13 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Use WASD to move around.
+  m_Text: 'Use WASD to move around. Press Space to jump!
 
 
-    Hold and release left-click to use your slingshot.
+    Hold and release left-click to fire your slingshot!
 
 
-    Pop the balloons as fast as possible as you progress!
+    Move through the level and pop the balloons as fast as possible!
 
 
     Good luck!'
@@ -465,7 +465,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &557618862
 MonoBehaviour:
@@ -691,7 +691,7 @@ GameObject:
   - component: {fileID: 808104286}
   - component: {fileID: 808104285}
   m_Layer: 5
-  m_Name: HeaderC
+  m_Name: HeaderD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -933,14 +933,12 @@ MonoBehaviour:
     here in the Games Academy.\n\nI\u2019m doing a research project for a big fat
     assignment, and I\u2019d like to invite you, Respected and Beautiful Gamer\u2122,
     to play my game so I can play the educational system.\n\nThis game is a first-person
-    shooter with an experimental graphics component under testing.\n\nYour procrastination
-    I mean participation will take about 15 minutes.\n\nYour participation is completely
-    voluntary and you may withdraw at any time for any reason, as mandated by the
-    Falmouth Ethics Research Policy.\r You may do this by leaving the laptop and/or
-    assertively speaking to me one you've noticed I'm still standing right there.
-    This includes phrases such as 'umm, I'm not sure- I've kind of changed my.. uh,
-    sorry my bus heads off in... well I shouldn't... 15 minutes? but I...well... oh
-    ok then I guess I'm doing it?'"
+    shooter with an experimental graphics component under testing. Your procrastination
+    I mean participation will take about 15 minutes.\n\nThis is completely voluntary
+    and you may withdraw at any time for any reason, in accordance with the Falmouth
+    Ethics Research Policy.\r You can withdraw this by leaving the laptop and smiling
+    awkwardly at me once you've seen I'm still standing here watching you commit the
+    sin of changing your mind."
 --- !u!222 &865349474
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -984,7 +982,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &935959072
 MonoBehaviour:
@@ -1019,7 +1017,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: I consent to having this data recorded, processed, and eventually overwritten
+  m_Text: I consent to having this data recorded, processed, and finally overwritten
     with cat videos.
 --- !u!222 &935959073
 CanvasRenderer:
@@ -1099,13 +1097,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "The game is a simple FPS where you take out your deepest frustrations on
-    an innocent flock of unsuspecting balloons. The objective: shoot each balloon
-    as fast as possible! The round ends when the timer expires.\r\n\nThere are four
-    rounds. Each round lasts up to 3 minutes.\n\nBetween each round, the game will
-    ask you about the difficulty, your performance, the visual quality of the game
-    and your overall experience for that round. These factors may or may not change
-    occasionally. I appreciate your honesty in responding to these."
+  m_Text: "The game is a simple FPS where you violently attack an innocent flock of
+    balloons. The round ends when the timer expires.\r There are 4 rounds in total.\n\nBetween
+    each round, you will be served a steaming hot survey with a side of questionnaires.
+    I appreciate your honesty in responding to these."
 --- !u!222 &1015692873
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1149,7 +1144,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1041003644
 MonoBehaviour:
@@ -1206,7 +1201,7 @@ GameObject:
   - component: {fileID: 1177270844}
   - component: {fileID: 1177270843}
   m_Layer: 5
-  m_Name: ConsentC
+  m_Name: ConsentD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1532,19 +1527,14 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Your responses, and in-game performance metrics such as your accuracy,
-    are recorded anonymously.\n\nAll participants' data is collated together in a
-    single file. It is entirely anonymous and impersonal, so it cannot be individually
-    linked to you. I will not ask your name, age or gender.\n\nThe data will be used
-    to draw correlations between the component configuration, your performance, enjoyment,
-    and similar factors. \n\nThe data will be transformed into stunningly attractive
-    lines and rectangles to support my findings and make my work look real smart.\n\nThis
-    processing will be conducted by myself, with help from the relevant computing
-    staff if I make any mistakes and/or contaminate the venerated collective intellect
-    of the academic community (all hail).\n\nThe data will be retained for about six
-    months, after which it will be deleted and violently overwritten with cat videos
-    in compliance with data regulation\rs. The videos will be used to replenish my
-    sanity after this assignment is all over."
+  m_Text: "Your survey responses, along with in-game performance metrics such as your
+    accuracy, are recorded anonymously.\n\nAll data is collated together in a single
+    file. It is entirely anonymous and cannot be individually linked to you.\n\nThe
+    data will be turned into stunningly attractive lines and rectangles to support
+    my findings and make me look real smart.\n\nData processing will be conducted
+    by myself, with help from the relevant computing staff.\n\nThe data will be retained
+    for about six months, after which it will be destroyed and violently overwritten
+    with cat videos in compliance with data regulation\rs."
 --- !u!222 &1397365097
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1709,7 +1699,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1534640069
 MonoBehaviour:

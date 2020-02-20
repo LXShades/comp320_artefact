@@ -188,6 +188,11 @@ public class ImpMan : MonoBehaviour
     bool didTheThing = false;
     int progressiveRenderIndex = 0;
 
+    // remove later!!!
+    float impostorWidth = 0;
+    float impostorHeight = 0;
+    Vector3 impostorPosition;
+
     bool RefreshImpostorLayer(ImpostorLayer layer)
     {
         if ((int)(Time.time * layer.updateRate) == (int)((Time.time - Time.deltaTime) * layer.updateRate))
@@ -232,9 +237,6 @@ public class ImpMan : MonoBehaviour
         benchCollect.Stop();
 
         // Render the objects in this impostor layer
-        Vector3 impostorPosition;
-        float impostorWidth, impostorHeight;
-
         // Setup the culling masks
         int impostorLayerCullingMask = 1 << impostorRenderLayer;
         for (int i = 0; i < numRenderLayerDivisions; i++)
@@ -252,12 +254,12 @@ public class ImpMan : MonoBehaviour
             layer.surface.batch.texture = layer.surface.backBuffer;
             layer.surface.SwapBuffers();
 
-            // frame the next impostor layer with the current camera position
-            impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
-
             // and place the impostor!
             layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition,
-                Camera.main.transform.up * impostorHeight, Camera.main.transform.right * impostorWidth, layer.surface.uvDimensions);
+                impostorCamera.transform.up * impostorHeight, impostorCamera.transform.right * impostorWidth, layer.surface.uvDimensions);
+
+            // frame the next impostor layer with the current camera position
+            impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
         }
 
         if (activateImpostorCamera)
@@ -273,7 +275,7 @@ public class ImpMan : MonoBehaviour
 
         if (progressiveRenderIndex > 0)
         {
-            // if we aren't currently rendering the first part of a progressive frame, don't allow the image to be cleared.
+            // only clear the image if we're building atop an existing frame
             impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
         }
 

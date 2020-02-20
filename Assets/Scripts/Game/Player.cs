@@ -174,12 +174,17 @@ public class Player : MonoBehaviour
             CollisionFlags collisions;
             collisions = controller.Move(velocity * Time.deltaTime);
 
+            isOnGround = collisions.HasFlag(CollisionFlags.Below);
+
+            if (isOnGround && velocity.y < 0)
+            {
+                velocity.y = 0;
+            }
+
             if (velocity.magnitude > 0.5f)
             {
                 velocity = (transform.position - lastPosition) / Time.deltaTime;
             }
-
-            isOnGround = collisions.HasFlag(CollisionFlags.Below);
 
             distanceTravelled += velocity.magnitude * Time.deltaTime;
         }
