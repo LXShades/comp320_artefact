@@ -88,7 +88,6 @@ public class DebugUI : MonoBehaviour
         debugToggles.text += $"EnableImpostors (Space): {ImpMan.singleton.enableImpostors}\n";
         debugToggles.text += $"ActivateCam (C): {ImpMan.singleton.activateImpostorCamera}\n";
         debugToggles.text += $"FreezeImpostors (F): {ImpMan.singleton.freezeImpostors}\n";
-        debugToggles.text += $"UseMasks (M): {ImpMan.singleton.useMasksForCulling}\n";
         debugToggles.text += $"Backgrounds (B): Unknown, toggle them\n";
         debugToggles.text += $"Impostor config (+/-): {GameManager.singleton.impostorConfigurationName}";
 
@@ -96,7 +95,6 @@ public class DebugUI : MonoBehaviour
         //ImpMan.singleton.enableImpostors ^= Input.GetKeyDown(KeyCode.Space);
         ImpMan.singleton.activateImpostorCamera ^= Input.GetKeyDown(KeyCode.C);
         ImpMan.singleton.freezeImpostors ^= Input.GetKeyDown(KeyCode.F);
-        ImpMan.singleton.useMasksForCulling ^= Input.GetKeyDown(KeyCode.M);
 
         if (Input.GetKeyDown(KeyCode.B))
         {

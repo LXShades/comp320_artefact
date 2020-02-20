@@ -58,14 +58,15 @@ public class Player : MonoBehaviour
     // Whether the character is standing on the ground
     private bool isOnGround;
 
-    // Collider to use when moving the character
-    private CapsuleCollider capsule;
+    // Character controller
+    private CharacterController controller;
+
 
     void Start()
     {
         eyeHorizontalAngle = transform.rotation.y;
 
-        capsule = GetComponent<CapsuleCollider>();
+        controller = GetComponent<CharacterController>();
 
         //Cursor.lockState = CursorLockMode.Locked;
     }
@@ -169,7 +170,16 @@ public class Player : MonoBehaviour
     {
         if (Time.deltaTime > 0 && velocity.sqrMagnitude > 0)
         {
-            velocity = Move(velocity * Time.deltaTime) / Time.deltaTime;
+            Vector3 lastPosition = transform.position;
+            CollisionFlags collisions;
+            collisions = controller.Move(velocity * Time.deltaTime);
+
+            if (velocity.magnitude > 0.5f)
+            {
+                velocity = (transform.position - lastPosition) / Time.deltaTime;
+            }
+
+            isOnGround = collisions.HasFlag(CollisionFlags.Below);
 
             distanceTravelled += velocity.magnitude * Time.deltaTime;
         }
@@ -187,72 +197,6 @@ public class Player : MonoBehaviour
         {
             slingshot.Fire();
         }
-    }
-
-
-    Vector3 Move(Vector3 movementVector)
-    {
-        Vector3 capsuleUp = transform.TransformVector(new Vector3(0, Mathf.Max(capsule.height * 0.5f - capsule.radius, capsule.radius), 0));
-        Vector3 capsuleUpTip = transform.TransformVector(new Vector3(0, capsule.height * 0.5f, 0));
-        Vector3 capsuleCenter = transform.TransformPoint(capsule.center);
-        Vector3 capsuleBottom = capsuleCenter - capsuleUpTip;
-        float castRadius = capsuleUpTip.magnitude - capsuleUp.magnitude;
-        Vector3 man = capsuleCenter - capsuleUp.normalized * (capsuleUp.magnitude + capsule.radius * Mathf.Max(transform.localScale.x, transform.localScale.z));
-
-        RaycastHit hit;
-
-        // Reset onGround state
-        isOnGround = false;
-
-        // Query our movement collision multiple times, correcting the movement vector to slide along surfaces as we go
-        const int numIterations = 3;
-        for (int iteration = 0; iteration < numIterations; iteration++)
-        {
-            if (Physics.CapsuleCast(capsuleCenter + capsuleUp, capsuleCenter - capsuleUp,
-                castRadius, movementVector.normalized, out hit,
-                movementVector.magnitude, ~0, QueryTriggerInteraction.Ignore))
-            {
-                bool isGroundSurface = Vector3.Dot(hit.normal, Vector3.up) >= Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
-
-                if (iteration != numIterations - 1)
-                {
-                    Vector3 embeddedVector = movementVector * (1 - hit.distance / movementVector.magnitude);
-
-                    if (!isGroundSurface)
-                    {
-                        // the first several iterations will try to slide along surfaces
-                        movementVector += hit.normal * (-Vector3.Dot(embeddedVector, hit.normal) + 0.0001f);
-                    }
-                    else
-                    {
-                        Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.blue);
-                        Debug.DrawLine(hit.point, hit.point + embeddedVector, Color.red);
-                        // This is a ground surface, so it's probably best that we don't slide along it. We have a grip on it.
-                        // So instead, we'll cancel vertical motion and maintain our other motion...
-                        movementVector += Vector3.up * (-Vector3.Dot(Vector3.up, embeddedVector) + 0.0001f);
-
-                        isOnGround = true;
-                    }
-                }
-                else
-                {
-                    Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.blue);
-
-                    // the last iteration will just outright remove excess movement, to avoid clipping through stuff
-                    movementVector *= ((hit.distance - 0.001f) / movementVector.magnitude);
-
-                    Debug.DrawLine(capsuleBottom, capsuleBottom + movementVector, Color.green);
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        // Move!
-        transform.position += movementVector;
-        return movementVector;
     }
 
     /// <summary>

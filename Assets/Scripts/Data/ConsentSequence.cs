@@ -46,7 +46,7 @@ public class ConsentSequence : MonoBehaviour
         }
         else
         {
-            GameManager.singleton.StartNextRound();
+            GameManager.singleton.StartFirstRound();
         }
     }
 }

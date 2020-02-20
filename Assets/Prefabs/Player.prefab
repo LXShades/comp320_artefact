@@ -57,7 +57,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301361135451860026}
   m_LocalRotation: {x: -0.070208676, y: 0.013456964, z: -0.005042916, w: 0.99742883}
-  m_LocalPosition: {x: -0.242, y: -1.298, z: 0.556}
+  m_LocalPosition: {x: -0.242, y: -1.135, z: 0.556}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1821438618764341349}
@@ -357,6 +357,7 @@ GameObject:
   - component: {fileID: 3044613865486892526}
   - component: {fileID: 6726757389320730815}
   - component: {fileID: 1335064367418299461}
+  - component: {fileID: 4177423630277119007}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -490,6 +491,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!143 &4177423630277119007
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3044613865486892525}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 1.9999999
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5797659133221006134
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,6 +892,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284695570041940520, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -10.424988
       objectReference: {fileID: 0}
     - target: {fileID: 3830671518948016363, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
         type: 3}

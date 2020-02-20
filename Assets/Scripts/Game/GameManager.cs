@@ -150,7 +150,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        StartSequence();
     }
 
     void Start()
@@ -210,6 +209,16 @@ public class GameManager : MonoBehaviour
         {
             currentRound = 0;
         }
+    }
+
+    /// <summary>
+    /// Begins the first round and teleports to main level
+    /// </summary>
+    public void StartFirstRound()
+    {
+        StartSequence();
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
     }
 
     /// <summary>

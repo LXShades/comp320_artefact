@@ -157,11 +157,9 @@ public class ImpostorCamera : MonoBehaviour
     {
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = clearColour;
-        camera.targetTexture = surface.texture;
+        camera.targetTexture = surface.backBuffer;
         camera.pixelRect = new Rect(surface.pixelDimensions.x, surface.pixelDimensions.y,
                                     surface.pixelDimensions.width, surface.pixelDimensions.height);
-
-        camera.cullingMask = 1 << ImpMan.singleton.impostorRenderLayer;
     }
 
     public void RenderToSurface(ImpostorSurface surface, Color clearColour)

@@ -28,11 +28,6 @@ public class Impostify : MonoBehaviour
         {
             if (value != _isImpostorVisible)
             {
-                foreach (Renderer renderer in renderers)
-                {
-                    renderer.gameObject.layer = 0;
-                    renderer.enabled = !value;
-                }
                 _isImpostorVisible = value;
             }
         }
