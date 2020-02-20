@@ -39,6 +39,13 @@ public class DebugUI : MonoBehaviour
     /// </summary>
     private float[] frameTimes = new float[numFrameTimes];
 
+    private float lastRealTime;
+
+    void Awake()
+    {
+        lastRealTime = Time.realtimeSinceStartup;
+    }
+
     void Update()
     {
         // Refresh the impostor texture display
@@ -72,8 +79,9 @@ public class DebugUI : MonoBehaviour
         }
 
         // Record this frame into the array
-        frameTimes[frameTimeIndex] = Time.deltaTime;
+        frameTimes[frameTimeIndex] = Time.realtimeSinceStartup - lastRealTime;
         frameTimeIndex = (frameTimeIndex + 1) % numFrameTimes;
+        lastRealTime = Time.realtimeSinceStartup;
 
         // Show debug toggles
         debugToggles.text = "";

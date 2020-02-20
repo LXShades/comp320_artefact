@@ -82,7 +82,7 @@ public class ImpostorBatch : MonoBehaviour
 
     private void RefreshMesh()
     {
-        Benchmark benchMeshRefresh = Benchmark.New();
+        Benchmark benchMeshRefresh = Benchmark.Start();
         if (myMesh == null)
         {
             // Create the empty mesh and material

@@ -108,6 +108,47 @@ public class ImpostorCamera : MonoBehaviour
     }
 
     /// <summary>
+    /// Positions and frames the camera to capture an impostor covering the area between minBounds and maxBounds.
+    /// </summary>
+    /// <param name="minBounds"></param>
+    /// <param name="maxBounds"></param>
+    /// <param name="mainCamera"></param>
+    /// <param name="impostorWidth"></param>
+    /// <param name="impostorHeight"></param>
+    public void FrameLayer(float windowDistance, Camera mainCamera, out float impostorWidth, out float impostorHeight, out Vector3 impostorCentre)
+    {
+        // Copy and setup camera projection settings
+        camera.aspect = mainCamera.aspect;
+        camera.fieldOfView = mainCamera.fieldOfView;
+        camera.transform.position = mainCamera.transform.position;
+        camera.transform.rotation = mainCamera.transform.rotation;
+
+        impostorWidth = windowDistance * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f) * camera.aspect;
+        impostorHeight = windowDistance * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f);
+        impostorCentre = mainCamera.transform.position + mainCamera.transform.forward * windowDistance;
+
+        camera.ResetProjectionMatrix();
+        //camera.projectionMatrix = Matrix4x4.Scale(new Vector3(1/windowDistance, 1/windowDistance, 1)) * camera.projectionMatrix;
+
+        // draw impostor position A
+        DebugDraw.Square(impostorCentre, mainCamera.transform.right * impostorWidth, mainCamera.transform.up * impostorHeight, Color.green);
+        DebugDraw.Point(impostorCentre, Color.cyan, 1);
+
+        // draw user's intended impostor centre
+        DebugDraw.Point(impostorCentre, Color.green, 2.0f);
+
+        // draw camera frustum
+        float d = 100.0f;
+        float frustumWidthAtD = (d * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f * camera.aspect;
+        float frustumHeightAtD = (d * Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f)) * 2f;
+
+        DebugDraw.Line(camera.transform.position, camera.transform.position + camera.transform.forward * d + camera.transform.right * (frustumWidthAtD / 2) + camera.transform.up * (frustumHeightAtD / 2), Color.red);
+        DebugDraw.Line(camera.transform.position, camera.transform.position + camera.transform.forward * d + camera.transform.right * (frustumWidthAtD / 2) - camera.transform.up * (frustumHeightAtD / 2), Color.red);
+        DebugDraw.Line(camera.transform.position, camera.transform.position + camera.transform.forward * d - camera.transform.right * (frustumWidthAtD / 2) + camera.transform.up * (frustumHeightAtD / 2), Color.red);
+        DebugDraw.Line(camera.transform.position, camera.transform.position + camera.transform.forward * d - camera.transform.right * (frustumWidthAtD / 2) - camera.transform.up * (frustumHeightAtD / 2), Color.red);
+    }
+
+    /// <summary>
     /// Sets the target surface to render to
     /// </summary>
     /// <param name="surface">The target surface</param>

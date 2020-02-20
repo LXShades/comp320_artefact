@@ -194,6 +194,8 @@ public class ImpMan : MonoBehaviour
         }
     }
 
+    bool ok = false;
+
     bool RefreshImpostorLayer(ImpostorLayer layer)
     {
         if ((int)(Time.time * layer.updateRate) == (int)((Time.time - Time.deltaTime) * layer.updateRate))
@@ -205,27 +207,29 @@ public class ImpMan : MonoBehaviour
         Vector3 cameraForward = Camera.main.transform.forward;
         float cameraForwardBase = Vector3.Dot(cameraForward, Camera.main.transform.position);
         List<Impostify> impostablesToRender = new List<Impostify>();
-        Vector3 boundsMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-        Vector3 boundsMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         int numRenderers = 0;
 
-        foreach (Impostify impostable in impostables)
-        {
-            float depth = Vector3.Dot(impostable.transform.position, cameraForward) - cameraForwardBase;
+        Benchmark benchCollect = Benchmark.Start();
 
-            if (depth > layer.minRadius && depth <= layer.maxRadius)
+        {
+            foreach (Impostify impostable in impostables)
             {
                 // Render this impostor
                 impostablesToRender.Add(impostable);
-                
+
                 foreach (Renderer renderer in impostable.renderers)
                 {
-                    renderer.gameObject.layer = impostorRenderLayer;
-                    renderer.enabled = true;
-                    numRenderers++;
+                    //float depth = Vector3.Dot(renderer.bounds.center, cameraForward) - cameraForwardBase - renderer.bounds.size.magnitude;
 
-                    boundsMin = Vector3.Min(boundsMin, renderer.bounds.min);
-                    boundsMax = Vector3.Max(boundsMax, renderer.bounds.max);
+                    //if (depth > layer.minRadius && depth < layer.maxRadius)
+                    {
+                        if (renderer.gameObject.layer != impostorRenderLayer)
+                        {
+                            renderer.gameObject.layer = impostorRenderLayer;
+                        }
+                        //renderer.enabled = true;
+                        numRenderers++;
+                    }
                 }
             }
         }
@@ -233,14 +237,14 @@ public class ImpMan : MonoBehaviour
         // Don't bother if there's nothing to draw
         if (numRenderers == 0) return false;
 
-//        Debug.Log($"numRenderers: {numRenderers}");
+        benchCollect.Stop();
 
         // Render the objects in this impostor layer
+        Benchmark benchFrame = Benchmark.Start();
         Vector3 impostorPosition = Camera.main.transform.position + Camera.main.transform.forward * debugImpostorDepth;
         float impostorWidth, impostorHeight;
-        Benchmark benchRender = Benchmark.New();
 
-        impostorCamera.FrameArea(boundsMin, boundsMax, impostorPosition, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
+        impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
 
         if (activateImpostorCamera)
         {
@@ -253,32 +257,11 @@ public class ImpMan : MonoBehaviour
             impostorCamera.RenderToSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
         }
 
-        // enable previously impostified objects
-        foreach (Impostify impostable in layer.activeImpostors)
-        {
-            foreach (Renderer renderer in impostable.renderers)
-            {
-                renderer.gameObject.layer = 0;
-                renderer.enabled = true;
-            }
-        }
+        Benchmark benchEnableDisable = Benchmark.Start();
 
-        // disable newly impostified objects
-        foreach (Impostify impostable in impostablesToRender)
-        {
-            foreach (Renderer renderer in impostable.renderers)
-            {
-                if (useMasksForCulling)
-                {
-                    renderer.gameObject.layer = impostorRenderLayer;
-                    renderer.enabled = true;
-                }
-                else
-                {
-                    renderer.enabled = false;
-                }
-            }
-        }
+        benchEnableDisable.Stop();
+
+        benchFrame.Stop();
 
         // Cull objects that have been turned into impostors
         if (useMasksForCulling)
@@ -289,8 +272,7 @@ public class ImpMan : MonoBehaviour
         // Store the list of objects so we can re-enable them if they leave the radius during the next update
         layer.activeImpostors = impostablesToRender;
 
-        float time = benchRender.ms;
-        //Debug.Log($"Render: {time}");
+        Debug.Log($"Collect: {benchCollect.ms} Render: {benchFrame.ms} EnableDisable: {benchEnableDisable.ms}");
 
         layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition, 
             Camera.main.transform.up * impostorHeight, Camera.main.transform.right * impostorWidth, layer.surface.uvDimensions);
