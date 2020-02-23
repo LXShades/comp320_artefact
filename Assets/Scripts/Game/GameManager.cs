@@ -148,10 +148,6 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Sets up the random impostor configuration order
     /// </summary>
-    void Awake()
-    {
-    }
-
     void Start()
     {
         // Register the scene load callback
@@ -163,6 +159,26 @@ public class GameManager : MonoBehaviour
         // Call the missed OnSceneLoad
         OnSceneLoad(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), UnityEngine.SceneManagement.SceneManager.GetActiveScene());
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    /// <summary>
+    /// Provides some debug functionality
+    /// </summary>
+    private void Update()
+    {
+        // Take screenshots
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
+        }
+
+        // Restart level
+        if (Input.GetKeyDown(KeyCode.ScrollLock))
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+#endif
 
     /// <summary>
     /// Generates and starts the impostor sequence from the list of configurations provided

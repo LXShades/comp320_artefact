@@ -177,12 +177,6 @@ public class ImpMan : MonoBehaviour
                 impostorCamera.camera.enabled = false;
             }
         }
-
-        // Take screenshots
-        if (Input.GetKeyDown(KeyCode.F12))
-        {
-            ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
-        }
     }
 
     bool didTheThing = false;
