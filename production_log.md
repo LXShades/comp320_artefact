@@ -125,3 +125,25 @@ Another ad-hoc test evaluation revealed the width and height of the impostors we
 A lot of time was spent attempting to work out how to slot the impostor into the correct segment of the screen. This was almost done before, but did not allow a custom distance and , which is useful for verifying the best distance to place each layer (e.g. maximal, minimal, centered).
 
 Tunnel-vision occurred and we eventually decided to focus efforts on drawing debug shapes into the scene to visualise every variable that was being calculated, including impostor distance, boundaries and screen space positions. This was provided a critical advantage compraed to e.g. drawing graphs on Paint and we will use this method in the future if tunnel-vision occurs.
+
+# 23/02/2020
+Sunday work woo.
+
+A refactor of FrameArea into FrameLayer now enables us to create 'windows' into parts of the level. Crucially they can be created at any distance, so layering is now a possibility.
+
+Unfortunately, actual layering using native Unity functionality such as masks seems to be fundamentally slow, so we created a single-layer version where the player can look around and see mobile objects at a normal frame rate, but with the background rendering at a lower framerate.
+
+Furthermore, the background can now be rendered continuously and progressively on a double-buffer texture to further stabilise the frame rate.
+
+## Next steps
+We still don't have a multi-layered system and it is reaching a point where re-designing the experiment is under consideration, investigating the effects of splitting the frame rate between the static background and interactive foreground. If this is shown to improve the player experience compared to a lower overall frame rate, this could theoretically be easily deployed into a commercial game.
+
+## Reflection
+Some of the impostor work lately proved fundamentally useless. During development of those features, namely the ability to group objects together, we realised we were aiming high for something that isn't within the requirements of the project.
+
+Oops. We thought it'd be easy and allow for more expandability in the future, but it became something of a blocker.
+
+The guilty function is FrameArea which could hypothetically frame an axis-aligned bounding box into the render texture. This would have been useful for e.g. splitting impostor workload across impostors, but since it was not in the design specification it was not useful to pursue this feature for as long as it took (several hours).
+
+## Next steps
+We'll take one shot at layering the impostors using a custom render pipeline in Unity. Yolo.
