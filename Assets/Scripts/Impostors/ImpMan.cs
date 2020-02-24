@@ -51,9 +51,6 @@ public class ImpMan : MonoBehaviour
     /// List of all known impostor batches that have been created/reserved
     /// </summary>
     public List<ImpostorBatch> impostorBatches = new List<ImpostorBatch>();
-
-    public float debugImpostorDepth = 5.0f;
-
     
     [Header("Impostor configuration")]
     [Tooltip("Whether impostors should be used at all")]
@@ -83,7 +80,7 @@ public class ImpMan : MonoBehaviour
     [Header("Impostor rendering settings")]
     [Tooltip("Render layer to draw impostors on")]
     public int impostorRenderLayer = 31;
-    public int numRenderLayerDivisions = 2;
+    public int numProgressiveRenderGroups = 2;
 
     /// <summary>
     /// A pre-calculated list of UVs for an impostor texture evenly divided into (impostorTextureDivisions*impostorTextureDivisions) surfaces
@@ -145,27 +142,29 @@ public class ImpMan : MonoBehaviour
 
         if (enableImpostors)
         {
-            bool hasUpdated = false;
-
-            if (!freezeImpostors)
-            {
-                // update impostor layers
-                for (int i = 0; i < impostorLayers.Length; i++)
-                {
-                    hasUpdated |= RefreshImpostorLayer(impostorLayers[i]);
-                }
-            }
-
+            // Refresh impostor layers
             foreach (ImpostorLayer layer in impostorLayers)
             {
+                bool hasLayerUpdated = false;
+
+                if (!freezeImpostors)
+                {
+                    if ((int)(Time.time * layer.updateRate) != (int)((Time.time - Time.deltaTime) * layer.updateRate))
+                    {
+                        RefreshImpostorLayer(layer);
+                        hasLayerUpdated = true;
+                    }
+                }
+
                 if (activateImpostorCamera)
                 {
                     layer.impostorCamera.camera.enabled = true; // we wanted to disable it when hasUpdated is false, but that caused stutters by gfx.WaitForPresent...
 
-                    if (!hasUpdated)
+                    if (!hasLayerUpdated)
                     {
+                        // Don't render anything on this camera right now
                         layer.impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
-                        layer.impostorCamera.camera.cullingMask = 0; // don't render anything right now
+                        layer.impostorCamera.camera.cullingMask = 0; 
                     }
                 }
                 else
@@ -177,23 +176,14 @@ public class ImpMan : MonoBehaviour
     }
 
     bool didTheThing = false;
-    int progressiveRenderIndex = 0;
 
     // remove later!!!
     float impostorWidth = 0;
     float impostorHeight = 0;
     Vector3 impostorPosition;
 
-    bool RefreshImpostorLayer(ImpostorLayer layer)
+    void RefreshImpostorLayer(ImpostorLayer layer)
     {
-        if ((int)(Time.time * layer.updateRate) == (int)((Time.time - Time.deltaTime) * layer.updateRate))
-        {
-            return false; // we're not refreshing yet
-        }
-
-        // collect all impostors ahead of the camera at the distance into th elayer
-        Vector3 cameraForward = Camera.main.transform.forward;
-        float cameraForwardBase = Vector3.Dot(cameraForward, Camera.main.transform.position);
         List<Impostify> impostablesToRender = new List<Impostify>();
         int numRenderers = 0;
 
@@ -201,6 +191,7 @@ public class ImpMan : MonoBehaviour
 
         if (!didTheThing)
         {
+            // Regroup impostors into appropriate layers
             foreach (Impostify impostable in impostables)
             {
                 // Render this impostor
@@ -208,14 +199,9 @@ public class ImpMan : MonoBehaviour
 
                 foreach (Renderer renderer in impostable.renderers)
                 {
-                    //float depth = Vector3.Dot(renderer.bounds.center, cameraForward) - cameraForwardBase - renderer.bounds.size.magnitude;
+                    renderer.gameObject.layer = impostorRenderLayer + (numRenderers % numProgressiveRenderGroups);
 
-                    //if (depth > layer.minRadius && depth < layer.maxRadius)
-                    {
-                        renderer.gameObject.layer = impostorRenderLayer + (numRenderers % numRenderLayerDivisions);
-
-                        numRenderers++;
-                    }
+                    numRenderers++;
                 }
             }
         }
@@ -223,34 +209,38 @@ public class ImpMan : MonoBehaviour
         numRenderers++; // more hack...
 
         // Don't bother if there's nothing to draw
-        if (numRenderers == 0) return false;
+        if (numRenderers == 0) return;
 
         benchCollect.Stop();
 
         // Render the objects in this impostor layer
         // Setup the culling masks
         int impostorLayerCullingMask = 1 << impostorRenderLayer;
-        for (int i = 0; i < numRenderLayerDivisions; i++)
+        for (int i = 0; i < numProgressiveRenderGroups; i++)
         {
             impostorLayerCullingMask |= 1 << (impostorRenderLayer + i);
         }
 
         // main camera renders none of the impostable stuff, impostor camera renders the current progressive mask
         Camera.main.cullingMask = ~impostorLayerCullingMask;
-        layer.impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer + progressiveRenderIndex);
+        layer.impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer + layer.progressiveRenderGroup);
 
-        if (progressiveRenderIndex == 0)
+        if (layer.progressiveRenderGroup == 0)
         {
             // if we're rendering the first part of a progressive frame, swap the buffers so we see the previous image
             layer.surface.batch.texture = layer.surface.backBuffer;
             layer.surface.SwapBuffers();
 
-            // and place the impostor!
+            // and place the previous impostor!
             layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition,
                 layer.impostorCamera.transform.up * impostorHeight, layer.impostorCamera.transform.right * impostorWidth, layer.surface.uvDimensions);
 
-            // frame the next impostor layer with the current camera position
-            layer.impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
+            // now, frame the next impostor layer with the current camera position
+            layer.impostorCamera.FrameLayer(layer.minRadius, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
+
+            // split scene into layered sections for render
+            //layer.impostorCamera.camera.nearClipPlane = layer.minRadius;
+            //layer.impostorCamera.camera.farClipPlane = layer.maxRadius;
         }
 
         if (activateImpostorCamera)
@@ -264,21 +254,19 @@ public class ImpMan : MonoBehaviour
             layer.impostorCamera.RenderToSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
         }
 
-        if (progressiveRenderIndex > 0)
+        if (layer.progressiveRenderGroup > 0)
         {
             // only clear the image if we're building atop an existing frame
             layer.impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
         }
 
         // increase the progressive render index for this layer (todo: separate per layer)
-        progressiveRenderIndex = (progressiveRenderIndex + 1) % numRenderLayerDivisions;
+        layer.progressiveRenderGroup = (layer.progressiveRenderGroup + 1) % numProgressiveRenderGroups;
 
         // Store the list of objects so we can re-enable them if they leave the radius during the next update
         layer.activeImpostors = impostablesToRender;
 
         //Debug.Log($"Collect: {benchCollect.ms} Render: {benchFrame.ms} EnableDisable: {benchEnableDisable.ms}");
-
-        return true;
     }
 
     /// <summary>
@@ -403,7 +391,7 @@ public class ImpostorConfiguration
 }
 
 /// <summary>
-/// A fragment of an impostor texture that can be reserved for an object(s)
+/// A portion of an impostor texture and associated impostor batch/index that can be reserved for an impostor
 /// </summary>
 public class ImpostorSurface
 {
@@ -548,6 +536,11 @@ public class ImpostorLayer
     /// The impostor camera used for rendering this layer
     /// </summary>
     public ImpostorCamera impostorCamera;
+
+    /// <summary>
+    /// Current mask index for progressively-rendered objects
+    /// </summary>
+    public int progressiveRenderGroup;
 
     /// <summary>
     /// Copies data from a different impostor layer to this one
