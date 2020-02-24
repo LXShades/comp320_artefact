@@ -84,12 +84,6 @@ public class ImpMan : MonoBehaviour
     [Tooltip("Render layer to draw impostors on")]
     public int impostorRenderLayer = 31;
     public int numRenderLayerDivisions = 2;
-    
-    [Header("Miscellaneous")]
-    /// <summary>
-    /// The camera that snapshots the impostors. We only need one such camera in the scene
-    /// </summary>
-    public ImpostorCamera impostorCamera;
 
     /// <summary>
     /// A pre-calculated list of UVs for an impostor texture evenly divided into (impostorTextureDivisions*impostorTextureDivisions) surfaces
@@ -115,9 +109,6 @@ public class ImpMan : MonoBehaviour
                 impostorTextureDivisionUvs[index].size = uvSize;
             }
         }
-
-        // Create the impostor camera
-        impostorCamera = CreateImpostorCamera();
     }
 
     private void Start()
@@ -137,7 +128,10 @@ public class ImpMan : MonoBehaviour
 
             if (!enableImpostors)
             {
-                impostorCamera.camera.enabled = false;
+                foreach (ImpostorLayer layer in impostorLayers)
+                {
+                    layer.impostorCamera.camera.enabled = enableImpostors;
+                }
 
                 // allow the main camera to render everything again
                 Camera.main.cullingMask = ~0;
@@ -162,19 +156,22 @@ public class ImpMan : MonoBehaviour
                 }
             }
 
-            if (activateImpostorCamera)
+            foreach (ImpostorLayer layer in impostorLayers)
             {
-                impostorCamera.camera.enabled = true; // we wanted to disable it when hasUpdated is false, but that caused stutters by gfx.WaitForPresent...
-
-                if (!hasUpdated)
+                if (activateImpostorCamera)
                 {
-                    impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
-                    impostorCamera.camera.cullingMask = 0; // don't render anything right now
+                    layer.impostorCamera.camera.enabled = true; // we wanted to disable it when hasUpdated is false, but that caused stutters by gfx.WaitForPresent...
+
+                    if (!hasUpdated)
+                    {
+                        layer.impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
+                        layer.impostorCamera.camera.cullingMask = 0; // don't render anything right now
+                    }
                 }
-            }
-            else
-            {
-                impostorCamera.camera.enabled = false;
+                else
+                {
+                    layer.impostorCamera.camera.enabled = false;
+                }
             }
         }
     }
@@ -240,7 +237,7 @@ public class ImpMan : MonoBehaviour
 
         // main camera renders none of the impostable stuff, impostor camera renders the current progressive mask
         Camera.main.cullingMask = ~impostorLayerCullingMask;
-        impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer + progressiveRenderIndex);
+        layer.impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer + progressiveRenderIndex);
 
         if (progressiveRenderIndex == 0)
         {
@@ -250,27 +247,27 @@ public class ImpMan : MonoBehaviour
 
             // and place the impostor!
             layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition,
-                impostorCamera.transform.up * impostorHeight, impostorCamera.transform.right * impostorWidth, layer.surface.uvDimensions);
+                layer.impostorCamera.transform.up * impostorHeight, layer.impostorCamera.transform.right * impostorWidth, layer.surface.uvDimensions);
 
             // frame the next impostor layer with the current camera position
-            impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
+            layer.impostorCamera.FrameLayer(debugImpostorDepth, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
         }
 
         if (activateImpostorCamera)
         {
             // camera will render naturally
-            impostorCamera.SetTargetSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
+            layer.impostorCamera.SetTargetSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
         }
         else
         {
             // manually render the camera
-            impostorCamera.RenderToSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
+            layer.impostorCamera.RenderToSurface(layer.surface, layer.debugFillBackground ? new Color(1, 0, 0, 1) : new Color(1, 0, 0, 0));
         }
 
         if (progressiveRenderIndex > 0)
         {
             // only clear the image if we're building atop an existing frame
-            impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
+            layer.impostorCamera.camera.clearFlags = CameraClearFlags.Nothing;
         }
 
         // increase the progressive render index for this layer (todo: separate per layer)
@@ -352,18 +349,15 @@ public class ImpMan : MonoBehaviour
             }
         }
 
-        // Remove previous layers
-        ClearImpostorSurfaces();
-
         // Copy new ones over
         impostorLayers = new ImpostorLayer[configuration.layers.Length];
 
         for (int i = 0; i < configuration.layers.Length; i++)
         {
             impostorLayers[i] = configuration.layers[i].Clone();
-
-            impostorLayers[i].surface = ReserveImpostorSurface(0, 0);
         }
+
+        InitImpostorLayers();
     }
 
     /// <summary>
@@ -375,6 +369,24 @@ public class ImpMan : MonoBehaviour
 
         // Disable it for now (so it isn't used as an actual camera)
         return cameraObject.GetComponent<ImpostorCamera>();
+    }
+
+    /// <summary>
+    /// Initialises all applicable impostor layers
+    /// </summary>
+    private void InitImpostorLayers()
+    {
+        // Remove previous impostor surfaces
+        ClearImpostorSurfaces();
+
+        foreach (ImpostorLayer layer in impostorLayers)
+        {
+            // Create the impostor camera
+            layer.impostorCamera = CreateImpostorCamera();
+
+            // Reserve the impostor surface
+            layer.surface = ReserveImpostorSurface(0, 0);
+        }
     }
 }
 
@@ -531,6 +543,11 @@ public class ImpostorLayer
     /// A list of objects that are currently included in this impostor
     /// </summary>
     public List<Impostify> activeImpostors = new List<Impostify>();
+
+    /// <summary>
+    /// The impostor camera used for rendering this layer
+    /// </summary>
+    public ImpostorCamera impostorCamera;
 
     /// <summary>
     /// Copies data from a different impostor layer to this one

@@ -82,7 +82,7 @@ public class Impostify : MonoBehaviour
     /// </summary>
     void RenderImpostor()
     {
-        ImpostorCamera impCam = ImpMan.singleton.impostorCamera;
+        /*ImpostorCamera impCam = ImpMan.singleton.impostorCamera;
         int[] oldLayers = new int[meshes.Length];
         bool[] oldVisibility = new bool[meshes.Length];
         int impostorLayer = ImpMan.singleton.impostorRenderLayer;
@@ -115,6 +115,8 @@ public class Impostify : MonoBehaviour
         {
             impostorSurface.batch.SetPlane(impostorSurface.batchPlaneIndex, impostorPosition, mainCamera.transform.up * impostorHeight, mainCamera.transform.right * impostorWidth, impostorSurface.uvDimensions);
         }
+
+        */
     }
 
     /// <summary>
