@@ -45,33 +45,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numTotalBalloons: 0
   numPoppedBalloons: 0
-  impostorConfigurationIndex: 0
-  impostorConfigurationSequenceIndex: 0
-  impostorConfigurationSequence: 
+  balloonPopLifetimes: []
+  dataName: ParticipantData.csv
+  currentRound: 0
+  impostorConfigByRound: 
   impostorConfigurations:
   - layers:
-    - updateRate: 30
-      minRadius: 0
-      maxRadius: 100
+    - updateRate: 60
+      minRadius: 0.5
+      maxRadius: 30
+      renderDistance: 30
       debugFillBackground: 0
+      surface:
+        frontBufferDepth: {fileID: 0}
+        backBuffer: {fileID: 0}
+        backBufferDepth: {fileID: 0}
+        batch: {fileID: 0}
+        batchPlaneIndex: 0
+        owner: {fileID: 0}
       activeImpostors: []
-  - layers:
-    - updateRate: 20
-      minRadius: 0
-      maxRadius: 100
-      debugFillBackground: 0
-      activeImpostors: []
-  - layers:
-    - updateRate: 10
-      minRadius: 0
-      maxRadius: 100
-      debugFillBackground: 0
-      activeImpostors: []
-  - layers:
-    - updateRate: 5
-      minRadius: 0
-      maxRadius: 100
-      debugFillBackground: 0
-      activeImpostors: []
-  levelTimeLimit: 120
+      impostorCamera: {fileID: 0}
+      progressiveRenderGroup: 0
+      nextImpostorPosition: {x: 0, y: 0, z: 0}
+      nextImpostorSize:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+  levelTimeLimit: 500
   levelName: SunTemple

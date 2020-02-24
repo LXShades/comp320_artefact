@@ -41,6 +41,7 @@ public class ImpMan : MonoBehaviour
     /// List of all impostor texture resources currently being used
     /// </summary>
     public List<RenderTexture> impostorTextures = new List<RenderTexture>();
+    public List<RenderTexture> impostorDepthTextures = new List<RenderTexture>();
 
     /// <summary>
     /// List of all known impostor surfaces that have been reserved
@@ -247,6 +248,9 @@ public class ImpMan : MonoBehaviour
         {
             // if we're rendering the first part of a progressive frame, swap the buffers so we see the previous image
             layer.surface.batch.texture = layer.surface.backBuffer;
+            layer.surface.batch.depthTexture = layer.surface.backBufferDepth;
+            layer.surface.batch.nearPlane = layer.minRadius;
+            layer.surface.batch.farPlane = layer.maxRadius;
             layer.surface.SwapBuffers();
 
             // and place the previous impostor!
@@ -306,19 +310,22 @@ public class ImpMan : MonoBehaviour
         if (textureIndex * 2 >= impostorTextures.Count)
         {
             RenderTexture frontBuf = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16);
+            RenderTexture frontBufDepth = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16, RenderTextureFormat.Depth);
             RenderTexture backBuf = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16);
+            RenderTexture backBufDepth = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16, RenderTextureFormat.Depth);
             ImpostorBatch batch = new GameObject("_ImpostorBatch_", typeof(ImpostorBatch)).GetComponent<ImpostorBatch>();
-
-            batch.gameObject.layer = impostorBatchLayer;
 
             backBuf.format = RenderTextureFormat.ARGBHalf;
             frontBuf.format = RenderTextureFormat.ARGBHalf;
 
             impostorTextures.Add(frontBuf);
             impostorTextures.Add(backBuf);
+            impostorDepthTextures.Add(frontBufDepth);
+            impostorDepthTextures.Add(backBufDepth);
             impostorBatches.Add(batch);
 
             batch.texture = backBuf;
+            batch.gameObject.layer = impostorBatchLayer;
         }
 
         // Create the surface
@@ -326,6 +333,8 @@ public class ImpMan : MonoBehaviour
         {
             backBuffer = impostorTextures[textureIndex * 2 + 1],
             frontBuffer = impostorTextures[textureIndex * 2],
+            backBufferDepth = impostorDepthTextures[textureIndex * 2 + 1],
+            frontBufferDepth = impostorDepthTextures[textureIndex * 2],
             uvDimensions = impostorTextureDivisionUvs[uvIndex],
             batch = impostorBatches[textureIndex],
             batchPlaneIndex = impostorBatches[textureIndex].ReservePlane()
@@ -489,11 +498,13 @@ public class ImpostorSurface
         }
     }
     private RenderTexture _texture;
+    public RenderTexture frontBufferDepth;
 
     /// <summary>
     /// The back buffer texture, used for renders
     /// </summary>
     public RenderTexture backBuffer;
+    public RenderTexture backBufferDepth;
 
     /// <summary>
     /// The impostor batch being used and the plane reserved from it 
@@ -518,6 +529,10 @@ public class ImpostorSurface
         RenderTexture swap = frontBuffer;
         frontBuffer = backBuffer;
         backBuffer = swap;
+
+        swap = backBufferDepth;
+        backBufferDepth = frontBufferDepth;
+        frontBufferDepth = swap;
     }
 };
 

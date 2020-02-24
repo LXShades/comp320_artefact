@@ -45,20 +45,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   impostables: []
   impostorTextures: []
+  impostorDepthTextures: []
+  impostorSurfaces: []
   impostorBatches: []
   enableImpostors: 1
-  useMasksForCulling: 1
   activateImpostorCamera: 1
   freezeImpostors: 0
   impostorLayers:
-  - updateRate: 1
-    minRadius: 80
-    maxRadius: 300
-    debugFillBackground: 0
+  - updateRate: 30
+    minRadius: 0
+    maxRadius: 100
+    renderDistance: 0
+    debugFillBackground: 1
+    surface:
+      frontBufferDepth: {fileID: 0}
+      backBuffer: {fileID: 0}
+      backBufferDepth: {fileID: 0}
+      batch: {fileID: 0}
+      batchPlaneIndex: 0
+      owner: {fileID: 0}
     activeImpostors: []
-  impostorShader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  impostorTextureWidth: 2048
-  impostorTextureHeight: 2048
+    impostorCamera: {fileID: 0}
+    progressiveRenderGroup: 0
+    nextImpostorPosition: {x: 0, y: 0, z: 0}
+    nextImpostorSize:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+  impostorShader: {fileID: 4800000, guid: c0a1202fbd0ee6d4f83df0e8d255f196, type: 3}
+  impostorTextureWidth: 1024
+  impostorTextureHeight: 1024
   impostorTextureDivisions: 1
-  impostorRenderLayer: 28
-  impostorCamera: {fileID: 0}
+  impostorRenderLayer: 30
+  impostorBatchLayer: 16
+  numProgressiveRenderGroups: 4

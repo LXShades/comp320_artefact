@@ -157,7 +157,7 @@ public class ImpostorCamera : MonoBehaviour
     {
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = clearColour;
-        camera.targetTexture = surface.backBuffer;
+        camera.SetTargetBuffers(surface.backBuffer.colorBuffer, surface.backBufferDepth.depthBuffer);
         camera.pixelRect = new Rect(surface.pixelDimensions.x, surface.pixelDimensions.y,
                                     surface.pixelDimensions.width, surface.pixelDimensions.height);
     }

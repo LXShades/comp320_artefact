@@ -22,6 +22,15 @@ public class ImpostorBatch : MonoBehaviour
     [Tooltip("The texture to be used when rendering this impostor batch")]
     public Texture texture = null;
 
+    [Tooltip("The depth texture to use when rendering this impostor batch, if available")]
+    public Texture depthTexture = null;
+
+    [Tooltip("The near clipping plane in the depth texture")]
+    public float nearPlane = 0;
+
+    [Tooltip("The far clipping plane in the depth texture")]
+    public float farPlane = 100;
+
     /// <summary>
     /// Number of impostors currently reserved for use in this batch
     /// </summary>
@@ -76,6 +85,13 @@ public class ImpostorBatch : MonoBehaviour
         {
             RefreshMesh();
         }
+
+        // Refresh the material parameters
+        myMaterial.SetFloat("_Cutoff", 0.99f);
+        myMaterial.SetTexture("_MainTex", texture);
+        myMaterial.SetTexture("_DepthTex", depthTexture);
+        myMaterial.SetFloat("_DepthMin", nearPlane);
+        myMaterial.SetFloat("_DepthMax", farPlane);
     }
 
     private void RefreshMesh()
@@ -101,12 +117,7 @@ public class ImpostorBatch : MonoBehaviour
         myMesh.uv = uvs;
         myMesh.RecalculateBounds();
 
-        float time = benchMeshRefresh.ms;
-//        Debug.Log($"Mesh refresh: {time}");
-
-        // Refresh the material
-        myMaterial.SetFloat("_Cutoff", 0.99f);
-        myMaterial.mainTexture = texture;
+        //Debug.Log($"Mesh refresh: {benchMeshRefresh.ms}");
 
         isMeshInvalidated = false;
     }
