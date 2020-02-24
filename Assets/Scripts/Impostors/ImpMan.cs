@@ -80,6 +80,7 @@ public class ImpMan : MonoBehaviour
     [Header("Impostor rendering settings")]
     [Tooltip("Render layer to draw impostors on")]
     public int impostorRenderLayer = 31;
+    public int impostorBatchLayer = 30;
     public int numProgressiveRenderGroups = 2;
 
     /// <summary>
@@ -127,7 +128,7 @@ public class ImpMan : MonoBehaviour
             {
                 foreach (ImpostorLayer layer in impostorLayers)
                 {
-                    layer.impostorCamera.camera.enabled = enableImpostors;
+                    layer.impostorCamera.camera.enabled = false;
                 }
 
                 // allow the main camera to render everything again
@@ -172,15 +173,13 @@ public class ImpMan : MonoBehaviour
                     layer.impostorCamera.camera.enabled = false;
                 }
             }
+
+            // Set the main camera to render none of the bits between 1<<impostorRenderLayer and 1<<numProgressiveRenderGroups
+            Camera.main.cullingMask = ~((~0 << numProgressiveRenderGroups) << (impostorRenderLayer - numProgressiveRenderGroups - 1));
         }
     }
 
     bool didTheThing = false;
-
-    // remove later!!!
-    float impostorWidth = 0;
-    float impostorHeight = 0;
-    Vector3 impostorPosition;
 
     void RefreshImpostorLayer(ImpostorLayer layer)
     {
@@ -199,7 +198,7 @@ public class ImpMan : MonoBehaviour
 
                 foreach (Renderer renderer in impostable.renderers)
                 {
-                    renderer.gameObject.layer = impostorRenderLayer + (numRenderers % numProgressiveRenderGroups);
+                    renderer.gameObject.layer = impostorRenderLayer - (numRenderers % numProgressiveRenderGroups);
 
                     numRenderers++;
                 }
@@ -215,15 +214,7 @@ public class ImpMan : MonoBehaviour
 
         // Render the objects in this impostor layer
         // Setup the culling masks
-        int impostorLayerCullingMask = 1 << impostorRenderLayer;
-        for (int i = 0; i < numProgressiveRenderGroups; i++)
-        {
-            impostorLayerCullingMask |= 1 << (impostorRenderLayer + i);
-        }
-
-        // main camera renders none of the impostable stuff, impostor camera renders the current progressive mask
-        Camera.main.cullingMask = ~impostorLayerCullingMask;
-        layer.impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer + layer.progressiveRenderGroup);
+        layer.impostorCamera.camera.cullingMask = 1 << (impostorRenderLayer - layer.progressiveRenderGroup);
 
         if (layer.progressiveRenderGroup == 0)
         {
@@ -232,15 +223,19 @@ public class ImpMan : MonoBehaviour
             layer.surface.SwapBuffers();
 
             // and place the previous impostor!
-            layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, impostorPosition,
-                layer.impostorCamera.transform.up * impostorHeight, layer.impostorCamera.transform.right * impostorWidth, layer.surface.uvDimensions);
+            layer.surface.batch.SetPlane(layer.surface.batchPlaneIndex, layer.nextImpostorPosition,
+                layer.impostorCamera.transform.up * layer.nextImpostorSize.height, layer.impostorCamera.transform.right * layer.nextImpostorSize.width, layer.surface.uvDimensions);
 
             // now, frame the next impostor layer with the current camera position
-            layer.impostorCamera.FrameLayer(layer.minRadius, Camera.main, out impostorWidth, out impostorHeight, out impostorPosition);
+            float nextWidth, nextHeight;
+            layer.impostorCamera.FrameLayer(layer.renderDistance > 0 ? layer.renderDistance : layer.minRadius, Camera.main, out nextWidth, out nextHeight, out layer.nextImpostorPosition);
+
+            layer.nextImpostorSize.width = nextWidth;
+            layer.nextImpostorSize.height = nextHeight;
 
             // split scene into layered sections for render
-            //layer.impostorCamera.camera.nearClipPlane = layer.minRadius;
-            //layer.impostorCamera.camera.farClipPlane = layer.maxRadius;
+            layer.impostorCamera.camera.nearClipPlane = layer.minRadius;
+            layer.impostorCamera.camera.farClipPlane = layer.maxRadius;
         }
 
         if (activateImpostorCamera)
@@ -286,6 +281,8 @@ public class ImpMan : MonoBehaviour
             RenderTexture frontBuf = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16);
             RenderTexture backBuf = new RenderTexture(impostorTextureWidth, impostorTextureHeight, 16);
             ImpostorBatch batch = new GameObject("_ImpostorBatch_", typeof(ImpostorBatch)).GetComponent<ImpostorBatch>();
+
+            batch.gameObject.layer = impostorBatchLayer;
 
             backBuf.format = RenderTextureFormat.ARGBHalf;
             frontBuf.format = RenderTextureFormat.ARGBHalf;
@@ -390,6 +387,7 @@ public class ImpostorConfiguration
     public ImpostorLayer[] layers;
 }
 
+[System.Serializable]
 /// <summary>
 /// A portion of an impostor texture and associated impostor batch/index that can be reserved for an impostor
 /// </summary>
@@ -518,6 +516,11 @@ public class ImpostorLayer
     public float maxRadius;
 
     /// <summary>
+    /// The distance to render this impostor at. If 0, minRadius is used
+    /// </summary>
+    public float renderDistance;
+
+    /// <summary>
     /// Whether to fill the impostor's background for debugging purposes
     /// </summary>
     public bool debugFillBackground;
@@ -541,6 +544,16 @@ public class ImpostorLayer
     /// Current mask index for progressively-rendered objects
     /// </summary>
     public int progressiveRenderGroup;
+
+    /// <summary>
+    /// The position of the impostor currently being rendered/displayed
+    /// </summary>
+    public Vector3 nextImpostorPosition;
+
+    /// <summary>
+    /// The size of the impostor currently being rendered/displayed
+    /// </summary>
+    public Rect nextImpostorSize;
 
     /// <summary>
     /// Copies data from a different impostor layer to this one

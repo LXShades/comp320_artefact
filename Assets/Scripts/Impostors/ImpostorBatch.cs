@@ -37,11 +37,6 @@ public class ImpostorBatch : MonoBehaviour
     /// </summary>
     private bool isMeshInvalidated = false;
 
-    /// <summary>
-    /// The layer to draw this on
-    /// </summary>
-    public int impostorPlaneLayer = 30;
-
     private void Awake()
     {
         // Setup the impostor mesh caches
@@ -62,8 +57,6 @@ public class ImpostorBatch : MonoBehaviour
             indexes[indexRoot + 4] = vertexRoot + 2;
             indexes[indexRoot + 5] = vertexRoot + 3;
         }
-
-        gameObject.layer = impostorPlaneLayer;
     }
 
     private void Start()

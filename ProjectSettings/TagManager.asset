@@ -21,6 +21,11 @@ TagManager:
   - 
   - 
   - 
+  - ImpostorBatches
+  - 
+  - 
+  - 
+  - ImpostorMin
   - 
   - 
   - 
@@ -30,12 +35,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - Impostors
-  - 
-  - 
+  - ImpostorMax
   - 
   m_SortingLayers:
   - name: Default
