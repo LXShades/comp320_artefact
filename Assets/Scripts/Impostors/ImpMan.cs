@@ -175,7 +175,34 @@ public class ImpMan : MonoBehaviour
             }
 
             // Set the main camera to render none of the bits between 1<<impostorRenderLayer and 1<<numProgressiveRenderGroups
-            Camera.main.cullingMask = ~((~0 << numProgressiveRenderGroups) << (impostorRenderLayer - numProgressiveRenderGroups - 1));
+            Camera.main.cullingMask = (int)~(~(~0u >> numProgressiveRenderGroups) >> (31 - impostorRenderLayer));
+
+            /*string binary = System.Convert.ToString(Camera.main.cullingMask, 2);
+            while (binary.Length < 32)
+            {
+                binary = "0" + binary;
+            }
+            Debug.Log($"Camera: {binary}");
+
+            //.....or just make it render things closer than the closest layer
+            float closestRadius = 2000.0f;
+            foreach (ImpostorLayer layer in impostorLayers)
+            {
+                if (layer.minRadius < closestRadius)
+                {
+                    closestRadius = layer.minRadius;
+                }
+            }
+
+            /// maybe use layer cull distances........
+            float[] layerCullDistances = new float[32];
+
+            for (int i = 0; i < numProgressiveRenderGroups; i++)
+            {
+                layerCullDistances[impostorRenderLayer - i] = closestRadius + 5f;
+            }
+
+            Camera.main.layerCullDistances = layerCullDistances;*/
         }
     }
 
