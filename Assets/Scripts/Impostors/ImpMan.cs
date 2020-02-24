@@ -60,6 +60,9 @@ public class ImpMan : MonoBehaviour
     [Tooltip("Whether to keep the impostor camera activated")]
     public bool activateImpostorCamera = false;
 
+    [Tooltip("Renders to the main camera as well")]
+    public bool enableMainCameraRendering = false;
+
     [Tooltip("Freezes active impostor systems")]
     public bool freezeImpostors = false;
 
@@ -89,6 +92,11 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     Rect[] impostorTextureDivisionUvs = new Rect[0];
 
+    /// <summary>
+    /// Original far clip plane of the main camera
+    /// </summary>
+    float oldFarClipPlane;
+
     private void Awake()
     {
         // Create a list of all impostifiable objects
@@ -116,6 +124,8 @@ public class ImpMan : MonoBehaviour
         {
             layer.surface = ReserveImpostorSurface(1024, 1024);
         }
+
+        oldFarClipPlane = Camera.main.farClipPlane;
     }
 
     private void Update()
@@ -134,6 +144,8 @@ public class ImpMan : MonoBehaviour
 
                 // allow the main camera to render everything again
                 Camera.main.cullingMask = ~0;
+                Camera.main.farClipPlane = oldFarClipPlane;
+                Camera.main.layerCullDistances = new float[32];
             }
 
             foreach (ImpostorBatch batch in impostorBatches)
@@ -178,32 +190,33 @@ public class ImpMan : MonoBehaviour
             // Set the main camera to render none of the bits between 1<<impostorRenderLayer and 1<<numProgressiveRenderGroups
             Camera.main.cullingMask = (int)~(~(~0u >> numProgressiveRenderGroups) >> (31 - impostorRenderLayer));
 
-            /*string binary = System.Convert.ToString(Camera.main.cullingMask, 2);
-            while (binary.Length < 32)
-            {
-                binary = "0" + binary;
-            }
-            Debug.Log($"Camera: {binary}");
-
             //.....or just make it render things closer than the closest layer
-            float closestRadius = 2000.0f;
-            foreach (ImpostorLayer layer in impostorLayers)
+            if (enableMainCameraRendering)
             {
-                if (layer.minRadius < closestRadius)
+                float closestRadius = Camera.main.farClipPlane;
+                foreach (ImpostorLayer layer in impostorLayers)
                 {
-                    closestRadius = layer.minRadius;
+                    if (layer.minRadius < closestRadius)
+                    {
+                        closestRadius = layer.minRadius;
+                    }
                 }
+
+                /// maybe use layer cull distances........
+                float[] layerCullDistances = new float[32];
+
+                for (int i = 0; i < numProgressiveRenderGroups; i++)
+                {
+                    layerCullDistances[impostorRenderLayer - i] = closestRadius + 5f;
+                }
+
+                Camera.main.layerCullDistances = layerCullDistances;
+                Camera.main.cullingMask = ~0;
             }
-
-            /// maybe use layer cull distances........
-            float[] layerCullDistances = new float[32];
-
-            for (int i = 0; i < numProgressiveRenderGroups; i++)
+            else
             {
-                layerCullDistances[impostorRenderLayer - i] = closestRadius + 5f;
+                Camera.main.layerCullDistances = new float[32];
             }
-
-            Camera.main.layerCullDistances = layerCullDistances;*/
         }
     }
 

@@ -155,7 +155,7 @@ public class ImpostorCamera : MonoBehaviour
     /// <param name="clearColour">The background colour to clear to</param>
     public void SetTargetSurface(ImpostorSurface surface, Color clearColour)
     {
-        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.clearFlags = CameraClearFlags.Skybox;
         camera.backgroundColor = clearColour;
         camera.SetTargetBuffers(surface.backBuffer.colorBuffer, surface.backBufferDepth.depthBuffer);
         camera.pixelRect = new Rect(surface.pixelDimensions.x, surface.pixelDimensions.y,
