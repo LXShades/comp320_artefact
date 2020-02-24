@@ -147,3 +147,9 @@ The guilty function is FrameArea which could hypothetically frame an axis-aligne
 
 ## Next steps
 We'll take one shot at layering the impostors using a custom render pipeline in Unity. Yolo.
+
+# 24/02/2020
+## Overview
+The custom render pipeline was successful, until we built it. Then everything turned black. It turns out this keeps happening and there is no documentation on how to avoid this happening. It strikes us as a lighting issue that we simply don't know how to fix.
+
+Efforts will be dedicated to returning to the original rendering structure and finding ways to create multiple layers from it. A frame analysis revealed that objects outside the minimum and maximum cull distance are culled and tend to improve the frame rate, so there is merit in creating multiple impostor cameras - one for each layer - and assigning rendering tasks to each of them.
