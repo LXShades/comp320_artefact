@@ -153,3 +153,25 @@ We'll take one shot at layering the impostors using a custom render pipeline in 
 The custom render pipeline was successful, until we built it. Then everything turned black. It turns out this keeps happening and there is no documentation on how to avoid this happening. It strikes us as a lighting issue that we simply don't know how to fix.
 
 Efforts will be dedicated to returning to the original rendering structure and finding ways to create multiple layers from it. A frame analysis revealed that objects outside the minimum and maximum cull distance are culled and tend to improve the frame rate, so there is merit in creating multiple impostor cameras - one for each layer - and assigning rendering tasks to each of them.
+
+# 25/02/2020
+Creating multiple layered impostors was successful. It was felt that the next priority would be to allow the main camera to render as well. Unfortunately this resulted in layering issues between the objects and impostors, inspiring a dive into depth impostors.
+
+We have successfully created a shader that simulates this depth. This has two useful effects: firstly, non-impostor objects now interact and occlude correctly with the impostor environment. Second, the main camera can render objects that overlap with the impostors without causing problems.
+
+This area needs some tweaking but once it's done, we can begin implementing the multi-impostor configuration setup for the main experiment.
+
+## Testing
+Due to the exploratory nature of this process, we have a new set of test conditions to meet including:
+
+* Do the impostors correctly occlude interactive objects and each other?
+* Do the depth impostors render quickly enough compared to regular impostors?
+
+The first condition has not been met as there are visual artefacts in a small area between the main camera contents and the close layer contents. This wil be investigated by testing in a simplified scene with a mixture of impostor and non-impostor objects placed near to each other.
+
+The second condition is uncertain. This needs testing on the laptop hardware. This will be done once the first condition is cleared.
+
+## Next steps
+* Investigate and fix aforementioned layering issues
+* Profile the development build on laptop hardware
+* Implement experiment impostor configurations

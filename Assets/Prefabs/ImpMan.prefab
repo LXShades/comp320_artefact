@@ -50,6 +50,7 @@ MonoBehaviour:
   impostorBatches: []
   enableImpostors: 1
   activateImpostorCamera: 1
+  enableMainCameraRendering: 1
   freezeImpostors: 0
   impostorLayers:
   - updateRate: 30
