@@ -64,11 +64,6 @@
 				return 1.0 / (1/_DepthMin * z + 1/_DepthMax);
 			}
 
-			inline float NewLinearEyeDepth(float z)
-			{
-				return 1.0 / (1/0.2 * z + 1/1000);
-			}
-
 			inline float LinearToDepth(float linearZ)
 			{
 				return (1 / linearZ - _ZBufferParams.w) / _ZBufferParams.z;
@@ -86,19 +81,22 @@
             f frag (v2f i)
             {
 				f output;
-                // sample the texture
+                // sample the textures
                 fixed4 col = tex2D(_MainTex, i.uv);
+				float bufferDepth = tex2D(_DepthTex, i.uv);
+
+				// Clip transparent and high-depth pixels
+				clip(col.a - 0.1);
+				clip(bufferDepth - 0.0001);
+
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
-				if (col.a < 0.1)
-				{
-					discard;
-				}
-
-				float depth = OldLinearEyeDepth(tex2D(_DepthTex, i.uv)) ;
+				float depth = OldLinearEyeDepth(bufferDepth) + 9;
 				output.depth = LinearToDepth(depth);
 				output.colour = col;
+
+				//output.colour = (depth) / 50;
 
                 return output;
             }

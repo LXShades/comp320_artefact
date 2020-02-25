@@ -207,7 +207,7 @@ public class ImpMan : MonoBehaviour
 
                 for (int i = 0; i < numProgressiveRenderGroups; i++)
                 {
-                    layerCullDistances[impostorRenderLayer - i] = closestRadius + 5f;
+                    layerCullDistances[impostorRenderLayer - i] = closestRadius + 1;
                 }
 
                 Camera.main.layerCullDistances = layerCullDistances;
