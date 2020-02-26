@@ -202,6 +202,14 @@ public class ImpMan : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called when the impman is destroyed or scene ended
+    /// </summary>
+    private void OnDestroy()
+    {
+        ClearImpostorResources();
+    }
+
     bool hasCollectedObjectsIntoLayers = false;
 
     void RefreshImpostorLayer(ImpostorLayer layer)
@@ -340,11 +348,31 @@ public class ImpMan : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears all impostor surfaces. This does not free the resources they used.
+    /// Clears all impostor surfaces, textures and batches
     /// </summary>
-    private void ClearImpostorSurfaces()
+    private void ClearImpostorResources()
     {
+        // Clear surfaces
         impostorSurfaces.Clear();
+
+        // Clear batches
+        foreach (ImpostorBatch batch in impostorBatches)
+        {
+            Destroy(batch.gameObject);
+        }
+
+        impostorBatches.Clear();
+
+        // Clear textures
+        foreach (RenderTexture texture in impostorTextures)
+        {
+            texture.Release();
+        }
+
+        foreach (RenderTexture texture in impostorDepthTextures)
+        {
+            texture.Release();
+        }
     }
     
     /// <summary>
@@ -352,7 +380,9 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     public void SetConfiguration(ImpostorConfiguration configuration)
     {
-        // Restore impostors contianed in previous layers
+        Debug.Log("Setting impostor configuration");
+
+        // Restore impostinated.. objects in previous layers
         foreach (ImpostorLayer layer in impostorLayers)
         {
             foreach (Impostify impostable in layer.activeImpostors)
@@ -362,6 +392,12 @@ public class ImpMan : MonoBehaviour
                     renderer.gameObject.layer = 0;
                     renderer.enabled = true;
                 }
+            }
+
+            // remove cameras
+            if (layer.impostorCamera)
+            {
+                Destroy(layer.impostorCamera.gameObject);
             }
         }
 
@@ -393,7 +429,7 @@ public class ImpMan : MonoBehaviour
     private void InitImpostorLayers()
     {
         // Remove previous impostor surfaces
-        ClearImpostorSurfaces();
+        ClearImpostorResources();
 
         foreach (ImpostorLayer layer in impostorLayers)
         {

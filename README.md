@@ -33,6 +33,7 @@ See below the testing requirements of the project. A **+** means the correct fun
 * + Can the player climb walls?
 * + Can the player escape the level?
 * + Can the player break the slingshot functionality by spamming Shoot?
+* + Does the slingshot reliably hit balloons at high speed?
 Last test: 26/02/2020
 
 ## Stage: Data collection

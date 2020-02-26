@@ -87,21 +87,26 @@ public class ImpostorBatch : MonoBehaviour
         }
 
         // Refresh the material parameters
-        myMaterial.SetFloat("_Cutoff", 0.99f);
-        myMaterial.SetTexture("_MainTex", texture);
-        myMaterial.SetTexture("_DepthTex", depthTexture);
-        myMaterial.SetFloat("_DepthMin", nearPlane);
-        myMaterial.SetFloat("_DepthMax", farPlane);
+        if (myMaterial != null)
+        {
+            myMaterial.SetFloat("_Cutoff", 0.99f);
+            myMaterial.SetTexture("_MainTex", texture);
+            myMaterial.SetTexture("_DepthTex", depthTexture);
+            myMaterial.SetFloat("_DepthMin", nearPlane);
+            myMaterial.SetFloat("_DepthMax", farPlane);
+        }
     }
 
     private void RefreshMesh()
     {
-        Benchmark benchMeshRefresh = Benchmark.Start();
         if (myMesh == null)
         {
             // Create the empty mesh and material
             myMesh = new Mesh();
-            myMaterial = new Material(ImpMan.singleton.impostorShader);
+            if (ImpMan.singleton.impostorShader)
+            {
+                myMaterial = new Material(ImpMan.singleton.impostorShader);
+            }
 
             GetComponent<MeshFilter>().sharedMesh = myMesh;
             GetComponent<MeshRenderer>().material = myMaterial;
@@ -116,8 +121,6 @@ public class ImpostorBatch : MonoBehaviour
         myMesh.SetIndices(indexes, MeshTopology.Triangles, 0);
         myMesh.uv = uvs;
         myMesh.RecalculateBounds();
-
-        //Debug.Log($"Mesh refresh: {benchMeshRefresh.ms}");
 
         isMeshInvalidated = false;
     }

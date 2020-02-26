@@ -43,6 +43,6 @@ public class SurveyBox : MonoBehaviour
     /// </summary>
     public void OnChange()
     {
-        GameManager.singleton.data.sessionData[$"{entryName}{GameManager.singleton.impostorConfigurationName}"] = ((int)slider.value).ToString();
+        GameManager.singleton.data.sessionData[$"{entryName}{GameManager.singleton.impostorConfigurationName}"] = slider.value.ToString("0.00");
     }
 }
