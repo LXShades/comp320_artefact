@@ -232,6 +232,13 @@ public class Impostify : MonoBehaviour
             for (int i = 0; i < meshes.Length; i++)
             {
                 Mesh mesh = meshes[i];
+
+                if (!mesh.isReadable)
+                {
+                    // uh... to do static stuff?
+                    continue;
+                }
+
                 Vector3[] vertices = mesh.vertices;
                 float totalScale = 1;
                 Transform currentTransform = renderers[i].transform;
