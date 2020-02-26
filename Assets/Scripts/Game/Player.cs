@@ -171,10 +171,17 @@ public class Player : MonoBehaviour
         if (Time.deltaTime > 0 && velocity.sqrMagnitude > 0)
         {
             Vector3 lastPosition = transform.position;
+            Vector3 lastVelocity = velocity;
             CollisionFlags collisions;
             collisions = controller.Move(velocity * Time.deltaTime);
 
             isOnGround = collisions.HasFlag(CollisionFlags.Below);
+
+            // Adjust velocity based on the movement occurred
+            if (velocity.y > lastVelocity.y && lastVelocity.y <= 0)
+            {
+                velocity.y = lastVelocity.y; // no rocket boosts, but also don't constantly accelerate down
+            }
 
             if (isOnGround && velocity.y < 0)
             {
@@ -186,6 +193,7 @@ public class Player : MonoBehaviour
                 velocity = (transform.position - lastPosition) / Time.deltaTime;
             }
 
+            // Record this movement
             distanceTravelled += velocity.magnitude * Time.deltaTime;
         }
     }
