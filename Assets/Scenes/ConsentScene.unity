@@ -1734,7 +1734,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: I would like to participte and I understand my right to withdraw at any
+  m_Text: I would like to participate and I understand my right to withdraw at any
     time.
 --- !u!222 &1534640070
 CanvasRenderer:
