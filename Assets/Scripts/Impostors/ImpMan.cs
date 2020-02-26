@@ -131,7 +131,7 @@ public class ImpMan : MonoBehaviour
     private void Update()
     {
         // Enable/disable impostors in general
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.I))
         {
             enableImpostors = !enableImpostors;
 

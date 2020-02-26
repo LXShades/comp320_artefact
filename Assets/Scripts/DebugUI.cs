@@ -85,7 +85,7 @@ public class DebugUI : MonoBehaviour
 
         // Show debug toggles
         debugToggles.text = "";
-        debugToggles.text += $"EnableImpostors (Space): {ImpMan.singleton.enableImpostors}\n";
+        debugToggles.text += $"EnableImpostors (I): {ImpMan.singleton.enableImpostors}\n";
         debugToggles.text += $"ActivateCam (C): {ImpMan.singleton.activateImpostorCamera}\n";
         debugToggles.text += $"FreezeImpostors (F): {ImpMan.singleton.freezeImpostors}\n";
         debugToggles.text += $"Backgrounds (B): Unknown, toggle them\n";

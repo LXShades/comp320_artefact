@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -418,7 +418,7 @@ MonoBehaviour:
     Hold and release left-click to fire your slingshot!
 
 
-    Move through the level and pop the balloons as fast as possible!
+    Pop the balloons as fast as possible as you progress!
 
 
     Good luck!'
@@ -930,15 +930,14 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "Hello! I'm Louis. I\u2019m a third-year BSc Computing for Games student
-    here in the Games Academy.\n\nI\u2019m doing a research project for a big fat
-    assignment, and I\u2019d like to invite you, Respected and Beautiful Gamer\u2122,
-    to play my game so I can play the educational system.\n\nThis game is a first-person
-    shooter with an experimental graphics component under testing. Your procrastination
-    I mean participation will take about 15 minutes.\n\nThis is completely voluntary
-    and you may withdraw at any time for any reason, in accordance with the Falmouth
-    Ethics Research Policy.\r You can withdraw this by leaving the laptop and smiling
-    awkwardly at me once you've seen I'm still standing here watching you commit the
-    sin of changing your mind."
+    in the Games Academy.\n\nI\u2019m doing a research project for a big fat assignment,
+    and I\u2019d like to invite you, Respected and Beautiful Gamer\u2122, to play
+    my game so I can play the educational system.\n\nThis game is a first-person shooter
+    with an experimental graphics feature. Your procrastination I mean participation
+    will take about 15 minutes.\n\nThis is completely voluntary and you may withdraw
+    at any time for any reason, in accordance with the Falmouth Ethics Research Policy.\r
+    You can withdraw this by leaving the laptop and smiling awkwardly at me once you've
+    seen I'm still standing here watching you commit the sin of changing your mind."
 --- !u!222 &865349474
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1017,8 +1016,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: I consent to having this data recorded, processed, and finally overwritten
-    with cat videos.
+  m_Text: I consent to having this data recorded, processed, and eventually gratuitously
+    overwritten with cat videos.
 --- !u!222 &935959073
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1532,9 +1531,9 @@ MonoBehaviour:
     file. It is entirely anonymous and cannot be individually linked to you.\n\nThe
     data will be turned into stunningly attractive lines and rectangles to support
     my findings and make me look real smart.\n\nData processing will be conducted
-    by myself, with help from the relevant computing staff.\n\nThe data will be retained
-    for about six months, after which it will be destroyed and violently overwritten
-    with cat videos in compliance with data regulation\rs."
+    by myself only. The data will be retained for about six months, after which it
+    will be destroyed and violently overwritten with cat videos in compliance with
+    data regulation\rs."
 --- !u!222 &1397365097
 CanvasRenderer:
   m_ObjectHideFlags: 0
