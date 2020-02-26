@@ -175,3 +175,42 @@ The second condition is uncertain. This needs testing on the laptop hardware. Th
 * Investigate and fix aforementioned layering issues
 * Profile the development build on laptop hardware
 * Implement experiment impostor configurations
+
+# 26/02/2020
+## Overview
+Panic! There is no time! We summarise the remaining goals for the week.
+
+### Replanning:
+* Revise the questionnaire
+* Revise the choice of data collection
+
+### Development
+* Make final optimisations to try and gain frame rate boost.
+* Add non-relative questions using a red marker instead to show previous answer
+
+### Polish
+* Run a stress test and report to buglist
+* Fix all known bugs (rocket bosting)
+
+## On questionnaire:
+The questionnaire's objective is to determine whether a mixed frame rate would be a favourable option for players compared to a low frame rate overall.
+
+Some tidbits from the Game Experience Questionnaire
+* I felt skilful
+* I thought it was fun
+* I felt competent
+* It was aesthetically pleasing
+* I felt good
+* I was fast at reaching the game's targets
+* I felt pressured
+* I felt challenged
+* I felt frustrated
+
+Some additional ones to look at
+* The gameplay felt smooth
+
+## On data collection
+We currently collect FPS and player movement. But that may not be indicative of player performance.
+
+Claypool's 2007 study measured major differences in the number of times a bot was shot.
+
