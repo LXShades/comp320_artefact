@@ -888,6 +888,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3204399977521100551, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -56.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3204399977521100551, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.25
+      objectReference: {fileID: 0}
     - target: {fileID: 7255659231219037994, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
         type: 3}
       propertyPath: m_Camera
@@ -903,20 +913,30 @@ PrefabInstance:
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 348854506644736083, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -9.744995
+      objectReference: {fileID: 0}
     - target: {fileID: 4537097570497526258, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -20.715027
       objectReference: {fileID: 0}
-    - target: {fileID: 8522863114414011287, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1.699997
-      objectReference: {fileID: 0}
-    - target: {fileID: 8522863114414011287, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+    - target: {fileID: 1977090239021479851, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -13.285004
+      value: 48.300003
+      objectReference: {fileID: 0}
+    - target: {fileID: 8506336570765140860, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -39.300003
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179808787318423266, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f984b484cdf1d7444a1dfecd2e9c9b57, type: 3}

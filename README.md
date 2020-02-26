@@ -31,7 +31,7 @@ See below the testing requirements of the project. A **+** means the correct fun
 ### Stress testing
 * + Do spawners reliably activate if the player attempts to jump around the invisible triggers?
 * + Can the player climb walls?
-* - Can the player escape the level?
+* + Can the player escape the level?
 * + Can the player break the slingshot functionality by spamming Shoot?
 Last test: 26/02/2020
 

@@ -21,6 +21,8 @@ public class PlayerUI : MonoBehaviour
     public GameObject completeScreen;
     // Survey screen
     public GameObject surveyScreen;
+    // Debug UI
+    public GameObject debugUi;
 
     void Start()
     {
@@ -28,6 +30,11 @@ public class PlayerUI : MonoBehaviour
         completeScreen.SetActive(true);
         surveyScreen.SetActive(false);
         endScreen.SetActive(false);
+
+        if (GameManager.isDebugBuild && debugUi)
+        {
+            debugUi.SetActive(true);
+        }
     }
 
     void Update()

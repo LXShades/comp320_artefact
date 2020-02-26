@@ -29,6 +29,12 @@ public class GameManager : MonoBehaviour
     }
     private static GameManager _singleton;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    public static bool isDebugBuild = true;
+#else
+    public static bool isDebugBuild = false;
+#endif
+
     /// <summary>
     /// Retrieves the player
     /// </summary>
@@ -158,6 +164,14 @@ public class GameManager : MonoBehaviour
 
         // Call the missed OnSceneLoad
         OnSceneLoad(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+
+        // Allow immediate testing in the SunTemple scnee
+#if UNITY_EDITOR
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == levelName)
+        {
+            StartSequence();
+        }
+#endif
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -166,16 +180,36 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        // Take screenshots
-        if (Input.GetKeyDown(KeyCode.F12))
+        if (isDebugBuild)
         {
-            ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
-        }
+            // Take screenshots
+            if (Input.GetKeyDown(KeyCode.F12))
+            {
+                ScreenCapture.CaptureScreenshot($"Screenshot {System.DateTime.Now.ToLongTimeString().Replace(":", "-")}.png");
+            }
 
-        // Restart level
-        if (Input.GetKeyDown(KeyCode.ScrollLock))
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+            // Restart level
+            if (Input.GetKeyDown(KeyCode.ScrollLock))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+            }
+
+            // Changes impostor configuration
+            if (Input.GetKeyDown(KeyCode.Equals))
+            {
+                Debug.Log("Changing impostor config");
+
+                impostorConfigByRound[currentRound] = (impostorConfigByRound[currentRound] + 1) % impostorConfigurations.Length;
+                SetImpostorConfiguration(impostorConfigByRound[currentRound]);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Minus))
+            {
+                Debug.Log("Changing impostor config");
+
+                impostorConfigByRound[currentRound] = ((impostorConfigByRound[currentRound] - 1) + impostorConfigurations.Length) % impostorConfigurations.Length;
+                SetImpostorConfiguration(impostorConfigByRound[currentRound]);
+            }
         }
     }
 #endif

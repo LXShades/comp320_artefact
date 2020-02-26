@@ -90,18 +90,5 @@ public class DebugUI : MonoBehaviour
         debugToggles.text += $"FreezeImpostors (F): {ImpMan.singleton.freezeImpostors}\n";
         debugToggles.text += $"Backgrounds (B): Unknown, toggle them\n";
         debugToggles.text += $"Impostor config (+/-): {GameManager.singleton.impostorConfigurationName}";
-
-        // Process debug toggles
-        //ImpMan.singleton.enableImpostors ^= Input.GetKeyDown(KeyCode.Space);
-        ImpMan.singleton.activateImpostorCamera ^= Input.GetKeyDown(KeyCode.C);
-        ImpMan.singleton.freezeImpostors ^= Input.GetKeyDown(KeyCode.F);
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            foreach (ImpostorLayer layer in ImpMan.singleton.impostorLayers)
-            {
-                layer.debugFillBackground = !layer.debugFillBackground;
-            }
-        }
     }
 }

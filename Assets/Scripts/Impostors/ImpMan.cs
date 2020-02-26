@@ -130,28 +130,9 @@ public class ImpMan : MonoBehaviour
 
     private void Update()
     {
-        // Enable/disable impostors in general
-        if (Input.GetKeyDown(KeyCode.I))
+        if (GameManager.isDebugBuild)
         {
-            enableImpostors = !enableImpostors;
-
-            if (!enableImpostors)
-            {
-                foreach (ImpostorLayer layer in impostorLayers)
-                {
-                    layer.impostorCamera.camera.enabled = false;
-                }
-
-                // allow the main camera to render everything again
-                Camera.main.cullingMask = ~0;
-                Camera.main.farClipPlane = oldFarClipPlane;
-                Camera.main.layerCullDistances = new float[32];
-            }
-
-            foreach (ImpostorBatch batch in impostorBatches)
-            {
-                batch.GetComponent<MeshRenderer>().enabled = enableImpostors;
-            }
+            ProcessDebugCommands();
         }
 
         if (enableImpostors)
@@ -163,7 +144,8 @@ public class ImpMan : MonoBehaviour
 
                 if (!freezeImpostors)
                 {
-                    if ((int)(Time.time * layer.updateRate) != (int)((Time.time - Time.deltaTime) * layer.updateRate))
+                    // check if the update interval has passed
+                    if ((int)(Time.time * layer.updateRate * numProgressiveRenderGroups) != (int)((Time.time - Time.deltaTime) * layer.updateRate * numProgressiveRenderGroups))
                     {
                         RefreshImpostorLayer(layer);
                         hasLayerUpdated = true;
@@ -220,7 +202,7 @@ public class ImpMan : MonoBehaviour
         }
     }
 
-    bool didTheThing = false;
+    bool hasCollectedObjectsIntoLayers = false;
 
     void RefreshImpostorLayer(ImpostorLayer layer)
     {
@@ -229,7 +211,7 @@ public class ImpMan : MonoBehaviour
 
         Benchmark benchCollect = Benchmark.Start();
 
-        if (!didTheThing)
+        if (!hasCollectedObjectsIntoLayers)
         {
             // Regroup impostors into appropriate layers
             foreach (Impostify impostable in impostables)
@@ -245,7 +227,7 @@ public class ImpMan : MonoBehaviour
                 }
             }
         }
-        didTheThing = true; // hack...
+        hasCollectedObjectsIntoLayers = true; // hack...
         numRenderers++; // more hack...
 
         // Don't bother if there's nothing to draw
@@ -420,6 +402,48 @@ public class ImpMan : MonoBehaviour
 
             // Reserve the impostor surface
             layer.surface = ReserveImpostorSurface(0, 0);
+        }
+    }
+
+    /// <summary>
+    /// Processes impostor-related debug toggles and inputs
+    /// </summary>
+    void ProcessDebugCommands()
+    {
+        // Enable/disable impostors overall
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            enableImpostors = !enableImpostors;
+
+            if (!enableImpostors)
+            {
+                foreach (ImpostorLayer layer in impostorLayers)
+                {
+                    layer.impostorCamera.camera.enabled = false;
+                }
+
+                // allow the main camera to render everything again
+                Camera.main.cullingMask = ~0;
+                Camera.main.farClipPlane = oldFarClipPlane;
+                Camera.main.layerCullDistances = new float[32];
+            }
+
+            foreach (ImpostorBatch batch in impostorBatches)
+            {
+                batch.GetComponent<MeshRenderer>().enabled = enableImpostors;
+            }
+        }
+
+        // Misc debug toggles
+        activateImpostorCamera ^= Input.GetKeyDown(KeyCode.C);
+        freezeImpostors ^= Input.GetKeyDown(KeyCode.F);
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            foreach (ImpostorLayer layer in ImpMan.singleton.impostorLayers)
+            {
+                layer.debugFillBackground = !layer.debugFillBackground;
+            }
         }
     }
 }
