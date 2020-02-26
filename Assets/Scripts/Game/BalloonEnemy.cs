@@ -80,11 +80,7 @@ public class BalloonEnemy : MonoBehaviour
             GameManager.singleton.numPoppedBalloons++;
         }
 
-        if (collision.collider.GetComponent<BalloonEnemy>() != null)
-        {
-            ;// velocity += collision.relativeVelocity;
-        }
-        else
+        if (collision.collider.GetComponent<BalloonEnemy>() == null)
         {
             // Die
             Pop();
@@ -93,7 +89,7 @@ public class BalloonEnemy : MonoBehaviour
 
     public void Pop()
     {
-        // Record the data (but not if self-destructed; this gives an unuseful value of 5 every time)
+        // Record the data (but not if self-destructed; that would give an unuseful value of 5 every time)
         if (Time.time - spawnTime < selfDestructTime)
         {
             GameManager.singleton.balloonPopLifetimes.Add(Time.time - spawnTime);

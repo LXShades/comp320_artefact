@@ -48,7 +48,7 @@ public class RockProjectile : MonoBehaviour
     /// <param name="targetPosition">Target to travel towards</param>
     public void Shoot(Vector3 targetPosition)
     {
-        rb.velocity = (targetPosition - transform.position).normalized * speed;
+        rb.AddForce((targetPosition - transform.position).normalized * speed, ForceMode.VelocityChange);
         rb.AddTorque(Random.onUnitSphere * spinSpeed, ForceMode.Impulse);
     }
 
