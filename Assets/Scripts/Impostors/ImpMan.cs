@@ -120,10 +120,7 @@ public class ImpMan : MonoBehaviour
 
     private void Start()
     {
-        foreach (ImpostorLayer layer in impostorLayers)
-        {
-            layer.surface = ReserveImpostorSurface(1024, 1024);
-        }
+        InitImpostorLayers();
 
         oldFarClipPlane = Camera.main.farClipPlane;
     }
@@ -358,7 +355,10 @@ public class ImpMan : MonoBehaviour
         // Clear batches
         foreach (ImpostorBatch batch in impostorBatches)
         {
-            Destroy(batch.gameObject);
+            if (batch != null && batch.gameObject != null)
+            {
+                Destroy(batch.gameObject);
+            }
         }
 
         impostorBatches.Clear();
@@ -373,6 +373,9 @@ public class ImpMan : MonoBehaviour
         {
             texture.Release();
         }
+
+        impostorTextures.Clear();
+        impostorDepthTextures.Clear();
     }
     
     /// <summary>
@@ -380,7 +383,7 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     public void SetConfiguration(ImpostorConfiguration configuration)
     {
-        Debug.Log("Setting impostor configuration");
+        Debug.Log("Setting impostor configuration...");
 
         // Restore impostinated.. objects in previous layers
         foreach (ImpostorLayer layer in impostorLayers)
