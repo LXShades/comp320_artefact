@@ -214,3 +214,5 @@ We currently collect FPS and player movement. But that may not be indicative of 
 
 Claypool's 2007 study measured major differences in the number of times a bot was shot.
 
+## Stress test
+Game stress test reveals the player can escape the level. This calls for more INVISIBLE WALLS.

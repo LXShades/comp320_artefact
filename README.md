@@ -4,7 +4,7 @@ This is a simple shooting game utilising an impostor-based rendering system in t
 That is my dissertation proposal in less than 1% of the words. Inflation is high in this market!
 
 # Project Status
-See below the testing requirements of the project. A **+** means the target has been met. A **-** means it was not satisfied. A **?** means that the test has not been conducted, or is out of date and need retesting.
+See below the testing requirements of the project. A **+** means the correct functionality occurs. A **-** means the feature or issue needs fixing or changing. A **?** means that the test has not been conducted, or is out of date and need retesting.
 
 ## Stage: Impostor Engine
 ### Requirements testing
@@ -29,11 +29,11 @@ See below the testing requirements of the project. A **+** means the target has 
 * + Is the player stopped when the game ends?
 
 ### Stress testing
-* ? Do spawners reliably activate if the player attempts to jump around the invisible triggers?
-* ? Can the player climb walls?
-* ? Can the player escape the level?
-* ? Can the player break the slingshot functionality by spamming Shoot?
-* ? Can the player for once have mercy on my sensitive programmer soul
+* + Do spawners reliably activate if the player attempts to jump around the invisible triggers?
+* + Can the player climb walls?
+* - Can the player escape the level?
+* + Can the player break the slingshot functionality by spamming Shoot?
+Last test: 26/02/2020
 
 ## Stage: Data collection
 ### Requirements testing
