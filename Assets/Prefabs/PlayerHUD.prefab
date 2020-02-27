@@ -355,20 +355,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questions:
-  - description: I felt skilful
-    dataColumn: skilful
   - description: I felt challenged
     dataColumn: challenge
+  - description: I felt skilful
+    dataColumn: skilful
   - description: I thought it was fun
     dataColumn: fun
-  - description: I felt competent
-    dataColumn: competent
-  - description: I felt pressured
-    dataColumn: pressure
   - description: It was aesthetically pleasing
     dataColumn: aesthetic
-  - description: I was fast at reaching the game's targets
-    dataColumn: targets
   - description: I felt frustrated
     dataColumn: frustration
   surveyBox: {fileID: 4556520111158064459}

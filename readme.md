@@ -45,6 +45,7 @@ Last test: 26/02/2020
 * - Does the frame rate data match the game's performance?
 * + Is the data associated with the active impostor configuration correctly?
 * + Does the questionnaire data match the user's responses?
+* - Is the number of shots fired recorded correctly?
 
 ### Stress testing
 * + Does the log file continue to collate the correct data when the game is run two times or more?

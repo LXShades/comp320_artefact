@@ -222,7 +222,9 @@ Game stress test reveals the player can escape the level. This calls for more IN
 Playtest time. We'll add the requirements above to the test conditions and continue shortly. This is a basic requirements test to reevaluate current priorities.
 
 Asides from those, tasks today will likely include:
-* Revise gameplay data collection (accuracy? number of kills? etc)
-* Adjust map to place balloons in sensible places
+* Add accuracy to gameplay data collection
+* Fix FPS in data collection
+* Adjust map to place balloons in front of buildings, etc
 * Add the red tick to the questionnaire responses
+* Reduce number of questions
 * Optimise, optimise, optimise
