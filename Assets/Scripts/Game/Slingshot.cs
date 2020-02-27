@@ -35,6 +35,9 @@ public class Slingshot : MonoBehaviour
     // Causes the slingshot to fire on the next frame that it's not charged
     private bool doFireWhenCharged = false;
 
+    // Data recording
+    [HideInInspector] public int numShotsFired = 0;
+
     void Awake()
     {
         animation = GetComponent<Animation>();
@@ -105,6 +108,9 @@ public class Slingshot : MonoBehaviour
         // Play the shooting animation
         animation.clip = fire;
         animation.Play();
+
+        // shots fired!
+        numShotsFired++;
     }
 
     public void OnProjectileDetach()

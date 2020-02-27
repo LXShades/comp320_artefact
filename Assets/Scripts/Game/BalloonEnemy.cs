@@ -16,9 +16,12 @@ public class BalloonEnemy : MonoBehaviour
     public Vector3 velocity;
     // Particles to spawn when the balloon pops
     public GameObject popParticles;
+    // How the object scales over time
+    public AnimationCurve scaleCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
     // Spawn point of the balloon
     private Vector3 initialPosition;
+    private Vector3 initialScale;
     // Time.time at spawn
     private float spawnTime;
 
@@ -30,13 +33,19 @@ public class BalloonEnemy : MonoBehaviour
 
     void Awake()
     {
+        // Store initial spawn ifno
         initialPosition = transform.position;
+        initialScale = transform.localScale;
         spawnTime = Time.time;
 
         wobbleAxis = (transform.position - GameManager.singleton.player.transform.position).normalized;
 
         rb = GetComponent<Rigidbody>();
 
+        // Don't pop in
+        transform.localScale = Vector3.zero;
+
+        // Data collection schtuff
         GameManager.singleton.numTotalBalloons++;
     }
 
@@ -49,6 +58,9 @@ public class BalloonEnemy : MonoBehaviour
         transform.position = initialPosition + velocity * aliveTime;
         // and bob
         transform.localRotation = Quaternion.AngleAxis(Mathf.Sin(wobbleRate * Mathf.PI * aliveTime) * wobbleAmount, wobbleAxis);
+
+        // Scale up (so we can legally spawn objects in plain sight)
+        transform.localScale = initialScale * scaleCurve.Evaluate(aliveTime);
 
         // Pass the momentum onto the rigidbody so collisions can be detected
         rb.velocity = velocity;

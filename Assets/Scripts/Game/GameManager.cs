@@ -162,9 +162,6 @@ public class GameManager : MonoBehaviour
         // Don't destroy this object when we change scenes
         DontDestroyOnLoad(this);
 
-        // Call the missed OnSceneLoad
-        OnSceneLoad(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-
         // Allow immediate testing in the SunTemple scnee
 #if UNITY_EDITOR
         if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == levelName)
@@ -172,9 +169,11 @@ public class GameManager : MonoBehaviour
             StartSequence();
         }
 #endif
+
+        // Call the missed OnSceneLoad
+        OnSceneLoad(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), UnityEngine.SceneManagement.SceneManager.GetActiveScene());
     }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
     /// <summary>
     /// Provides some debug functionality
     /// </summary>
@@ -211,8 +210,10 @@ public class GameManager : MonoBehaviour
                 SetImpostorConfiguration(impostorConfigByRound[currentRound]);
             }
         }
+
+        // Update FPS tracking
+        fpsSampler.Update();
     }
-#endif
 
     /// <summary>
     /// Generates and starts the impostor sequence from the list of configurations provided
@@ -282,6 +283,7 @@ public class GameManager : MonoBehaviour
 
         data.sessionData[$"fps{impostorConfigurationName}"] = fpsSampler.GetAverageFps().ToString();
         data.sessionData[$"travelled{impostorConfigurationName}"] = player.distanceTravelled.ToString();
+        data.sessionData[$"shotsFired{impostorConfigurationName}"] = player.slingshot.numShotsFired.ToString();
         data.sessionData[$"balloonLifetime{impostorConfigurationName}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();
         data.sessionData[$"balloonsPopped{impostorConfigurationName}"] = numPoppedBalloons.ToString();
         data.sessionData[$"balloonsSeen{impostorConfigurationName}"] = numTotalBalloons.ToString();
@@ -327,6 +329,8 @@ public class GameManager : MonoBehaviour
 
         if (activeImpostorConfiguration < impostorConfigurations.Length)
         {
+            Debug.Log($"Setting impostor config to {activeImpostorConfiguration}/{impostorConfigurationName}");
+
             // Initialise ImpMan impostor configuration
             SetImpostorConfiguration(activeImpostorConfiguration);
         }
