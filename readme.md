@@ -13,6 +13,7 @@ See below the testing requirements of the project. A **+** means the correct fun
 * ? Do the layers adequately frame the objects within them?
 * ? Does the impostor system advance when the player completes a level?
 * ? Does the impostor system exhaustively advance to every state?
+* ? Do the impostors correctly occlude interactive objects and each other?
 
 ### Stress testing
 * ? Does the impostor system perform above or at least on par with regular rendering?
@@ -22,18 +23,19 @@ See below the testing requirements of the project. A **+** means the correct fun
 * + Can the player shoot all balloons?
 * + Can the player play all rounds?
 * + Do the balloons spawn when the player enters the trigger area?
-* + Does the player's slingshot shoot reliably?
+* + Does the player's slingshot shoot and hit reliably?
 * + Does the score count increase as the player shoots balloons?
 * + Does the next round begin after the player completes a level?
 * + Can the player complete the level?
 * + Is the player stopped when the game ends?
+* ? Are the balloons easy to notice and hard to miss as you progress?
+Last test: 27/02/2020
 
 ### Stress testing
 * + Do spawners reliably activate if the player attempts to jump around the invisible triggers?
 * + Can the player climb walls?
 * + Can the player escape the level?
 * + Can the player break the slingshot functionality by spamming Shoot?
-* + Does the slingshot reliably hit balloons at high speed?
 Last test: 26/02/2020
 
 ## Stage: Data collection
@@ -41,7 +43,7 @@ Last test: 26/02/2020
 * + Do the questions all appear in sequence after each round?
 * + Does the balloon lifetime data match the player's gameplay performance?
 * - Does the frame rate data match the game's performance?
-* ? Is the data associated with the active impostor configuration correctly?
+* + Is the data associated with the active impostor configuration correctly?
 * + Does the questionnaire data match the user's responses?
 
 ### Stress testing

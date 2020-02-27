@@ -216,3 +216,13 @@ Claypool's 2007 study measured major differences in the number of times a bot wa
 
 ## Stress test
 Game stress test reveals the player can escape the level. This calls for more INVISIBLE WALLS.
+
+# 27/02/2020
+## Overview
+Playtest time. We'll add the requirements above to the test conditions and continue shortly. This is a basic requirements test to reevaluate current priorities.
+
+Asides from those, tasks today will likely include:
+* Revise gameplay data collection (accuracy? number of kills? etc)
+* Adjust map to place balloons in sensible places
+* Add the red tick to the questionnaire responses
+* Optimise, optimise, optimise
