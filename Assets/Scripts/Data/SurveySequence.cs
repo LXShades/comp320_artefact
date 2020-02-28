@@ -23,6 +23,10 @@ public class SurveySequence : MonoBehaviour
     // The list of questions 
     public SurveyQuestion[] questions = new SurveyQuestion[0];
 
+    // Tracks the responses previously made by the player
+    private static Dictionary<string, float> previousResponses = new Dictionary<string, float>();
+    private static Dictionary<string, float> currentResponses = new Dictionary<string, float>();
+
     // The survey box to update as we progress through the survey
     public SurveyBox surveyBox;
 
@@ -47,8 +51,18 @@ public class SurveySequence : MonoBehaviour
     public void SetQuestion(int questionIndex)
     {
         surveyBox.description = questions[questionIndex].description;
-        surveyBox.entryName = questions[questionIndex].dataColumn;
-        surveyBox.slider.value = 3;
+        surveyBox.surveyQuestionIndex = questionIndex;
+
+        if (previousResponses.ContainsKey(questions[questionIndex].dataColumn))
+        {
+            surveyBox.value = surveyBox.previousValue;
+            surveyBox.previousValue = previousResponses[questions[questionIndex].dataColumn];
+        }
+        else
+        {
+            surveyBox.value = 3;
+            surveyBox.previousValue = -1;
+        }
 
         if (currentQuestionIndex == questions.Length - 1)
         {
@@ -74,6 +88,14 @@ public class SurveySequence : MonoBehaviour
     {
         if (currentQuestionIndex < questions.Length - 1)
         {
+            // Record this responsee
+            float response = currentResponses[questions[currentQuestionIndex].dataColumn];
+
+            GameManager.singleton.data.sessionData[$"{currentQuestionIndex}{GameManager.singleton.impostorConfigurationName}"] = response.ToString("0.00");
+
+            previousResponses[questions[currentQuestionIndex].dataColumn] = response;
+
+            // Move to next question
             currentQuestionIndex++;
 
             SetQuestion(currentQuestionIndex);
@@ -90,5 +112,12 @@ public class SurveySequence : MonoBehaviour
     public void OnClickedSlider()
     {
         continueButton.interactable = true;
+    }
+
+    public void SetQuestionValue(int questionIndex, float value)
+    {
+        currentResponses[questions[questionIndex].dataColumn] = value;
+
+        surveyBox.previousValue = value;
     }
 }

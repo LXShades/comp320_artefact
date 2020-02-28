@@ -14,8 +14,50 @@ public class SurveyBox : MonoBehaviour
     // Slider tracking the user's response
     public Slider slider;
 
-    // Name of the data column that this survey box applies to
-    public string entryName;
+    // Marker showing the user's previous response
+    public Canvas previousMarker;
+
+    // Current survey question index of parent SurveySequence
+    [HideInInspector]
+    public int surveyQuestionIndex = 0;
+
+    // Parent survey sequence
+    private SurveySequence parentSequence;
+
+    // Sets or retrieves the user's current response value
+    public float value
+    {
+        set
+        {
+            slider.value = value;
+        }
+        get
+        {
+            return slider.value;
+        }
+    }
+
+    // Sets or receives the marker of the previous value's position, or -1 for none
+    public float previousValue
+    {
+        get
+        {
+            return _previousValue;
+        }
+        set
+        {
+            _previousValue = value;
+
+            RectTransform rect = previousMarker.GetComponent<RectTransform>();
+            RectTransform parentRect = previousMarker.transform.parent.GetComponent<RectTransform>();
+
+            rect.anchoredPosition = new Vector3(rect.anchoredPosition.x, (slider.maxValue - value) / (slider.maxValue - slider.minValue) * -parentRect.sizeDelta.y);
+
+            previousMarker.gameObject.SetActive(value > 0);
+        }
+    }
+    private float _previousValue;
+
 
     // Retrieves or sets the description directly
     public string description
@@ -35,6 +77,8 @@ public class SurveyBox : MonoBehaviour
     /// </summary>
     void Start()
     {
+        parentSequence = GetComponentInParent<SurveySequence>();
+
         OnChange();
     }
 
@@ -43,6 +87,6 @@ public class SurveyBox : MonoBehaviour
     /// </summary>
     public void OnChange()
     {
-        GameManager.singleton.data.sessionData[$"{entryName}{GameManager.singleton.impostorConfigurationName}"] = slider.value.ToString("0.00");
+        parentSequence.SetQuestionValue(surveyQuestionIndex, slider.value);
     }
 }
