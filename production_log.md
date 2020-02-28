@@ -228,3 +228,8 @@ Asides from those, tasks today will likely include:
 * Add the red tick to the questionnaire responses
 * Reduce number of questions
 * Optimise, optimise, optimise
+
+# 28/02/2020
+Adding in the red tick.
+
+Then finalising some example configurations

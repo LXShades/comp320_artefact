@@ -57,13 +57,11 @@ public class SurveySequence : MonoBehaviour
         {
             surveyBox.value = previousResponses[questions[questionIndex].dataColumn];
             surveyBox.previousValue = previousResponses[questions[questionIndex].dataColumn];
-            Debug.Log("Key found");
         }
         else
         {
             surveyBox.value = 3;
             surveyBox.previousValue = -1;
-            Debug.Log("Key not found");
         }
 
         if (currentQuestionIndex == questions.Length - 1)
@@ -78,7 +76,7 @@ public class SurveySequence : MonoBehaviour
             }
         }
 
-        questionsRemaining.text = $"{currentQuestionIndex + 1}/{questions.Length}";
+        questionsRemaining.text = $"question {currentQuestionIndex + 1}/{questions.Length}";
 
         continueButton.interactable = false;
     }
