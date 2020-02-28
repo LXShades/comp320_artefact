@@ -55,13 +55,15 @@ public class SurveySequence : MonoBehaviour
 
         if (previousResponses.ContainsKey(questions[questionIndex].dataColumn))
         {
-            surveyBox.value = surveyBox.previousValue;
+            surveyBox.value = previousResponses[questions[questionIndex].dataColumn];
             surveyBox.previousValue = previousResponses[questions[questionIndex].dataColumn];
+            Debug.Log("Key found");
         }
         else
         {
             surveyBox.value = 3;
             surveyBox.previousValue = -1;
+            Debug.Log("Key not found");
         }
 
         if (currentQuestionIndex == questions.Length - 1)
@@ -86,15 +88,15 @@ public class SurveySequence : MonoBehaviour
     /// </summary>
     public void OnClickedNextButton()
     {
+        // Record this responsee
+        float response = currentResponses[questions[currentQuestionIndex].dataColumn];
+
+        GameManager.singleton.data.sessionData[$"{questions[currentQuestionIndex].dataColumn}{GameManager.singleton.impostorConfigurationName}"] = response.ToString("0.00");
+
+        previousResponses[questions[currentQuestionIndex].dataColumn] = response;
+
         if (currentQuestionIndex < questions.Length - 1)
         {
-            // Record this responsee
-            float response = currentResponses[questions[currentQuestionIndex].dataColumn];
-
-            GameManager.singleton.data.sessionData[$"{currentQuestionIndex}{GameManager.singleton.impostorConfigurationName}"] = response.ToString("0.00");
-
-            previousResponses[questions[currentQuestionIndex].dataColumn] = response;
-
             // Move to next question
             currentQuestionIndex++;
 
@@ -114,10 +116,11 @@ public class SurveySequence : MonoBehaviour
         continueButton.interactable = true;
     }
 
+    /// <summary>
+    /// Sets the response value for a given question index
+    /// </summary>
     public void SetQuestionValue(int questionIndex, float value)
     {
         currentResponses[questions[questionIndex].dataColumn] = value;
-
-        surveyBox.previousValue = value;
     }
 }
