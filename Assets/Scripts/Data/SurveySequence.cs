@@ -40,7 +40,7 @@ public class SurveySequence : MonoBehaviour
     // Current question in the list of question that we're at
     int currentQuestionIndex = 0;
 
-    public void Start()
+    public void OnEnable()
     {
         SetQuestion(0);
     }
