@@ -165,6 +165,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void Start()
     {
+        // only allow one instance
+        if (singleton != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // Register the scene load callback
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneLoad;
 
@@ -175,7 +182,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == levelName)
         {
-            StartSequence();
+            StartFirstRound();
         }
 #endif
 
@@ -263,6 +270,8 @@ public class GameManager : MonoBehaviour
                 randomValues[smallestValueIndex] = float.MaxValue;
             }
 
+            Debug.Log($"StartSequence (first: {impostorConfigByRound[0]})");
+
             currentRound = 0;
         }
         else
@@ -320,6 +329,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void SetImpostorConfiguration(int configurationIndex)
     {
+        Debug.Log($"Setting impostor config to {configurationIndex}/{impostorConfigurations[configurationIndex].name}");
+
         ImpMan.singleton.SetConfiguration(impostorConfigurations[configurationIndex]);
     }
 
@@ -338,8 +349,6 @@ public class GameManager : MonoBehaviour
 
         if (activeImpostorConfiguration < impostorConfigurations.Length)
         {
-            Debug.Log($"Setting impostor config to {activeImpostorConfiguration}/{activeImpostorConfigurationSymbol}");
-
             // Initialise ImpMan impostor configuration
             SetImpostorConfiguration(activeImpostorConfiguration);
         }

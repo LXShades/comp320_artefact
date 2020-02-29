@@ -150,53 +150,5 @@ MonoBehaviour:
     layers: []
     enableMainCameraRendering: 1
     fpsCap: 30
-  - name: 
-    layers:
-    - updateRate: 5
-      minRadius: 15
-      maxRadius: 80
-      renderDistance: 50
-      debugFillBackground: 0
-      surface:
-        frontBufferDepth: {fileID: 0}
-        backBuffer: {fileID: 0}
-        backBufferDepth: {fileID: 0}
-        batch: {fileID: 0}
-        batchPlaneIndex: 0
-        owner: {fileID: 0}
-      activeImpostors: []
-      impostorCamera: {fileID: 0}
-      progressiveRenderGroup: 0
-      nextImpostorPosition: {x: 0, y: 0, z: 0}
-      nextImpostorSize:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 0
-        height: 0
-    - updateRate: 2
-      minRadius: 80
-      maxRadius: 500
-      renderDistance: 100
-      debugFillBackground: 0
-      surface:
-        frontBufferDepth: {fileID: 0}
-        backBuffer: {fileID: 0}
-        backBufferDepth: {fileID: 0}
-        batch: {fileID: 0}
-        batchPlaneIndex: 0
-        owner: {fileID: 0}
-      activeImpostors: []
-      impostorCamera: {fileID: 0}
-      progressiveRenderGroup: 0
-      nextImpostorPosition: {x: 0, y: 0, z: 0}
-      nextImpostorSize:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 0
-        height: 0
-    enableMainCameraRendering: 1
-    fpsCap: 0
-  levelTimeLimit: 2
+  levelTimeLimit: 20
   levelName: SunTemple

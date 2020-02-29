@@ -73,12 +73,18 @@ public class SurveyBox : MonoBehaviour
     }
 
     /// <summary>
-    /// Writes an initial value to the data file
+    /// Keep track of the parent component for setting question values
+    /// </summary>
+    private void Awake()
+    {
+        parentSequence = GetComponentInParent<SurveySequence>();
+    }
+
+    /// <summary>
+    /// Sets the initial value
     /// </summary>
     void Start()
     {
-        parentSequence = GetComponentInParent<SurveySequence>();
-
         OnChange();
     }
 
