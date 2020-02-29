@@ -76,7 +76,7 @@ public class SurveySequence : MonoBehaviour
             }
         }
 
-        questionsRemaining.text = $"question {currentQuestionIndex + 1}/{questions.Length}";
+        questionsRemaining.text = $"Question {currentQuestionIndex + 1} of {questions.Length}...";
 
         continueButton.interactable = false;
     }
@@ -89,7 +89,7 @@ public class SurveySequence : MonoBehaviour
         // Record this responsee
         float response = currentResponses[questions[currentQuestionIndex].dataColumn];
 
-        GameManager.singleton.data.sessionData[$"{questions[currentQuestionIndex].dataColumn}{GameManager.singleton.impostorConfigurationName}"] = response.ToString("0.00");
+        GameManager.singleton.data.sessionData[$"{questions[currentQuestionIndex].dataColumn}{GameManager.singleton.activeImpostorConfigurationSymbol}"] = response.ToString("0.00");
 
         previousResponses[questions[currentQuestionIndex].dataColumn] = response;
 

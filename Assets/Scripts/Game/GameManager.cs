@@ -106,12 +106,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Retrieves the name (letter) of the current impostor configuration
-    public string impostorConfigurationName
+    // Retrieves the symbol (letter identifier) of the current impostor configuration
+    public string activeImpostorConfigurationSymbol
     {
         get
         {
             return ((System.Char)('A' + activeImpostorConfiguration)).ToString();
+        }
+    }
+
+    // Retrieves the full name of the current impostor configuration (for debugging)
+    public string activeImpostorConfigurationName
+    {
+        get
+        {
+            return impostorConfigurations[activeImpostorConfiguration].name;
         }
     }
 
@@ -281,12 +290,12 @@ public class GameManager : MonoBehaviour
         float totalLifetime = 0;
         balloonPopLifetimes.ForEach(b => totalLifetime += b);
 
-        data.sessionData[$"fps{impostorConfigurationName}"] = fpsSampler.GetAverageFps().ToString();
-        data.sessionData[$"travelled{impostorConfigurationName}"] = player.distanceTravelled.ToString();
-        data.sessionData[$"shotsFired{impostorConfigurationName}"] = player.slingshot.numShotsFired.ToString();
-        data.sessionData[$"balloonLifetime{impostorConfigurationName}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();
-        data.sessionData[$"balloonsPopped{impostorConfigurationName}"] = numPoppedBalloons.ToString();
-        data.sessionData[$"balloonsSeen{impostorConfigurationName}"] = numTotalBalloons.ToString();
+        data.sessionData[$"fps{activeImpostorConfigurationSymbol}"] = fpsSampler.GetAverageFps().ToString();
+        data.sessionData[$"travelled{activeImpostorConfigurationSymbol}"] = player.distanceTravelled.ToString();
+        data.sessionData[$"shotsFired{activeImpostorConfigurationSymbol}"] = player.slingshot.numShotsFired.ToString();
+        data.sessionData[$"balloonLifetime{activeImpostorConfigurationSymbol}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();
+        data.sessionData[$"balloonsPopped{activeImpostorConfigurationSymbol}"] = numPoppedBalloons.ToString();
+        data.sessionData[$"balloonsSeen{activeImpostorConfigurationSymbol}"] = numTotalBalloons.ToString();
 
         if (currentRound + 1 < impostorConfigByRound.Length)
         {
@@ -329,7 +338,7 @@ public class GameManager : MonoBehaviour
 
         if (activeImpostorConfiguration < impostorConfigurations.Length)
         {
-            Debug.Log($"Setting impostor config to {activeImpostorConfiguration}/{impostorConfigurationName}");
+            Debug.Log($"Setting impostor config to {activeImpostorConfiguration}/{activeImpostorConfigurationSymbol}");
 
             // Initialise ImpMan impostor configuration
             SetImpostorConfiguration(activeImpostorConfiguration);

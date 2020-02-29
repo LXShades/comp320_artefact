@@ -89,6 +89,6 @@ public class DebugUI : MonoBehaviour
         debugToggles.text += $"ActivateCam (C): {ImpMan.singleton.activateImpostorCamera}\n";
         debugToggles.text += $"FreezeImpostors (F): {ImpMan.singleton.freezeImpostors}\n";
         debugToggles.text += $"Backgrounds (B): Unknown, toggle them\n";
-        debugToggles.text += $"Impostor config (+/-): {GameManager.singleton.impostorConfigurationName}";
+        debugToggles.text += $"Impostor config (+/-): {GameManager.singleton.activeImpostorConfigurationName} ({GameManager.singleton.activeImpostorConfigurationSymbol})";
     }
 }
