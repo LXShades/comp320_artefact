@@ -233,3 +233,10 @@ Asides from those, tasks today will likely include:
 Adding in the red tick.
 
 Then finalising some example configurations
+
+# 1/03/2020
+A final requirements test and stress test is conducted before pilot testing. See readme.
+
+The results showed satisfactory functionality across all domains with a few exceptions. The main exceptions include layers containing duplicate objects (where objects are rendered into the foreground layer as well as the first impostor layer) and some errors with the depth buffer dump.
+
+The game itself is felt satisfactory for pilot testing. We feel it would be useful to include a 'base' imposotor configuration as per the original design, so this has been included.

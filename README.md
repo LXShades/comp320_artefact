@@ -8,15 +8,17 @@ See below the testing requirements of the project. A **+** means the correct fun
 
 ## Stage: Impostor Engine
 ### Requirements testing
-* ? Does the impostor system visibly divide the scene into layers when viewed from an alternative angle?
-* ? Are the layers correctly ordered with no overlaps/duplicates of objects?
-* ? Do the layers adequately frame the objects within them?
-* ? Does the impostor system advance when the player completes a level?
-* ? Does the impostor system exhaustively advance to every state?
-* ? Do the impostors correctly occlude interactive objects and each other?
+* + Does the impostor system visibly divide the scene into layers when viewed from an alternative angle?
+* - Are the layers correctly ordered with no overlaps/duplicates of objects?
+* + Do the layers adequately frame the objects within them?
+* + Does the impostor system advance when the player completes a level?
+* + Does the impostor system exhaustively advance to every state?
+* - Do the impostors correctly occlude interactive objects and each other?
+Last test: 1/03/2020
 
 ### Stress testing
-* ? Does the impostor system perform above or at least on par with regular rendering?
+* - Does the impostor system perform above or at least on par with regular rendering?
+Last test: 1/03/2020
 
 ## Stage: Game
 ### Requirements testing
@@ -28,29 +30,32 @@ See below the testing requirements of the project. A **+** means the correct fun
 * + Does the next round begin after the player completes a level?
 * + Can the player complete the level?
 * + Is the player stopped when the game ends?
-* ? Are the balloons easy to notice and hard to miss as you progress?
-Last test: 27/02/2020
+* + Are the balloons easy to notice and hard to miss as you progress?
+Last test: 1/03/2020
 
 ### Stress testing
 * + Do spawners reliably activate if the player attempts to jump around the invisible triggers?
 * + Can the player climb walls?
 * + Can the player escape the level?
 * + Can the player break the slingshot functionality by spamming Shoot?
-Last test: 26/02/2020
+Last test: 1/03/2020
 
 ## Stage: Data collection
 ### Requirements testing
 * + Do the questions all appear in sequence after each round?
 * + Does the balloon lifetime data match the player's gameplay performance?
-* - Does the frame rate data match the game's performance?
+* + Does the frame rate data match the game's performance?
 * + Is the data associated with the active impostor configuration correctly?
 * + Does the questionnaire data match the user's responses?
-* - Is the number of shots fired recorded correctly?
+* + Is the number of shots fired recorded correctly?
+Last test: 1/03/2020
 
 ### Stress testing
 * + Does the log file continue to collate the correct data when the game is run two times or more?
+Last test: 1/03/2020
 
 ### Unit tests
 * + Do all unit tests pass?
+Last test: 1/03/2020
 
 See Scripts/Test_PlayMode/PlayModeTests source code for descriptively commented unit tests.

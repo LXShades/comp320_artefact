@@ -146,9 +146,13 @@ MonoBehaviour:
         height: 0
     enableMainCameraRendering: 0
     fpsCap: 0
-  - name: Base30FPS
+  - name: Base20FPS
     layers: []
     enableMainCameraRendering: 1
-    fpsCap: 30
+    fpsCap: 20
+  - name: BaseMaxFPS
+    layers: []
+    enableMainCameraRendering: 1
+    fpsCap: 0
   levelTimeLimit: 120
   levelName: SunTemple
