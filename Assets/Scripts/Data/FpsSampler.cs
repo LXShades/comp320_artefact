@@ -8,7 +8,7 @@ using UnityEngine;
 public class FpsSampler
 {
     // How many samples should be taken per second
-    public float sampleRate = 1f;
+    public float sampleRate = 5f;
 
     // Last realtime that a sample was taken at
     private float lastSampleTime = 0;
@@ -61,7 +61,8 @@ public class FpsSampler
 
         sortedFrameTimes.Sort();
 
-        return sortedFrameTimes[(int)(percentile*0.01f * sortedFrameTimes.Count)];
+        // 1-percentile due to frame times being inversely proportional to frame rate
+        return 1f / sortedFrameTimes[Mathf.Clamp((int)((1 - percentile * 0.01f) * sortedFrameTimes.Count), 0, deltaTimeSamples.Count)];
     }
 
     /// <summary>
