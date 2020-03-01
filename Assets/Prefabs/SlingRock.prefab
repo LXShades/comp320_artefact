@@ -368,7 +368,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 3.2197928e-10
+      time: 1.5009273e-10
       value: 0.9965279
       inSlope: 0
       outSlope: 0
@@ -377,8 +377,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.34305802
-      value: 3.939656
+      time: 0.15991873
+      value: 4.536611
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -386,10 +386,10 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.46973348
-      value: 3.074343
-      inSlope: -2.6208076
-      outSlope: -2.6208076
+      time: 0.21896932
+      value: 3.4957864
+      inSlope: -2.8048868
+      outSlope: -2.8048868
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
@@ -495,22 +495,22 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.0703125
-        inSlope: 0
-        outSlope: 0
+        value: 0.4244792
+        inSlope: -0.016690468
+        outSlope: -0.016690468
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 1
       - serializedVersion: 3
-        time: 0.084745765
-        value: 0.0625
-        inSlope: 0
-        outSlope: 0
+        time: 0.31878832
+        value: 0.38020834
+        inSlope: -0.21121955
+        outSlope: -0.21121955
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0.22592592
+        outWeight: 0.1809893
       - serializedVersion: 3
         time: 1
         value: 0

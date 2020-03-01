@@ -92,7 +92,7 @@
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
-				float depth = OldLinearEyeDepth(bufferDepth) + 9;
+				float depth = OldLinearEyeDepth(bufferDepth) + 7;
 				output.depth = LinearToDepth(depth);
 				output.colour = col;
 
