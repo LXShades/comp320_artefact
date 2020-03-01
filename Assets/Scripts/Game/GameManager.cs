@@ -299,7 +299,10 @@ public class GameManager : MonoBehaviour
         float totalLifetime = 0;
         balloonPopLifetimes.ForEach(b => totalLifetime += b);
 
-        data.sessionData[$"fps{activeImpostorConfigurationSymbol}"] = fpsSampler.GetAverageFps().ToString();
+        data.sessionData[$"fpsAvg{activeImpostorConfigurationSymbol}"] = fpsSampler.GetAverageFps().ToString();
+        data.sessionData[$"fpsLow{activeImpostorConfigurationSymbol}"] = fpsSampler.GetFpsAtPercentile(1f).ToString();
+        data.sessionData[$"fpsMed{activeImpostorConfigurationSymbol}"] = fpsSampler.GetFpsAtPercentile(50f).ToString();
+        data.sessionData[$"fpsHigh{activeImpostorConfigurationSymbol}"] = fpsSampler.GetFpsAtPercentile(99f).ToString();
         data.sessionData[$"travelled{activeImpostorConfigurationSymbol}"] = player.distanceTravelled.ToString();
         data.sessionData[$"shotsFired{activeImpostorConfigurationSymbol}"] = player.slingshot.numShotsFired.ToString();
         data.sessionData[$"balloonLifetime{activeImpostorConfigurationSymbol}"] = (totalLifetime / balloonPopLifetimes.Count).ToString();

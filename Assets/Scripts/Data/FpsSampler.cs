@@ -46,6 +46,25 @@ public class FpsSampler
     }
 
     /// <summary>
+    /// Returns the FPS at the given percentile
+    /// </summary>
+    /// <param name="percentile">Percentile between 0-100</param>
+    /// <returns></returns>
+    public float GetFpsAtPercentile(float percentile = 1)
+    {
+        if (deltaTimeSamples.Count == 0)
+        {
+            return 0;
+        }
+
+        List<float> sortedFrameTimes = new List<float>(deltaTimeSamples);
+
+        sortedFrameTimes.Sort();
+
+        return sortedFrameTimes[(int)(percentile*0.01f * sortedFrameTimes.Count)];
+    }
+
+    /// <summary>
     /// Resets all recorded data
     /// </summary>
     public void Reset()
