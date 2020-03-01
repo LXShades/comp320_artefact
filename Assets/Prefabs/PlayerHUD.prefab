@@ -608,15 +608,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questions:
-  - description: I felt challenged
-    dataColumn: challenge
   - description: I felt skilful
     dataColumn: skilful
   - description: I thought it was fun
     dataColumn: fun
+  - description: The game felt responsive
+    dataColumn: responsive
   - description: It was aesthetically pleasing
     dataColumn: aesthetic
-  - description: I felt frustrated
+  - description: I felt in control of my character
     dataColumn: frustration
   surveyBox: {fileID: 4556520111158064459}
   questionsRemaining: {fileID: 563466420746233129}
@@ -2245,7 +2245,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -9.744995}
+  m_AnchoredPosition: {x: 0, y: -9.74501}
   m_SizeDelta: {x: 0, y: -244.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7867899688858850812
@@ -3274,7 +3274,6 @@ GameObject:
   - component: {fileID: 7255659231219037995}
   - component: {fileID: 7255659231219037992}
   - component: {fileID: 7255659231219037993}
-  - component: {fileID: 1114148729}
   - component: {fileID: 8347105807709842051}
   m_Layer: 5
   m_Name: PlayerHUD
@@ -3384,18 +3383,6 @@ MonoBehaviour:
   debugTextures:
   - {fileID: 7255659231260552191}
   debugToggles: {fileID: 114541923083425972}
---- !u!114 &1114148729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7255659231219037990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bca1c2e0003d44a9027f6ec298e86b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8347105807709842051
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -100,10 +100,10 @@ MonoBehaviour:
     fpsCap: 0
   - name: LQImpostors
     layers:
-    - updateRate: 5
-      minRadius: 15
+    - updateRate: 20
+      minRadius: 0.2
       maxRadius: 80
-      renderDistance: 50
+      renderDistance: 70
       debugFillBackground: 0
       surface:
         frontBufferDepth: {fileID: 0}
@@ -122,7 +122,7 @@ MonoBehaviour:
         y: 0
         width: 0
         height: 0
-    - updateRate: 2
+    - updateRate: 5
       minRadius: 80
       maxRadius: 500
       renderDistance: 100
@@ -144,7 +144,7 @@ MonoBehaviour:
         y: 0
         width: 0
         height: 0
-    enableMainCameraRendering: 1
+    enableMainCameraRendering: 0
     fpsCap: 0
   - name: Base30FPS
     layers: []
