@@ -63,7 +63,7 @@ Transform:
   - {fileID: 1821438618764341349}
   - {fileID: 670093730290489701}
   - {fileID: 7274197385885024483}
-  - {fileID: 8837549145517900967}
+  - {fileID: 8296042736308166363}
   - {fileID: 13215627628404400}
   - {fileID: 4084083022675638541}
   m_Father: {fileID: 3044613863449127921}
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 3044613865486892526}
-  projectileSpawnPoint: {fileID: 8837549145517900967}
+  projectileSpawnPoint: {fileID: 8296042736308166363}
   fireCooldown: 0.25
   projectile: {fileID: 4987496156540999926, guid: 91251c59c92ef7f439f6d498c2ef8c62,
     type: 3}
@@ -356,7 +356,6 @@ GameObject:
   - component: {fileID: 3044613865486892496}
   - component: {fileID: 3044613865486892527}
   - component: {fileID: 3044613865486892526}
-  - component: {fileID: 6726757389320730815}
   - component: {fileID: 1335064367418299461}
   - component: {fileID: 4177423630277119007}
   m_Layer: 10
@@ -464,18 +463,6 @@ MonoBehaviour:
   slingshot: {fileID: 8522928202243599265}
   velocity: {x: 0, y: 0, z: 0}
   distanceTravelled: 0
---- !u!114 &6726757389320730815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3044613865486892525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bca1c2e0003d44a9027f6ec298e86b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &1335064367418299461
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -894,6 +881,11 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 3044613863449127822}
+    - target: {fileID: 4537097570497526258, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -20.715042
+      objectReference: {fileID: 0}
     - target: {fileID: 1613930404614221862, guid: f984b484cdf1d7444a1dfecd2e9c9b57,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1024,9 +1016,19 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2235999372750657952, guid: 91251c59c92ef7f439f6d498c2ef8c62,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2235999372750657952, guid: 91251c59c92ef7f439f6d498c2ef8c62,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91251c59c92ef7f439f6d498c2ef8c62, type: 3}
---- !u!4 &8837549145517900967 stripped
+--- !u!4 &8296042736308166363 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 685742268690028649, guid: 91251c59c92ef7f439f6d498c2ef8c62,
     type: 3}
