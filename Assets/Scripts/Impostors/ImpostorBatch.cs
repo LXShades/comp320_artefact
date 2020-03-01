@@ -31,6 +31,8 @@ public class ImpostorBatch : MonoBehaviour
     [Tooltip("The far clipping plane in the depth texture")]
     public float farPlane = 100;
 
+    public float renderDistance = 0;
+
     /// <summary>
     /// Number of impostors currently reserved for use in this batch
     /// </summary>
@@ -94,6 +96,7 @@ public class ImpostorBatch : MonoBehaviour
             myMaterial.SetTexture("_DepthTex", depthTexture);
             myMaterial.SetFloat("_DepthMin", nearPlane);
             myMaterial.SetFloat("_DepthMax", farPlane);
+            myMaterial.SetFloat("_RenderDistance", renderDistance);
         }
     }
 

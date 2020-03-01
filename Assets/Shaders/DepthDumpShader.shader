@@ -6,6 +6,7 @@
 		_DepthTex("DepthTexture", 2D) = "white" {}
 		_DepthMin("DepthMin", Float) = 1
 		_DepthMax("DepthMax", Float) = 2
+		_RenderDistance("RenderDistnace", Float) = 2
     }
     SubShader
     {
@@ -33,6 +34,7 @@
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+				float linearDepthOffset : TEXCOORD1;
             };
 
 			struct f
@@ -46,6 +48,7 @@
             float4 _MainTex_ST;
 			float _DepthMin;
 			float _DepthMax;
+			float _RenderDistance;
 
 			/*
 			Despite Unity documentation's LIES, here are the values Unity supplies in _ZBufferParams
@@ -74,6 +77,7 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.linearDepthOffset = mul(UNITY_MATRIX_MV, float4(v.vertex.xyz, 1.0)).z + _RenderDistance;
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
@@ -92,11 +96,11 @@
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
-				float depth = OldLinearEyeDepth(bufferDepth) + 7;
+				float depth = max(OldLinearEyeDepth(bufferDepth) - i.linearDepthOffset, _DepthMin + 2); // clamp to remove weird clipping errors
 				output.depth = LinearToDepth(depth);
 				output.colour = col;
 
-				//output.colour = (depth) / 50;
+				//output.colour = clamp(depth - 5, 0, 1);
 
                 return output;
             }

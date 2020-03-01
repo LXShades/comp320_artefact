@@ -251,6 +251,7 @@ public class ImpMan : MonoBehaviour
             layer.surface.batch.depthTexture = layer.surface.backBufferDepth;
             layer.surface.batch.nearPlane = layer.minRadius;
             layer.surface.batch.farPlane = layer.maxRadius;
+            layer.surface.batch.renderDistance = layer.renderDistance;
             layer.surface.SwapBuffers();
 
             // and place the previous impostor!
