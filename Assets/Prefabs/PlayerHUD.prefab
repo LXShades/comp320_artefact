@@ -1748,7 +1748,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Please share your feelings with the following statements
+  m_Text: Please share your feelings on the following statements
 --- !u!1 &3767815746407214172
 GameObject:
   m_ObjectHideFlags: 0

@@ -75,7 +75,7 @@ public class SurveyBox : MonoBehaviour
     /// <summary>
     /// Keep track of the parent component for setting question values
     /// </summary>
-    private void Awake()
+    private void OnEnable()
     {
         parentSequence = GetComponentInParent<SurveySequence>();
     }
@@ -93,6 +93,9 @@ public class SurveyBox : MonoBehaviour
     /// </summary>
     public void OnChange()
     {
-        parentSequence.SetQuestionValue(surveyQuestionIndex, slider.value);
+        if (parentSequence)
+        {
+            parentSequence.SetQuestionValue(surveyQuestionIndex, slider.value);
+        }
     }
 }

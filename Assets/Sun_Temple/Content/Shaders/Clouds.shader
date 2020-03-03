@@ -12,7 +12,7 @@ Shader "Sun_Temple/Clouds" {
 
 
 	SubShader { 
-		Tags { "RenderType"="Opaque" "Queue"="Overlay" "IgnoreProjector"="True" }
+		Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True" }
 		LOD 200
 		Cull Off		
 		ZWrite Off
