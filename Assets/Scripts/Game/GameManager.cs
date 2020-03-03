@@ -65,6 +65,9 @@ public class GameManager : MonoBehaviour
     // List of lifetimes of balloons when popped
     public List<float> balloonPopLifetimes = new List<float>();
 
+    /// <summary>
+    /// Returns whether the game is running. Currently this is only true when time is up
+    /// </summary>
     public bool isPaused
     {
         get
@@ -89,6 +92,11 @@ public class GameManager : MonoBehaviour
         }
     }
     private DataFile _data;
+
+    /// <summary>
+    /// Whether the timer has started tickintg
+    /// </summary>
+    public bool hasTimerStarted;
 
     /// <summary>
     /// Tracks frame rate and stuff
@@ -195,6 +203,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (!hasTimerStarted)
+        {
+            levelStartTime = Time.time;
+        }
+
         if (isDebugBuild)
         {
             // Take screenshots
@@ -347,6 +360,8 @@ public class GameManager : MonoBehaviour
 
         balloonPopLifetimes.Clear();
         fpsSampler.Reset();
+
+        hasTimerStarted = false;
 
         levelStartTime = Time.time;
 

@@ -21,6 +21,8 @@ public class PlayerUI : MonoBehaviour
     public GameObject completeScreen;
     // Survey screen
     public GameObject surveyScreen;
+    // Tutorial screen, shows until the game starts
+    public GameObject tutorialScreen;
     // Debug UI
     public GameObject debugUi;
 
@@ -39,11 +41,21 @@ public class PlayerUI : MonoBehaviour
 
     void Update()
     {
+        tutorialScreen.SetActive(!GameManager.singleton.hasTimerStarted);
+
         if (GameManager.singleton.timeRemaining > 0)
         {
             // Update player balloon status
             balloonStatusText.text = $"{GameManager.singleton.numPoppedBalloons}/{GameManager.singleton.numTotalBalloons}";
-            timerText.text = $"{((int)GameManager.singleton.timeRemaining / 60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
+
+            if (GameManager.singleton.hasTimerStarted)
+            {
+                timerText.text = $"{((int)GameManager.singleton.timeRemaining / 60).ToString("0.#")}:{((int)GameManager.singleton.timeRemaining % 60).ToString("00.#")}\nremaining";
+            }
+            else
+            {
+                timerText.text = "Waiting for door...";
+            }
 
             crosshair.SetActive(true);
 
