@@ -612,14 +612,14 @@ MonoBehaviour:
     dataColumn: enjoyed
   - description: My shooting felt accurate
     dataColumn: accurate
-  - description: The game felt responsive
+  - description: The controls felt responsive
     dataColumn: responsive
   - description: The frame rate felt smooth
     dataColumn: smooth
-  - description: I had difficulty moving my character
-    dataColumn: movedifficulty
   - description: I had difficulty aiming
     dataColumn: aimdifficulty
+  - description: I had difficulty moving around
+    dataColumn: movedifficulty
   surveyBox: {fileID: 4556520111158064459}
   questionsRemaining: {fileID: 563466420746233129}
   continueButton: {fileID: 8928209668603434701}
