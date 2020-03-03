@@ -240,3 +240,16 @@ A final requirements test and stress test is conducted before pilot testing. See
 The results showed satisfactory functionality across all domains with a few exceptions. The main exceptions include layers containing duplicate objects (where objects are rendered into the foreground layer as well as the first impostor layer) and some errors with the depth buffer dump.
 
 The game itself is felt satisfactory for pilot testing. We feel it would be useful to include a 'base' imposotor configuration as per the original design, so this has been included.
+
+# 3/03/2020
+Some final changes were mdae following critical feedback from staff. The changes are summarised as:
+
+* Improve specifity of questions
+* Give the player a moment to get a feel for the controls before the game starts
+* Improve slingshot usability following feedback by players about feeling the need to lead their shots. The slingshot now plays a more immediate line effect that clearly penetrates balloons instantaneously.
+
+It is time to collect data. yay.
+
+celebrate.
+
+we're there i guess
