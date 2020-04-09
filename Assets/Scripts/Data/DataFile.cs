@@ -8,7 +8,9 @@ using UnityEngine;
 /// </summary>
 public class DataFile
 {
-    // Variable-value associative data
+    /// <summary>
+    /// All variable-value associative data in this session
+    /// </summary>
     public Dictionary<string, string> sessionData = new Dictionary<string, string>();
 
     /// <summary>

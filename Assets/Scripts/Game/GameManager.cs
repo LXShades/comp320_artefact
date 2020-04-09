@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour
     }
     private static GameManager _singleton;
 
+    /// <summary>
+    /// Whether this is a development/debug build. Used to supply debug info.
+    /// </summary>
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     public static bool isDebugBuild = true;
 #else
@@ -36,7 +39,7 @@ public class GameManager : MonoBehaviour
 #endif
 
     /// <summary>
-    /// Retrieves the player
+    /// Retrieves a reference to the player
     /// </summary>
     public Player player
     {
@@ -52,18 +55,82 @@ public class GameManager : MonoBehaviour
     }
     private Player _player;
 
-    /// <summary>
-    /// Total number of balloons in this scene
-    /// </summary>
-    public int numTotalBalloons;
+    [Tooltip("Game-defined impostor configurations")]
+    public ImpostorConfiguration[] impostorConfigurations = new ImpostorConfiguration[0];
+
+    [Tooltip("Duration of each game round")]
+    public float levelTimeLimit = 120;
+
+    [Tooltip("Name of the .csv data file")]
+    public string dataName = "participantData.csv";
+
+    [Tooltip("Name of the main scene")]
+    public string levelName = "SunTemple";
 
     /// <summary>
-    /// Number of balloons that have been popped by the player
+    /// Number of seconds remaining until time runs out
     /// </summary>
-    public int numPoppedBalloons;
+    public float timeRemaining
+    {
+        get
+        {
+            return Mathf.Max(levelTimeLimit - (Time.time - levelStartTime), 0);
+        }
+    }
 
-    // List of lifetimes of balloons when popped
-    public List<float> balloonPopLifetimes = new List<float>();
+    /// <summary>
+    /// Retrieves the symbol (letter identifier) of the current impostor configuration
+    /// </summary>
+    public string activeImpostorConfigurationSymbol
+    {
+        get
+        {
+            return ((System.Char)('A' + activeImpostorConfiguration)).ToString();
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the full name of the current impostor configuration (for debugging)
+    /// </summary>
+    public string activeImpostorConfigurationName
+    {
+        get
+        {
+            return impostorConfigurations[activeImpostorConfiguration].name;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the index of the currently active impostor configuration
+    /// </summary>
+    public int activeImpostorConfiguration
+    {
+        get
+        {
+            return currentRound < numRounds ? impostorConfigByRound[currentRound] : 0;
+        }
+    }
+
+    /// <summary>
+    /// The current round index. This is independent to impostor configuration index as the latter is picked in random order.
+    /// </summary>
+    [HideInInspector] public int currentRound = 0;
+
+    /// <summary>
+    /// Returns the total number of rounds - equivalent to the length of the impostor configuration-by-round sequence
+    /// </summary>
+    public int numRounds
+    {
+        get
+        {
+            return impostorConfigByRound.Length;
+        }
+    }
+
+    /// <summary>
+    /// The impostor indexes to go through each round, randomised
+    /// </summary>
+    [HideInInspector] public int[] impostorConfigByRound = new int[0];
 
     /// <summary>
     /// Returns whether the game is running. Currently this is only true when time is up
@@ -94,79 +161,34 @@ public class GameManager : MonoBehaviour
     private DataFile _data;
 
     /// <summary>
+    /// Total number of balloons seen in this round
+    /// </summary>
+    [HideInInspector] public int numTotalBalloons;
+
+    /// <summary>
+    /// Number of balloons that have been popped by the player
+    /// </summary>
+    [HideInInspector] public int numPoppedBalloons;
+
+    /// <summary>
+    /// List of lifetimes of balloons when popped
+    /// </summary>
+    [HideInInspector] public List<float> balloonPopLifetimes = new List<float>();
+
+    /// <summary>
     /// Whether the timer has started tickintg
     /// </summary>
-    public bool hasTimerStarted;
+    [HideInInspector] public bool hasTimerStarted;
 
     /// <summary>
     /// Tracks frame rate and stuff
     /// </summary>
-    public FpsSampler fpsSampler = new FpsSampler();
+    [HideInInspector] public FpsSampler fpsSampler = new FpsSampler();
 
-    // File name of the data file
-    public string dataName = "participantData.csv";
-
-    public float timeRemaining
-    {
-        get
-        {
-            return Mathf.Max(levelTimeLimit - (Time.time - levelStartTime), 0);
-        }
-    }
-
-    // Retrieves the symbol (letter identifier) of the current impostor configuration
-    public string activeImpostorConfigurationSymbol
-    {
-        get
-        {
-            return ((System.Char)('A' + activeImpostorConfiguration)).ToString();
-        }
-    }
-
-    // Retrieves the full name of the current impostor configuration (for debugging)
-    public string activeImpostorConfigurationName
-    {
-        get
-        {
-            return impostorConfigurations[activeImpostorConfiguration].name;
-        }
-    }
-
-    // The currently active impostor configuration
-    public int activeImpostorConfiguration
-    {
-        get
-        {
-            return currentRound < numRounds ? impostorConfigByRound[currentRound] : 0;
-        }
-    }
-
-    // The current index in the random impostor configuration list
-    public int currentRound = 0;
-
-    // Returns the total number of rounds - equivalent to the length of the impostor configuration-by-round sequence
-    public int numRounds
-    {
-        get
-        {
-            return impostorConfigByRound.Length;
-        }
-    }
-
-    // The impostor indexes to go through each round, randomised
-    public int[] impostorConfigByRound = new int[0];
-
-    // Game-defined impostor configurations
-    public ImpostorConfiguration[] impostorConfigurations = new ImpostorConfiguration[0];
-
-    // Duration of each game round
-    public float levelTimeLimit = 120;
-
-    // Time.time when the level was started
+    /// <summary>
+    /// Time.time when the level was started
+    /// </summary>
     private float levelStartTime;
-
-    // Name of the main level
-    public string levelName = "SunTemple";
 
     /// <summary>
     /// Sets up the random impostor configuration order

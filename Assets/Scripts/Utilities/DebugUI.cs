@@ -4,23 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI for impostor and performance debugging
+/// UI displaying impostor and performance debugging information
 /// </summary>
 public class DebugUI : MonoBehaviour
 {
-    /// <summary>
-    /// The FPS counter text
-    /// </summary>
+    [Tooltip("The FPS counter text")]
     public Text fpsCounter;
 
-    /// <summary>
-    /// The debug texture images in the UI hiearchy
-    /// </summary>
+    [Tooltip("The debug texture images in the UI hiearchy")]
     public Image[] debugTextures;
 
-    /// <summary>
-    /// A list of debug toggles used for wow
-    /// </summary>
+    [Tooltip("A list of debug toggles used for wow")]
     public Text debugToggles;
 
     // Frame logging is done in a circular array
@@ -39,13 +33,22 @@ public class DebugUI : MonoBehaviour
     /// </summary>
     private float[] frameTimes = new float[numFrameTimes];
 
+    /// <summary>
+    /// Real time in the previous frame, used for frame rate tracking
+    /// </summary>
     private float lastRealTime;
 
+    /// <summary>
+    /// Called by Unity upon creation. Initialises variables.
+    /// </summary>
     void Awake()
     {
         lastRealTime = Time.realtimeSinceStartup;
     }
 
+    /// <summary>
+    /// Called by Unity upon a frame. Refreshes debug UI elements.
+    /// </summary>
     void Update()
     {
         // Refresh the impostor texture display

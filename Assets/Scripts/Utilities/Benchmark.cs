@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class Benchmark
 {
+    /// <summary>
+    /// Index of the next available benchmark in the preallocated benchmark pool
+    /// </summary>
     public static int currentIndex = 0;
 
     /// <summary>
@@ -29,6 +32,9 @@ public class Benchmark
     /// </summary>
     public float startTime;
 
+    /// <summary>
+    /// Preallocates the benchmark pool
+    /// </summary>
     static Benchmark()
     {
         for (int i = 0; i < poolSize; i++)

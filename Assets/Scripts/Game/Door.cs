@@ -7,7 +7,9 @@ using UnityEngine;
 /// </summary>
 public class Door : MonoBehaviour
 {
-    // Whether the door has already been opened and can't open again
+    /// <summary>
+    /// Whether the door has already been opened and can't open again
+    /// </summary>
     [HideInInspector] public bool hasOpened;
 
     /// <summary>

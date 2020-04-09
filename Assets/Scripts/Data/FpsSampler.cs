@@ -7,15 +7,22 @@ using UnityEngine;
 /// </summary>
 public class FpsSampler
 {
-    // How many samples should be taken per second
+    [Tooltip("How many samples should be taken per second")]
     public float sampleRate = 5f;
 
-    // Last realtime that a sample was taken at
+    /// <summary>
+    /// Last Time.realtimeSinceStartup that a sample was taken at
+    /// </summary>
     private float lastSampleTime = 0;
 
-    /// Samples deltaTime which should be an adequate measurement of frame times
+    /// <summary>
+    /// Samples of deltaTime which collected over time (deltaTime being a measurement of frame time)
+    /// </summary>
     private List<float> deltaTimeSamples = new List<float>();
 
+    /// <summary>
+    /// Called by Unity every frame. Adds a frame time sample if enough time has passed since the last sample
+    /// </summary>
     public void Update()
     {
         if (Time.realtimeSinceStartup - lastSampleTime >= 1.0f / sampleRate)

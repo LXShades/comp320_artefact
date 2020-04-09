@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// The player's weapon object
+/// The player's weapon
 /// </summary>
 public class Slingshot : MonoBehaviour
 {
@@ -20,29 +20,51 @@ public class Slingshot : MonoBehaviour
     public RockProjectile projectile;
 
     [Header("Animations")]
-    // Clip for charge-up animation
+    [Tooltip("The charge-up animation")]
     public AnimationClip chargeUp;
+    [Tooltip("The release/fire animation")]
     public AnimationClip fire;
 
     // Components
+    [Tooltip("The Animation component playing active animations")]
     private new Animation animation;
 
+    /// <summary>
+    /// The last time the weapon was fired. Used for cooldowns
+    /// </summary>
     private float lastFiredTime;
 
-    // Whether the slingshot has begun charging
+    /// <summary>
+    /// Whether the slingshot has begun charging
+    /// </summary>
     private bool isCharging = false;
+
+    /// <summary>
+    /// Whether the swingshot is charged and ready to fire
+    /// </summary>
     private bool hasCharged = false;
-    // Causes the slingshot to fire on the next frame that it's not charged
+
+    /// <summary>
+    /// Causes the slingshot to fire as soon as it's ready (player released the mouse button early)
+    /// </summary>
     private bool doFireWhenCharged = false;
 
-    // Data recording
+    /// <summary>
+    /// Number of shots fired in total. For data recording
+    /// </summary>
     [HideInInspector] public int numShotsFired = 0;
 
+    /// <summary>
+    /// Called by Unity upon creation. Initialises components.
+    /// </summary>
     void Awake()
     {
         animation = GetComponent<Animation>();
     }
 
+    /// <summary>
+    /// Called by Unity upon a frame. Handles weapon game logic.
+    /// </summary>
     void Update()
     {
         // show default pose when not using it
@@ -97,6 +119,9 @@ public class Slingshot : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays the projectile release animation and begins cooldown
+    /// </summary>
     private void ReleaseProjectile()
     {
         // Record firing time for cooldowns
@@ -113,6 +138,9 @@ public class Slingshot : MonoBehaviour
         numShotsFired++;
     }
 
+    /// <summary>
+    /// Called by the release animation when the rock should detach and release from the elastic
+    /// </summary>
     public void OnProjectileDetach()
     {
         // Spawn and eject the projectile towards the target

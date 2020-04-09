@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Basic WASD-style camera movement 
+/// Basic WASD-style camera movement for impostor scene testing
 /// </summary>
 public class CameraMovement : MonoBehaviour
 {
@@ -34,11 +34,17 @@ public class CameraMovement : MonoBehaviour
     /// </summary>
     float activeSprintSpeed;
     
+    /// <summary>
+    /// Called by Unity upon creation. Locks and hides the cursor.
+    /// </summary>
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
     
+    /// <summary>
+    /// Called by Unity upon a frame. Moves the camera by user input.
+    /// </summary>
     void Update()
     {
         if (Input.GetKey(KeyCode.LeftShift) && (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0))

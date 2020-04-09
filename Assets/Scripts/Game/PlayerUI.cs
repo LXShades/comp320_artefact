@@ -8,24 +8,27 @@ using UnityEngine.UI;
 /// </summary>
 public class PlayerUI : MonoBehaviour
 {
-    // UI text for the balloon status info
+    [Tooltip("UI text for the balloon status info")]
     public Text balloonStatusText;
-    // UI text for the time remaining
+    [Tooltip("UI text for the time remaining")]
     public Text timerText;
 
-    // In-game crosshair
+    [Tooltip("In-game crosshair")]
     public GameObject crosshair;
-    // End screen and survey
+    [Tooltip("End screen and survey")]
     public GameObject endScreen;
-    // Round end screen
+    [Tooltip("Round end screen")]
     public GameObject completeScreen;
-    // Survey screen
+    [Tooltip("Survey screen")]
     public GameObject surveyScreen;
-    // Tutorial screen, shows until the game starts
+    [Tooltip("Tutorial screen, shows until the game starts")]
     public GameObject tutorialScreen;
-    // Debug UI
+    [Tooltip("Debug UI")]
     public GameObject debugUi;
 
+    /// <summary>
+    /// Called by Unity upon creation. Initialises UI elements
+    /// </summary>
     void Start()
     {
         // Start with initial UI state
@@ -39,6 +42,9 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by Unity upon a frame. Refreshes UI display, cursor control  and stats
+    /// </summary>
     void Update()
     {
         tutorialScreen.SetActive(!GameManager.singleton.hasTimerStarted);
@@ -57,6 +63,7 @@ public class PlayerUI : MonoBehaviour
                 timerText.text = "Waiting for door...";
             }
 
+            // Lock the cursor (we're in game)
             crosshair.SetActive(true);
 
             Cursor.lockState = CursorLockMode.Locked;
@@ -64,11 +71,11 @@ public class PlayerUI : MonoBehaviour
         }
         else
         {
+            // Unlock the cursor (we're doing the survey or end screen now)
             endScreen.SetActive(true);
-            Cursor.visible = true;
-
             crosshair.SetActive(false);
 
+            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
     }

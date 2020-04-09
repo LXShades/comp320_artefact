@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Once Activataed, spawns balloons in bursts at configurable times
+/// </summary>
 public class BalloonSpawner : MonoBehaviour
 {
     /// <summary>
@@ -10,38 +13,44 @@ public class BalloonSpawner : MonoBehaviour
     [System.Serializable]
     public class SpawnBurst
     {
-        // Time relative to the beginning of the cycle that the spawn burst will occur
+        [Tooltip("Time relative to the beginning of the cycle that the spawn burst will occur")]
         public float time = 0;
 
-        // Number to spawn
+        [Tooltip("Number to spawn")]
         public int numToSpawn = 1;
 
-        // Wait time between each spawn
+        [Tooltip("Wait time between each spawn")]
         public float spawnTimeGap;
 
-        // Initial velocity to spawn the balloons at
+        [Tooltip("Initial velocity to spawn the balloons at")]
         public Vector3 startVelocity = Vector3.one;
 
-        // Ending velocity (velocity of the final balloon) to spawn the balloons at
+        [Tooltip("Ending velocity (velocity of the final balloon) to spawn the balloons at")]
         public Vector3 endVelocity = Vector3.one;
     }
 
-    // The balloon prefab to spawn
+    [Tooltip("The balloon prefab to spawn")]
     public GameObject prefabToSpawn;
 
-    // List of spawn bursts in a cycle
+    [Tooltip("List of spawn bursts in a cycle")]
     public List<SpawnBurst> spawnBursts = new List<SpawnBurst>();
 
-    // Whether to activate at level start
+    [Tooltip("Whether to activate at level start")]
     public bool autoActivate = false;
 
-    // Game time that the beginning of the cycle started at
+    /// <summary>
+    /// Game time that we were activated at
+    /// </summary>
     float activationTime = 0;
 
-    // Whether the spawner is active and spawning balloons
+    /// <summary>
+    /// Whether the spawner is active and spawning balloons
+    /// </summary>
     bool hasActivated = false;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Called by Unity on creation. Auto-activates if desired.
+    /// </summary>
     void Start()
     {
         if (autoActivate)
@@ -50,7 +59,9 @@ public class BalloonSpawner : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Called by Unity each frame. If activated, spawns balloons at the appropriate times
+    /// </summary>
     void Update()
     {
         if (hasActivated)
@@ -93,6 +104,9 @@ public class BalloonSpawner : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    /// <summary>
+    /// Visualises the spawn bursts with lines
+    /// </summary>
     void OnDrawGizmos()
     {
         foreach (SpawnBurst burst in spawnBursts)
@@ -105,6 +119,9 @@ public class BalloonSpawner : MonoBehaviour
     }
 #endif
 
+    /// <summary>
+    /// Spawns a new balloon at the given position and velocity
+    /// </summary>
     void SpawnBalloon(Vector3 position, Vector3 velocity)
     {
         BalloonEnemy balloon = Instantiate(prefabToSpawn, position, Quaternion.identity).GetComponent<BalloonEnemy>();

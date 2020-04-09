@@ -14,32 +14,43 @@ public class SurveySequence : MonoBehaviour
     [System.Serializable]
     public class SurveyQuestion
     {
-        // Description on the survey question box
+        [Tooltip("Description on the survey question box")]
         public string description;
-        // Data column this belongs to
+        [Tooltip("Data column this belongs to")]
         public string dataColumn;
     };
 
-    // The list of questions 
+    [Tooltip("The survey questions to ask")]
     public SurveyQuestion[] questions = new SurveyQuestion[0];
 
-    // Tracks the responses previously made by the player
+    /// <summary>
+    /// Tracks the responses previously made by the player. Used to show the previous response marker.
+    /// </summary>
     private static Dictionary<string, float> previousResponses = new Dictionary<string, float>();
+
+    /// <summary>
+    /// Tracks the responses currently being made by the player
+    /// </summary>
     private static Dictionary<string, float> currentResponses = new Dictionary<string, float>();
 
-    // The survey box to update as we progress through the survey
+    [Tooltip("The survey box UI to update as we progress through the survey")]
     public SurveyBox surveyBox;
 
-    // Status box
+    [Tooltip("Status box UI")]
     public Text questionsRemaining;
-    // Continue button
+    [Tooltip("The continue button")]
     public Button continueButton;
-    // Text on the continue button
+    [Tooltip("The text on the continue button")]
     public Text continueButtonText;
 
-    // Current question in the list of question that we're at
+    /// <summary>
+    /// Current question in the list of question that we're at
+    /// </summary>
     int currentQuestionIndex = 0;
 
+    /// <summary>
+    /// Called upon Unity upon first script activation. Resets to the first question
+    /// </summary>
     public void OnEnable()
     {
         SetQuestion(0);
@@ -82,7 +93,7 @@ public class SurveySequence : MonoBehaviour
     }
 
     /// <summary>
-    /// Goes to the next question
+    /// Progresses to the next question
     /// </summary>
     public void OnClickedNextButton()
     {

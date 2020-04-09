@@ -82,9 +82,11 @@ public class ImpMan : MonoBehaviour
     public int impostorTextureDivisions = 1;
 
     [Header("Impostor rendering settings")]
-    [Tooltip("Render layer to draw impostors on")]
+    [Tooltip("Render layer to render impostors in")]
     public int impostorRenderLayer = 31;
+    [Tooltip("Render layer to draw impostors on")]
     public int impostorBatchLayer = 30;
+    [Tooltip("Number of separate render groups for progressive impostor rendering")]
     public int numProgressiveRenderGroups = 2;
 
     /// <summary>
@@ -97,6 +99,14 @@ public class ImpMan : MonoBehaviour
     /// </summary>
     float oldFarClipPlane;
 
+    /// <summary>
+    /// Whether objects have already been collected into impostor layers
+    /// </summary>
+    bool hasCollectedObjectsIntoLayers = false;
+
+    /// <summary>
+    /// Called earlier on by Unity when created
+    /// </summary>
     private void Awake()
     {
         // Create a list of all impostifiable objects
@@ -118,6 +128,9 @@ public class ImpMan : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by Unity when created
+    /// </summary>
     private void Start()
     {
         InitImpostorLayers();
@@ -125,6 +138,17 @@ public class ImpMan : MonoBehaviour
         oldFarClipPlane = Camera.main.farClipPlane;
     }
 
+    /// <summary>
+    /// Called when the impman is destroyed or scene ended
+    /// </summary>
+    private void OnDestroy()
+    {
+        ClearImpostorResources();
+    }
+
+    /// <summary>
+    /// Called every frame by Unity
+    /// </summary>
     private void Update()
     {
         if (GameManager.isDebugBuild)
@@ -200,21 +224,13 @@ public class ImpMan : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when the impman is destroyed or scene ended
+    /// Renders relevant objects into 
     /// </summary>
-    private void OnDestroy()
-    {
-        ClearImpostorResources();
-    }
-
-    bool hasCollectedObjectsIntoLayers = false;
-
+    /// <param name="layer"></param>
     void RefreshImpostorLayer(ImpostorLayer layer)
     {
         List<Impostify> impostablesToRender = new List<Impostify>();
         int numRenderers = 0;
-
-        Benchmark benchCollect = Benchmark.Start();
 
         if (!hasCollectedObjectsIntoLayers)
         {
@@ -231,14 +247,9 @@ public class ImpMan : MonoBehaviour
                     numRenderers++;
                 }
             }
+
+            hasCollectedObjectsIntoLayers = true;
         }
-        hasCollectedObjectsIntoLayers = true; // hack...
-        numRenderers++; // more hack...
-
-        // Don't bother if there's nothing to draw
-        if (numRenderers == 0) return;
-
-        benchCollect.Stop();
 
         // Render the objects in this impostor layer
         // Setup the culling masks
@@ -498,107 +509,5 @@ public class ImpMan : MonoBehaviour
                 layer.debugFillBackground = !layer.debugFillBackground;
             }
         }
-    }
-}
-
-/// <summary>
-/// A container of ImpostorLayer setups for the ImpMan to use
-/// </summary>
-[System.Serializable]
-public class ImpostorConfiguration
-{
-    /// <summary>
-    /// Optional name for this configuration
-    /// </summary>
-    public string name;
-
-    /// <summary>
-    /// List of layers to impostify
-    /// </summary>
-    public ImpostorLayer[] layers;
-
-    /// <summary>
-    /// Whether the main camera should render some of the foreground in addition to the layers
-    /// </summary>
-    public bool enableMainCameraRendering = true;
-
-    /// <summary>
-    /// If non-zero, caps the FPS. If 0, FPS is unlimited
-    /// </summary>
-    public int fpsCap = 0;
-}
-
-/// <summary>
-/// Impostor layer configuration settings
-/// </summary>
-[System.Serializable]
-public class ImpostorLayer
-{
-    /// <summary>
-    /// How many updates per second this layer should have
-    /// </summary>
-    public float updateRate;
-
-    /// <summary>
-    /// The minimum radius of this impostor layer. Objects crossing this boundary are probably in the previous layer
-    /// </summary>
-    public float minRadius;
-
-    /// <summary>
-    /// The maximum radius of this impostor layer. Objects past this boundary are probably in the next layer
-    /// </summary>
-    public float maxRadius;
-
-    /// <summary>
-    /// The distance to render this impostor at. If 0, minRadius is used
-    /// </summary>
-    public float renderDistance;
-
-    /// <summary>
-    /// Whether to fill the impostor's background for debugging purposes
-    /// </summary>
-    public bool debugFillBackground;
-
-    /// <summary>
-    /// The impostor surface this layer uses
-    /// </summary>
-    public ImpostorSurface surface;
-
-    /// <summary>
-    /// A list of objects that are currently included in this impostor
-    /// </summary>
-    public List<Impostify> activeImpostors = new List<Impostify>();
-
-    /// <summary>
-    /// The impostor camera used for rendering this layer
-    /// </summary>
-    public ImpostorCamera impostorCamera;
-
-    /// <summary>
-    /// Current mask index for progressively-rendered objects
-    /// </summary>
-    public int progressiveRenderGroup;
-
-    /// <summary>
-    /// The position of the impostor currently being rendered/displayed
-    /// </summary>
-    public Vector3 nextImpostorPosition;
-
-    /// <summary>
-    /// The size of the impostor currently being rendered/displayed
-    /// </summary>
-    public Rect nextImpostorSize;
-
-    /// <summary>
-    /// Copies data from a different impostor layer to this one
-    /// </summary>
-    public ImpostorLayer Clone()
-    {
-        ImpostorLayer clone = (ImpostorLayer)this.MemberwiseClone();
-
-        clone.activeImpostors = new List<Impostify>();
-        clone.surface = null;
-
-        return clone;
     }
 }

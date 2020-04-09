@@ -6,40 +6,56 @@
 /// </summary>
 public class BalloonEnemy : MonoBehaviour
 {
-    // How far up/down the balloon will wobble
+    [Tooltip("How far up/down the balloon will wobble")]
     public float wobbleAmount = 30.0f;
-    // How rapidly the balloon will wobble
+    [Tooltip("How rapidly the balloon will wobble")]
     public float wobbleRate = 0.5f;
-    // When the balloon will self-destruct to remove itself from the scene
+    [Tooltip("When the balloon will self-destruct to remove itself from the scene")]
     public float selfDestructTime = 8.0f;
-    // Direction of the balloon
+    [Tooltip("Direction of the balloon")]
     public Vector3 velocity;
-    // Particles to spawn when the balloon pops
+    [Tooltip("Particles to spawn when the balloon pops")]
     public GameObject popParticles;
-    // How the object scales over time
+    [Tooltip("How the object scales over time")]
     public AnimationCurve scaleCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
-    // Spawn point of the balloon
+    /// <summary>
+    /// Position that we initially spawned at
+    /// </summary>
     private Vector3 initialPosition;
+    /// <summary>
+    /// Scale that we initially spawned at
+    /// </summary>
     private Vector3 initialScale;
-    // Time.time at spawn
+
+    /// <summary>
+    /// Game Time.time at spawn
+    /// </summary>
     private float spawnTime;
 
-    // Components
+    /// <summary>
+    /// The attached Rigidbody component
+    /// </summary>
     private Rigidbody rb;
 
-    // Axis to wobble around
+    /// <summary>
+    /// Axis to wobble around on
+    /// </summary>
     private Vector3 wobbleAxis;
 
+    /// <summary>
+    /// Called early on by Unity upon creation. Initialises variables and stores initial states
+    /// </summary>
     void Awake()
     {
-        // Store initial spawn ifno
+        // Store initial spawn info
         initialPosition = transform.position;
         initialScale = transform.localScale;
         spawnTime = Time.time;
 
         wobbleAxis = (transform.position - GameManager.singleton.player.transform.position).normalized;
 
+        // Get components
         rb = GetComponent<Rigidbody>();
 
         // Don't pop in
@@ -49,7 +65,9 @@ public class BalloonEnemy : MonoBehaviour
         GameManager.singleton.numTotalBalloons++;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Called by Unity upon a frame. Moves the balloon along its movement direction.
+    /// </summary>
     void Update()
     {
         float aliveTime = Time.time - spawnTime;
@@ -74,6 +92,9 @@ public class BalloonEnemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by Unity during physics updates. Stops the balloon from spinning if it hits other balloons
+    /// </summary>
     void FixedUpdate()
     {
         rb.angularVelocity = Vector3.zero;
@@ -99,6 +120,9 @@ public class BalloonEnemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Causes the balloon to burst and delete itself
+    /// </summary>
     public void Pop()
     {
         // Record the data (but not if self-destructed; that would give an unuseful value of 5 every time)

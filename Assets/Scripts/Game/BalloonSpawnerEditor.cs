@@ -4,10 +4,30 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 
+/// <summary>
+/// Balloon spawner editor that previews balloon spawns in real-time
+/// </summary>
 [CustomEditor(typeof(BalloonSpawner))]
 public class BalloonSpawnerEditor : Editor
 {
-    // Force the editor to show the object (for simulation purposes)
+    /// <summary>
+    /// Time.realTimeSinceStartup at the last frame. Used to calculate deltaTime.
+    /// </summary>
+    private float lastTime;
+
+    /// <summary>
+    /// Time since this object was activated
+    /// </summary>
+    private float cycleTime = 0;
+
+    /// <summary>
+    /// The last rotation of the object. If this differs from the current rotation, the simulation is adjusted
+    /// </summary>
+    private Quaternion lastRotation;
+
+    /// <summary>
+    /// Forces the editor to update the object (for simulation purposes)
+    /// </summary>
     public void OnEnable()
     {
         cycleTime = 0;
@@ -18,14 +38,15 @@ public class BalloonSpawnerEditor : Editor
         // Force continual update so we can visualise balloon paths
         EditorApplication.update += Update;
     }
+
+    /// <summary>
+    /// Detaches from editor updates
+    /// </summary>
     public void OnDisable() { EditorApplication.update -= Update; }
 
-    private float lastTime;
-
-    private float cycleTime = 0;
-
-    private Quaternion lastRotation;
-
+    /// <summary>
+    /// Called during an editor viewport update. Continues the balloon spawn simulation
+    /// </summary>
     void Update()
     {
         float deltaTime = Time.realtimeSinceStartup - lastTime;
@@ -48,6 +69,9 @@ public class BalloonSpawnerEditor : Editor
         }
     }
 
+    /// <summary>
+    /// Renders spawn start/end handles and simulated balloons
+    /// </summary>
     void OnSceneGUI()
     {
         // Draw spawn direction handles

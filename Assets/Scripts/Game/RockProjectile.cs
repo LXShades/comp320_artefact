@@ -8,27 +8,36 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class RockProjectile : MonoBehaviour
 {
-    // Speed in m/s that the rock should travel
+    [Tooltip("Speed in m/s that the rock should travel")]
     public float speed = 50.0f;
 
-    // Speed damping when colliding
+    [Tooltip("Speed damping when colliding")]
     public float collisionDamp = 0.5f;
 
-    // Speed in degrees/s that the rock will spin
+    [Tooltip("Speed in degrees/s that the rock will spin")]
     public float spinSpeed = 700.0f;
 
-    // Scale multiplier over time after the rock is spawned
+    [Tooltip("Scale multiplier over time after the rock is spawned")]
     public AnimationCurve scaleCurve;
 
-    // Rigidbody component
+    /// <summary>
+    /// Rigidbody component
+    /// </summary>
     private Rigidbody rb;
 
-    // Scale this object was spawned with
+    /// <summary>
+    /// Scale this object was spawned with
+    /// </summary>
     private Vector3 initialScale;
 
-    // Time.time this object was spawned at
+    /// <summary>
+    /// Time.time this object was spawned at
+    /// </summary>
     private float spawnTime;
 
+    /// <summary>
+    /// Called by Unity upon creation. Initialises variables
+    /// </summary>
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -37,6 +46,9 @@ public class RockProjectile : MonoBehaviour
         spawnTime = Time.time;
     }
 
+    /// <summary>
+    /// Called by Unity upon a frame. Scales the rock over time (visual feedback)
+    /// </summary>
     void Update()
     {
         transform.localScale = initialScale * scaleCurve.Evaluate(Time.time - spawnTime);

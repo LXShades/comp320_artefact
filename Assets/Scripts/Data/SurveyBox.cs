@@ -8,23 +8,29 @@ using UnityEngine.UI;
 /// </summary>
 public class SurveyBox : MonoBehaviour
 {
-    // The UI element containg the text description for the question
+    [Tooltip("The UI element containg the text description for the question")]
     public Text descriptionText;
 
-    // Slider tracking the user's response
+    [Tooltip("Slider tracking the user's response")]
     public Slider slider;
 
-    // Marker showing the user's previous response
+    [Tooltip("Marker showing the user's previous response")]
     public Canvas previousMarker;
 
-    // Current survey question index of parent SurveySequence
+    /// <summary>
+    /// Current survey question index of parent SurveySequence
+    /// </summary>
     [HideInInspector]
     public int surveyQuestionIndex = 0;
 
-    // Parent survey sequence
+    /// <summary>
+    /// The survey sequence owning this survey box
+    /// </summary>
     private SurveySequence parentSequence;
 
-    // Sets or retrieves the user's current response value
+    /// <summary>
+    /// Sets or retrieves the user's current response value from the slider
+    /// </summary>
     public float value
     {
         set
@@ -37,7 +43,9 @@ public class SurveyBox : MonoBehaviour
         }
     }
 
-    // Sets or receives the marker of the previous value's position, or -1 for none
+    /// <summary>
+    /// Sets or receives the marker of the previous value's position, or -1 if none/NA/first time asked
+    /// </summary>
     public float previousValue
     {
         get
@@ -59,7 +67,9 @@ public class SurveyBox : MonoBehaviour
     private float _previousValue;
 
 
-    // Retrieves or sets the description directly
+    /// <summary>
+    /// Retrieves or sets the question description directly
+    /// </summary>
     public string description
     {
         get
@@ -81,7 +91,7 @@ public class SurveyBox : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the initial value
+    /// Records the initial value
     /// </summary>
     void Start()
     {
@@ -89,7 +99,7 @@ public class SurveyBox : MonoBehaviour
     }
 
     /// <summary>
-    /// Writes value to the data file
+    /// Writes the response value to the data file
     /// </summary>
     public void OnChange()
     {

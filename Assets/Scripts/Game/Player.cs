@@ -8,32 +8,37 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Control")]
-    // Acceleration in m/s/s
+    [Tooltip("Acceleration in m/s/s")]
     public float acceleration = 12.0f;
-    // Friction in m/s/s
+    [Tooltip("Friction in m/s/s")]
     public float friction = 8.0f;
-    // Maximum player speed in m/s
+    [Tooltip("Maximum player speed in m/s")]
     public float maxSpeed = 8.0f;
-    // Vertical speed to apply while jumping
+    [Tooltip("Vertical speed to apply while jumping")]
     public float jumpSpeed = 10.0f;
-    // Look sensitivity in degrees per 100 pixels
+    [Tooltip("Look sensitivity in degrees per 100 pixels")]
     public float lookSensitivity = 10.0f;
 
     [Header("Physics")]
-    // The maximum slope angle that the character can stand on, in degrees, before they are not considered to be on the ground
+    [Tooltip("The maximum slope angle that the character can stand on, in degrees, before they are not considered to be on the ground")]
     public float maxSlopeAngle = 45.0f;
-    // The gravity in m/s/s
+    [Tooltip("The gravity in m/s/s")]
     public float gravity = 9.8f;
 
     [Header("Hierarchy")]
-    // Camera used for looking and turning
+    [Tooltip("Camera used for looking and turning")]
     public Camera eyes;
-    // Slingshot for hitting things and pain
+    [Tooltip("Slingshot for hitting things and pain")]
     public Slingshot slingshot;
 
-    // Velocity of the player character in m/s
-    public Vector3 velocity = Vector3.zero;
+    /// <summary>
+    /// Velocity of the player character in m/s
+    /// </summary>
+    [HideInInspector] public Vector3 velocity = Vector3.zero;
 
+    /// <summary>
+    /// Velocity of the player character in m/s, but just the horizontal components. Useful for friction, etc.
+    /// </summary>
     public Vector3 horizontalVelocity
     {
         get
@@ -47,21 +52,34 @@ public class Player : MonoBehaviour
         }
     }
 
-    // How far the player has travelled overall
-    public float distanceTravelled = 0;
+    /// <summary>
+    /// How far the player has travelled overall. For data recording
+    /// </summary>
+    [HideInInspector] public float distanceTravelled = 0;
 
-    // Horizontal look direction angle, in degrees
+    /// <summary>
+    /// Horizontal look direction angle, in degrees
+    /// </summary>
     private float eyeHorizontalAngle = 0;
-    // Vertical look direction angle, in degrees
+
+    /// <summary>
+    /// Vertical look direction angle, in degrees
+    /// </summary>
     private float eyeVerticalAngle = 0;
 
-    // Whether the character is standing on the ground
+    /// <summary>
+    /// Whether the character is standing on the ground
+    /// </summary>
     private bool isOnGround;
 
-    // Character controller
+    /// <summary>
+    /// Character controller component
+    /// </summary>
     private CharacterController controller;
 
-
+    /// <summary>
+    /// Called upon creation by Unity. Initialises variables
+    /// </summary>
     void Start()
     {
         eyeHorizontalAngle = transform.rotation.y;
@@ -71,6 +89,9 @@ public class Player : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
     }
 
+    /// <summary>
+    /// Called upon creation by Unity. Handles game inputs/outputs, weapons and movement.
+    /// </summary>
     void Update()
     {
         if (GameManager.singleton.timeRemaining <= 0f)
@@ -132,6 +153,9 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Allows the player to jump
+    /// </summary>
     void ApplyInputJumps()
     {
         if (Input.GetButtonDown("Jump") && isOnGround)
@@ -198,7 +222,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Charges up and/or fires the slingshot based on player inputs
+    /// <summary>
+    /// Charges up and/or fires the slingshot based on player inputs
+    /// </summary>
     void HandleSlingshot()
     {
         if (Input.GetButton("Fire1"))
@@ -213,9 +239,8 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// Finds the position we are currently aiming at
+    /// Finds the approximate world position we are currently aiming at. Max range is 100m
     /// </summary>
-    /// <returns></returns>
     public Vector3 GetTargetPosition()
     {
         // Find the surface under the cursor, or just fire forward if none is found

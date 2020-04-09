@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A volume that triggers associated spawners to spawn balloons
+/// </summary>
 public class SpawnZone : MonoBehaviour
 {
+    [Tooltip("Balloon spawners to activate when the player enters this zone")]
     public BalloonSpawner[] associatedSpawners = new BalloonSpawner[0];
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Called upon creation by Unity. Hides the trigger volume.
+    /// </summary>
     void Start()
     {
         // Don't show the volume in-game
@@ -28,6 +34,9 @@ public class SpawnZone : MonoBehaviour
     }
 #endif
 
+    /// <summary>
+    /// Called by Unity upon entering the trigger. Activates the associated ballon spawners
+    /// </summary>
     void OnTriggerEnter(Collider collider)
     {
         if (collider.GetComponentInParent<Player>())

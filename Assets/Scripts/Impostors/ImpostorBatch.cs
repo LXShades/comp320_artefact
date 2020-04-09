@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/** Contains and renders a collection of impostor planes with varying UVs and a shared texture*/
+/// <summary>
+/// Contains and renders a varying number of impostor planes using a singlet exture with configurable UVs and positions */
+/// </summary>
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class ImpostorBatch : MonoBehaviour
 {
@@ -31,6 +33,7 @@ public class ImpostorBatch : MonoBehaviour
     [Tooltip("The far clipping plane in the depth texture")]
     public float farPlane = 100;
 
+    [Tooltip("The distance of the plane being rendered from the camera. This is used for depth calculations")]
     public float renderDistance = 0;
 
     /// <summary>
@@ -38,7 +41,7 @@ public class ImpostorBatch : MonoBehaviour
     /// </summary>
     private int numReservedImpostors = 0;
 
-    // Mesh element cache (as accessing mesh.vertices, etc takes time)
+    // Mesh element caches (as accessing mesh.vertices, etc takes time)
     private Vector3[] vertices;
     private Vector2[] uvs;
     private int[] indexes;
@@ -48,6 +51,9 @@ public class ImpostorBatch : MonoBehaviour
     /// </summary>
     private bool isMeshInvalidated = false;
 
+    /// <summary>
+    /// Called early upon creation by Unity. Initialises mesh caches.
+    /// </summary>
     private void Awake()
     {
         // Setup the impostor mesh caches
@@ -70,12 +76,18 @@ public class ImpostorBatch : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called upon creation by Unity. Sets up the empty mesh
+    /// </summary>
     private void Start()
     {
         // Generate the mesh upon creation
         RefreshMesh();
     }
 
+    /// <summary>
+    /// Called after scene Update by Unity. Prepares impostors for rendering
+    /// </summary>
     private void LateUpdate()
     {
         // Reset position (we're batched, so no movement plz)
@@ -100,6 +112,9 @@ public class ImpostorBatch : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates or updates the mesh, applying pending vertex/uv/face changes
+    /// </summary>
     private void RefreshMesh()
     {
         if (myMesh == null)

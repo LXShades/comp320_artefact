@@ -59,3 +59,7 @@ Last test: 1/03/2020
 Last test: 1/03/2020
 
 See Scripts/Test_PlayMode/PlayModeTests source code for descriptively commented unit tests.
+
+# Acknowledgements
+**Sun Temple by Sandro T on the Unity Asset Store:**  
+https://assetstore.unity.com/packages/3d/environments/sun-temple-115417

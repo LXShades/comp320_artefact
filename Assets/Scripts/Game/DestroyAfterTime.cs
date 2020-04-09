@@ -7,10 +7,12 @@ using UnityEngine;
 /// </summary>
 public class DestroyAfterTime : MonoBehaviour
 {
-    // Number of seconds before this object self-destructs
+    [Tooltip("Number of seconds before this object self-destructs")]
     public float secondsUntilDestroy = 5.0f;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Called by Unity upon creation. Starts the destruction timer
+    /// </summary>
     void Start()
     {
         StartCoroutine("DestroyAfterSeconds", secondsUntilDestroy);

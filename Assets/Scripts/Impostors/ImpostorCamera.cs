@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A Unity camera wrapper that can capture objects into impostors
+/// </summary>
 [RequireComponent(typeof(Camera))]
 public class ImpostorCamera : MonoBehaviour
 {
-    public new Camera camera;
+    /// <summary>
+    /// Reference to the associated auto-generated camera
+    /// </summary>
+    [HideInInspector] public new Camera camera;
 
+    /// <summary>
+    /// Called by Unity early upon creation. Creates the camera.
+    /// </summary>
     private void Awake()
     {
         camera = GetComponent<Camera>();
@@ -152,7 +161,7 @@ public class ImpostorCamera : MonoBehaviour
     /// Sets the target surface to render to
     /// </summary>
     /// <param name="surface">The target surface</param>
-    /// <param name="clearColour">The background colour to clear to</param>
+    /// <param name="clearColour">The background colour to clear the surface with</param>
     public void SetTargetSurface(ImpostorSurface surface, Color clearColour)
     {
         camera.clearFlags = CameraClearFlags.Skybox;
@@ -162,6 +171,11 @@ public class ImpostorCamera : MonoBehaviour
                                     surface.pixelDimensions.width, surface.pixelDimensions.height);
     }
 
+    /// <summary>
+    /// Immediately renders to a target surface
+    /// </summary>
+    /// <param name="surface">The target surface</param>
+    /// <param name="clearColour">The background colour to clear the surface with</param>
     public void RenderToSurface(ImpostorSurface surface, Color clearColour)
     {
         SetTargetSurface(surface, clearColour);

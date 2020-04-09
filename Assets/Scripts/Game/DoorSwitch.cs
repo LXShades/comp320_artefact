@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Opens a door when hit
+/// Opens a door when hit with the rock
 /// </summary>
 public class DoorSwitch : MonoBehaviour
 {
+    [Tooltip("Target Door object to open")]
     public Door doorToOpen;
 
     /// <summary>

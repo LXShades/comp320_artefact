@@ -8,11 +8,17 @@ using UnityEngine.UI;
 /// </summary>
 public class ConsentSequence : MonoBehaviour
 {
-    // Sequence of forms to go through with each button press
+    [Tooltip("Sequence of forms to go through with each button press")]
     public GameObject[] forms;
 
+    /// <summary>
+    /// Index of the current form we're on
+    /// </summary>
     int currentFormIndex = 0;
 
+    /// <summary>
+    /// Called by Unity upon creation. Opens the first (and current) from
+    /// </summary>
     void Start()
     {
         // Turn off all forms before activating the current one
